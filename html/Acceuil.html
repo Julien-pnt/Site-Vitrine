@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/Styles.css">
+    <link rel="shortcut icon" href="../img/icon.png" type="image/x-icon">
+    <title>Page accueil</title>
+</head>
+<body>
+    <!-- Header section with logo and navigation menu -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="../img/logo.png" alt="Logo" class="logo">
+        </div>
+        <ul class="menu-bar">
+            <li><a href="../html/Acceuil.html">Accueil</a></li>
+            <li><a href="../html/Collections.html">Collections</a></li>
+            <li><a href="../html/Montres.html">Montres</a></li>
+            <li><a href="../html/DescriptionProduits.html">Description produits</a></li>
+            <li><a href="../html/APropos.html">À propos</a></li>
+            <li><a href="../html/Organigramme.html">Organigramme</a></li>
+        </ul>
+    </header>
+
+    <!-- Video background section -->
+    <div class="video-background">
+        <video autoplay loop muted playsinline class="video-bg">
+            <source src="../video/background.mp4" type="video/mp4">
+            Votre navigateur ne supporte pas la vidéo.
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <!-- Search bar section -->
+    <div class="search-container">
+        <input type="text" class="search-bar" placeholder="Rechercher une montre...">
+    </div>
+
+    <!-- Shopping cart icon with item count -->
+    <div class="cart-icon">
+        🛒
+        <span class="cart-count">0</span>
+    </div>
+
+     <!-- User account icon -->
+     <div class="user-icon">
+        <a href="../html/Compte.html">👤</a>
+    </div>
+
+    <!-- Product grid section -->
+    <div class="product-grid">
+        <!-- Product card for Chronograph Elite -->
+        <div class="product-card">
+            <img src="../img/chrronographe-elite.jpg" alt="Chronograph Elite" class="product-image">
+            <h3>Chronograph Elite</h3>
+            <p class="price">12,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+        <!-- Product card for Classic Gold -->
+        <div class="product-card">
+            <img src="../img/montre gold.jpg" alt="Classic Gold" class="product-image">
+            <h3>Classic Gold</h3>
+            <p class="price">18,900 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    </div>
+</body>
+</html>

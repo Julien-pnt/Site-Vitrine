@@ -49,6 +49,23 @@
         <a href="../html/Compte.html">👤</a>
     </div>
 
+    <!-- Price Filter Section -->
+    <div class="price-filter">
+        <label for="price-range">Filtrer par prix :</label>
+        <input type="range" id="price-range" min="0" max="50000" value="50000" step="1000">
+        <span id="price-value">50,000 €</span>
+    </div>
+
+    <!-- Sort Section -->
+    <div class="sort-section">
+        <label for="sort-by">Trier par :</label>
+        <select id="sort-by">
+            <option value="price-asc">Prix croissant</option>
+            <option value="price-desc">Prix décroissant</option>
+            <option value="popularity">Popularité</option>
+        </select>
+    </div>
+
     <!-- Category slider for selecting Homme or Femme -->
     <div class="category-slider-container">
         <input type="range" min="0" max="1" step="1" value="0" id="category-slider" oninput="showCategory(this.value)">
@@ -93,5 +110,17 @@
             <button class="add-to-cart">Ajouter au panier</button>
         </div>
     </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2023 Montres de Luxe. Tous droits réservés.</p>
+            <ul class="footer-links">
+                <li><a href="../html/APropos.html">À propos</a></li>
+                <li><a href="../html/Organigramme.html">Contact</a></li>
+                <li><a href="#">Politique de confidentialité</a></li>
+            </ul>
+        </div>
+    </footer>
 </body>
 </html>

@@ -545,23 +545,6 @@ a {
     transform: translateZ(0);
 }
 
-/* Page Collections - See More Button */
-.see-more {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 9999px;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.3s;
-    margin-top: 1rem;
-}
-
-.see-more:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.05);
-}
-
 /* Page Montres - Price Filter */
 .price-filter {
     text-align: center;

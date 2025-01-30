@@ -162,14 +162,14 @@ a {
     font-weight: bold;
 }
 
-/* Style for the user account icon */
+/* User Icon - Base Style */
 .user-icon {
     position: fixed;
     top: 2rem;
-    right: 7rem; 
-    width: 2.5rem; 
-    height: 2.5rem; 
-    padding: 0.75rem; 
+    right: 7rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.75rem;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border-radius: 50%;
@@ -178,18 +178,66 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1000;
 }
 
-/* Hover effect for the user account icon */
 .user-icon:hover {
     background: rgba(255, 255, 255, 0.2);
 }
 
-/* Style for the user account icon link */
-.user-icon a {
+/* Profile Picture */
+.user-icon .profile-pic {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.user-icon .profile-pic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Dropdown Menu */
+.user-icon .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 0.75rem;
+    padding: 0.5rem 0;
+    display: none;
+    min-width: 150px;
+    z-index: 1000;
+}
+
+.user-icon:hover .dropdown-menu {
+    display: block;
+}
+
+.user-icon .dropdown-menu a {
+    display: block;
+    padding: 0.75rem 1rem;
     color: white;
     text-decoration: none;
-    font-size: 1.5rem;
+    font-size: 0.9rem;
+    transition: background 0.3s;
+}
+
+.user-icon .dropdown-menu a:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Logout Button */
+.user-icon .dropdown-menu .logout {
+    color: #ff7f50;
+    font-weight: bold;
+}
+
+.user-icon .dropdown-menu .logout:hover {
+    background: rgba(255, 127, 80, 0.1);
 }
 
 /* Style for the product grid */

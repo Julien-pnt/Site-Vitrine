@@ -1,14 +1,32 @@
-// Sélectionnez l'icône utilisateur et le menu déroulant
-const userIcon = document.querySelector('.user-icon');
-const dropdownMenu = userIcon.querySelector('.dropdown-menu');
+// Simuler l'état de connexion (true = connecté, false = déconnecté)
+let isLoggedIn = false; // Changez cette valeur pour tester les deux états
 
-// Ajoutez un écouteur d'événement pour afficher/cacher le menu
-userIcon.addEventListener('click', (e) => {
-    e.stopPropagation(); // Empêche la propagation de l'événement
-    dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
-});
+// Sélectionnez l'icône utilisateur
+const userIcon = document.getElementById('user-icon');
 
-// Fermez le menu si l'utilisateur clique ailleurs sur la page
-document.addEventListener('click', () => {
-    dropdownMenu.style.display = 'none';
-});
+// Fonction pour mettre à jour l'affichage en fonction de l'état de connexion
+function updateUserIcon() {
+    if (userIcon) {
+        if (isLoggedIn) {
+            userIcon.classList.remove('logged-out');
+            userIcon.classList.add('logged-in');
+        } else {
+            userIcon.classList.remove('logged-in');
+            userIcon.classList.add('logged-out');
+        }
+    }
+}
+
+// Mettre à jour l'affichage au chargement de la page
+updateUserIcon();
+
+// Gérer la déconnexion
+const logoutButton = document.getElementById('logout-button');
+if (logoutButton) {
+    logoutButton.addEventListener('click', (e) => {
+        e.preventDefault(); // Empêcher le comportement par défaut du lien
+        isLoggedIn = false; // Simuler la déconnexion
+        updateUserIcon(); // Mettre à jour l'affichage
+        alert('Vous êtes déconnecté.'); // Afficher un message de déconnexion
+    });
+}

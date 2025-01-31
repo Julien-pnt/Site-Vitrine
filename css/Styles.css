@@ -1,4 +1,8 @@
-/* Style for the body element */
+/* ==================== */
+/* GENERAL STYLES */
+/* ==================== */
+
+/* Styles de base pour le corps de la page */
 body {
     margin: 0;
     min-height: 100vh;
@@ -6,24 +10,34 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Style for the header section */
+/* Styles pour les liens */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ==================== */
+/* HEADER STYLES */
+/* ==================== */
+
+/* Styles pour l'en-tête (commun à toutes les pages) */
 .header {
     position: relative;
     z-index: 10;
     padding: 2rem 1rem;
 }
 
-/* Center the logo container */
+/* Centrer le logo */
 .logo-container {
     text-align: center;
 }
 
-/* Style for the logo image */
+/* Styles pour le logo */
 .logo {
     height: 80%;
 }
 
-/* Style for the menu bar */
+/* Styles pour la barre de menu */
 .menu-bar {
     display: flex;
     justify-content: center;
@@ -37,13 +51,7 @@ body {
     border-radius: 9999px;
 }
 
-/* Remove default link styles */
-a {
-    text-decoration: none;
-    color: inherit;
-}
-
-/* Style for each menu item */
+/* Styles pour chaque élément du menu */
 .menu-bar li {
     position: relative;
     padding: 0.75rem 1.5rem;
@@ -53,7 +61,7 @@ a {
     transition: color 0.2s;
 }
 
-/* Background effect for menu items */
+/* Effet de fond pour les éléments du menu */
 .menu-bar li::before {
     content: "";
     position: absolute;
@@ -65,7 +73,7 @@ a {
     z-index: -1;
 }
 
-/* Hover effect for menu items */
+/* Effet de survol pour les éléments du menu */
 .menu-bar li:hover {
     color: #000;
 }
@@ -74,35 +82,42 @@ a {
     opacity: 1;
 }
 
-/* Style for the video background */
+/* ==================== */
+/* VIDEO BACKGROUND */
+/* ==================== */
+
+/* Styles pour l'arrière-plan vidéo (commun à toutes les pages) */
 .video-background {
     position: fixed;
     inset: 0;
     z-index: -1;
 }
 
-/* Style for the video element */
+/* Styles pour la vidéo */
 .video-bg {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-/* Overlay for the video background */
+/* Overlay pour la vidéo d'arrière-plan */
 .video-overlay {
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0.6);
 }
 
-/* Container for the search bar */
+/* ==================== */
+/* SEARCH BAR */
+/* ==================== */
+
+/* Styles pour la barre de recherche (commun à plusieurs pages) */
 .search-container {
     max-width: 600px;
     margin: 2rem auto;
     padding: 0 1rem;
 }
 
-/* Style for the search bar */
 .search-bar {
     width: 100%;
     padding: 1rem;
@@ -116,25 +131,27 @@ a {
     transition: background-color 0.2s;
 }
 
-/* Focus effect for the search bar */
 .search-bar:focus {
     outline: none;
     background: rgba(255, 255, 255, 0.15);
 }
 
-/* Placeholder style for the search bar */
 .search-bar::placeholder {
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* Style for the cart icon */
+/* ==================== */
+/* CART ICON */
+/* ==================== */
+
+/* Styles pour l'icône du panier (commun à plusieurs pages) */
 .cart-icon {
     position: fixed;
     top: 2rem;
     right: 2rem;
-    width: 2.5rem; 
-    height: 2.5rem; 
-    padding: 0.75rem; 
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.75rem;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border-radius: 50%;
@@ -144,12 +161,11 @@ a {
     align-items: center;
     justify-content: center;
 }
-/* Hover effect for the cart icon */
+
 .cart-icon:hover {
     background: rgba(255, 255, 255, 0.2);
 }
 
-/* Style for the cart item count */
 .cart-count {
     position: absolute;
     top: -0.5rem;
@@ -162,7 +178,11 @@ a {
     font-weight: bold;
 }
 
-/* User Icon - Base Style */
+/* ==================== */
+/* USER ICON */
+/* ==================== */
+
+/* Styles pour l'icône utilisateur (commun à plusieurs pages) */
 .user-icon {
     position: fixed;
     top: 2rem;
@@ -185,7 +205,6 @@ a {
     background: rgba(255, 255, 255, 0.2);
 }
 
-/* Profile Picture */
 .user-icon .profile-pic {
     width: 100%;
     height: 100%;
@@ -199,7 +218,6 @@ a {
     object-fit: cover;
 }
 
-/* Dropdown Menu */
 .user-icon .dropdown-menu {
     position: absolute;
     top: 100%;
@@ -230,7 +248,6 @@ a {
     background: rgba(255, 255, 255, 0.2);
 }
 
-/* Logout Button */
 .user-icon .dropdown-menu .logout {
     color: #ff7f50;
     font-weight: bold;
@@ -240,7 +257,11 @@ a {
     background: rgba(255, 127, 80, 0.1);
 }
 
-/* Style for the product grid */
+/* ==================== */
+/* PRODUCT GRID */
+/* ==================== */
+
+/* Styles pour la grille de produits (commun à plusieurs pages) */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -250,7 +271,6 @@ a {
     margin: 0 auto;
 }
 
-/* Style for each product card */
 .product-card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -260,12 +280,10 @@ a {
     transition: transform 0.3s;
 }
 
-/* Hover effect for product cards */
 .product-card:hover {
     transform: translateY(-0.5rem);
 }
 
-/* Style for the product image */
 .product-image {
     width: 100%;
     height: 250px;
@@ -274,13 +292,11 @@ a {
     margin-bottom: 1rem;
 }
 
-/* Style for the product title */
 .product-card h3 {
     margin: 0.5rem 0;
     font-size: 1.25rem;
 }
 
-/* Style for the product price */
 .price {
     color: #ffd700;
     font-size: 1.5rem;
@@ -288,7 +304,6 @@ a {
     margin: 0.5rem 0 1rem;
 }
 
-/* Style for the add to cart button */
 .add-to-cart {
     background: linear-gradient(90deg, #ff7f50, #ff4500);
     color: white;
@@ -301,22 +316,24 @@ a {
     transition: transform 0.2s, opacity 0.2s;
 }
 
-/* Hover effect for the add to cart button */
 .add-to-cart:hover {
     transform: scale(1.05);
 }
 
-/* Active effect for the add to cart button */
 .add-to-cart:active {
     transform: scale(0.95);
 }
 
-/* Style for the category slider container */
+/* ==================== */
+/* CATEGORY SLIDER */
+/* ==================== */
+
+/* Styles pour le sélecteur de catégorie (page Montres) */
 .category-slider-container {
     text-align: center;
     margin: 2rem 0;
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);    
+    backdrop-filter: blur(10px);
     padding: 1rem;
     border-radius: 10px;
     max-width: 800px;
@@ -324,13 +341,12 @@ a {
     margin-right: auto;
 }
 
-/* Style for the category slider */
 #category-slider {
-    width: 100%; /* Adjusted width */
-    margin: 10px 0; /* Reduced margin */
+    width: 100%;
+    margin: 10px 0;
     -webkit-appearance: none;
     appearance: none;
-    height: 5px; /* Thin bar */
+    height: 5px;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border-radius: 9999px;
@@ -338,45 +354,40 @@ a {
     transition: background 0.3s;
 }
 
-/* Style for the slider thumb (WebKit browsers) */
 #category-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 7%; 
-    height: 7px; 
-    border-radius: 18px; 
+    width: 7%;
+    height: 7px;
+    border-radius: 18px;
     background: rgba(255, 255, 255, 0.767);
     cursor: pointer;
     transition: background-color 0.3s, transform 0.3s;
 }
 
-/* Style for the slider thumb (Mozilla browsers) */
 #category-slider::-moz-range-thumb {
-    width: 30px; /* Width of the thumb */
-    height: 15px; /* Height of the thumb */
-    border-radius: 15px; /* Rounded ends */
+    width: 30px;
+    height: 15px;
+    border-radius: 15px;
     background: white;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.3s;
 }
 
-/* Hover effect for the slider thumb (WebKit browsers) */
 #category-slider:hover::-webkit-slider-thumb {
     background-color: #999;
     transform: scale(1.2);
 }
 
-/* Hover effect for the slider thumb (Mozilla browsers) */
 #category-slider:hover::-moz-range-thumb {
     background-color: #999;
     transform: scale(1.2);
 }
 
-/* Style for the category labels */
 .category-labels {
     display: flex;
     justify-content: space-between;
-    width: 100%; /* Match the width of the slider */
+    width: 100%;
     margin: 0 auto;
 }
 
@@ -386,22 +397,79 @@ a {
     color: white;
 }
 
-/* Responsive styles for smaller screens */
-@media (max-width: 768px) {
-    .menu-bar {
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
+/* ==================== */
+/* PRICE FILTER */
+/* ==================== */
 
-    .menu-bar li {
-        padding: 0.5rem 1rem;
-    }
-
-    .product-grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        padding: 1rem;
-    }
+/* Styles pour le filtre de prix (page Montres) */
+.price-filter {
+    text-align: center;
+    margin: 2rem 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 1rem;
+    border-radius: 10px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
+
+.price-filter label {
+    font-size: 1.2rem;
+    color: white;
+    margin-right: 1rem;
+}
+
+#price-range {
+    width: 60%;
+    margin: 0 1rem;
+}
+
+#price-value {
+    font-size: 1.2rem;
+    color: #ff7f50;
+    font-weight: bold;
+}
+
+/* ==================== */
+/* SORT SECTION */
+/* ==================== */
+
+/* Styles pour la section de tri (page Montres) */
+.sort-section {
+    text-align: center;
+    margin: 2rem 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 1rem;
+    border-radius: 10px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sort-section label {
+    font-size: 1.2rem;
+    color: white;
+    margin-right: 1rem;
+}
+
+#sort-by {
+    padding: 0.5rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#sort-by:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ==================== */
+/* COLLECTIONS PAGE */
+/* ==================== */
 
 /* Styles spécifiques pour la page Collections */
 .collections-header {
@@ -505,38 +573,11 @@ a {
     box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .collections-header h1 {
-        font-size: 2.5rem;
-    }
+/* ==================== */
+/* NEW ARRIVALS SECTION */
+/* ==================== */
 
-    .collections-grid {
-        grid-template-columns: 1fr;
-        padding: 1rem;
-    }
-
-    .collection-card {
-        max-width: 500px;
-        margin: 0 auto;
-    }
-}
-
-/* Page Accueil - Promotional Banner 
-.promo-banner {
-    background: linear-gradient(90deg, rgba(255, 127, 80, 0.8), rgba(255, 69, 0, 0.8));
-    color: white;
-    text-align: center;
-    padding: 1rem;
-    font-size: 1.2rem;
-    font-weight: bold;
-    position: relative;
-    z-index: 5;
-}
-
-*/
-
-/* Page Accueil - New Arrivals Section */
+/* Styles pour la section des nouvelles arrivées (page Accueil) */
 .new-arrivals {
     padding: 4rem 2rem;
     text-align: center;
@@ -551,7 +592,11 @@ a {
     -webkit-text-fill-color: transparent;
 }
 
-/* Page Accueil - Footer */
+/* ==================== */
+/* FOOTER */
+/* ==================== */
+
+/* Styles pour le pied de page (commun à toutes les pages) */
 .footer {
     background: rgba(0, 0, 0, 0.8);
     padding: 2rem;
@@ -584,73 +629,294 @@ a {
     color: #ff7f50;
 }
 
-/* Page Collections - Parallax Effect */
-.parallax {
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    transform: translateZ(0);
+/* ==================== */
+/* RESPONSIVE DESIGN */
+/* ==================== */
+
+@media (max-width: 768px) {
+    /* Header et Menu */
+    .header {
+        padding: 1rem;
+    }
+
+    .menu-bar {
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+    }
+
+    .menu-bar li {
+        padding: 0.5rem 1rem;
+        margin: 0;
+    }
+
+    /* Cart Icon et User Icon */
+    .cart-icon {
+        top: 1rem;
+        right: 1rem;
+        width: 2rem;
+        height: 2rem;
+        padding: 0.5rem;
+    }
+
+    .user-icon {
+        top: 1rem;
+        right: 4rem;
+        width: 2rem;
+        height: 2rem;
+        padding: 0.5rem;
+    }
+
+    .user-icon .dropdown-menu {
+        min-width: 120px;
+    }
+
+    /* Search Bar */
+    .search-container {
+        margin: 1rem auto;
+        padding: 0 0.5rem;
+    }
+
+    .search-bar {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    /* Product Grid */
+    .product-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .product-card {
+        padding: 1rem;
+    }
+
+    .product-image {
+        height: 150px;
+    }
+
+    .product-card h3 {
+        font-size: 1rem;
+    }
+
+    .price {
+        font-size: 1.2rem;
+    }
+
+    .add-to-cart {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Collections Grid */
+    .collections-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1rem;
+    }
+
+    .collection-card {
+        max-width: 100%;
+    }
+
+    .collection-image {
+        height: 200px;
+    }
+
+    .collection-info {
+        padding: 1rem;
+    }
+
+    .collection-info h2 {
+        font-size: 1.5rem;
+    }
+
+    .collection-info p {
+        font-size: 1rem;
+    }
+
+    .price-range {
+        font-size: 1rem;
+    }
+
+    .explore-button {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    /* Price Filter et Sort Section */
+    .price-filter, .sort-section {
+        padding: 0.75rem;
+        margin: 1rem auto;
+    }
+
+    .price-filter label, .sort-section label {
+        font-size: 1rem;
+    }
+
+    #price-range {
+        width: 50%;
+    }
+
+    #price-value {
+        font-size: 1rem;
+    }
+
+    #sort-by {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    /* Footer */
+    .footer {
+        padding: 1rem;
+    }
+
+    .footer-links {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .footer-links a {
+        font-size: 0.9rem;
+    }
 }
 
-/* Page Montres - Price Filter */
-.price-filter {
-    text-align: center;
-    margin: 2rem 0;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    padding: 1rem;
-    border-radius: 10px;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-}
+@media (max-width: 480px) {
+    /* Header et Menu */
+    .menu-bar {
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.25rem;
+    }
 
-.price-filter label {
-    font-size: 1.2rem;
-    color: white;
-    margin-right: 1rem;
-}
+    .menu-bar li {
+        padding: 0.25rem 0.5rem;
+    }
 
-#price-range {
-    width: 60%;
-    margin: 0 1rem;
-}
+    /* Cart Icon et User Icon */
+    .cart-icon {
+        top: 0.5rem;
+        right: 0.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        padding: 0.25rem;
+    }
 
-#price-value {
-    font-size: 1.2rem;
-    color: #ff7f50;
-    font-weight: bold;
-}
+    .user-icon {
+        top: 0.5rem;
+        right: 3rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        padding: 0.25rem;
+    }
 
-/* Page Montres - Sort Section */
-.sort-section {
-    text-align: center;
-    margin: 2rem 0;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    padding: 1rem;
-    border-radius: 10px;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-}
+    .user-icon .dropdown-menu {
+        min-width: 100px;
+    }
 
-.sort-section label {
-    font-size: 1.2rem;
-    color: white;
-    margin-right: 1rem;
-}
+    /* Search Bar */
+    .search-container {
+        margin: 0.5rem auto;
+        padding: 0 0.25rem;
+    }
 
-#sort-by {
-    padding: 0.5rem;
-    border-radius: 9999px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: none;
-    cursor: pointer;
-}
+    .search-bar {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
 
-#sort-by:hover {
-    background: rgba(255, 255, 255, 0.2);
+    /* Product Grid */
+    .product-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        padding: 0.5rem;
+    }
+
+    .product-card {
+        padding: 0.75rem;
+    }
+
+    .product-image {
+        height: 120px;
+    }
+
+    .product-card h3 {
+        font-size: 0.9rem;
+    }
+
+    .price {
+        font-size: 1rem;
+    }
+
+    .add-to-cart {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    /* Collections Grid */
+    .collections-grid {
+        gap: 1rem;
+        padding: 0.5rem;
+    }
+
+    .collection-image {
+        height: 150px;
+    }
+
+    .collection-info {
+        padding: 0.75rem;
+    }
+
+    .collection-info h2 {
+        font-size: 1.2rem;
+    }
+
+    .collection-info p {
+        font-size: 0.9rem;
+    }
+
+    .price-range {
+        font-size: 0.9rem;
+    }
+
+    .explore-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Price Filter et Sort Section */
+    .price-filter, .sort-section {
+        padding: 0.5rem;
+        margin: 0.5rem auto;
+    }
+
+    .price-filter label, .sort-section label {
+        font-size: 0.9rem;
+    }
+
+    #price-range {
+        width: 40%;
+    }
+
+    #price-value {
+        font-size: 0.9rem;
+    }
+
+    #sort-by {
+        padding: 0.25rem;
+        font-size: 0.8rem;
+    }
+
+    /* Footer */
+    .footer {
+        padding: 0.5rem;
+    }
+
+    .footer-links a {
+        font-size: 0.8rem;
+    }
 }

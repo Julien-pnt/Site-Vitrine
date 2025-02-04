@@ -336,7 +336,7 @@ a {
     backdrop-filter: blur(10px);
     padding: 1rem;
     border-radius: 10px;
-    max-width: 800px;
+    max-width: 300px; 
     margin-left: auto;
     margin-right: auto;
 }
@@ -346,9 +346,8 @@ a {
     margin: 10px 0;
     -webkit-appearance: none;
     appearance: none;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+    height: 3px; 
+    background: rgba(255, 255, 255, 0.3); 
     border-radius: 9999px;
     outline: none;
     transition: background 0.3s;
@@ -357,31 +356,35 @@ a {
 #category-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 7%;
-    height: 7px;
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.767);
+    width: 15px; 
+    height: 15px; 
+    border-radius: 50%; 
+    background: white; 
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2); 
 }
 
 #category-slider::-moz-range-thumb {
-    width: 30px;
-    height: 15px;
-    border-radius: 15px;
-    background: white;
+    width: 15px; 
+    height: 15px; 
+    border-radius: 50%; 
+    background: white; 
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2); 
 }
 
 #category-slider:hover::-webkit-slider-thumb {
-    background-color: #999;
-    transform: scale(1.2);
+    background-color: #999; 
+    transform: scale(1.2); 
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3); 
 }
 
 #category-slider:hover::-moz-range-thumb {
-    background-color: #999;
-    transform: scale(1.2);
+    background-color: #999; 
+    transform: scale(1.2); 
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3); 
 }
 
 .category-labels {
@@ -395,6 +398,12 @@ a {
     font-size: 1rem;
     font-weight: bold;
     color: white;
+    opacity: 0.7; 
+    transition: opacity 0.3s;
+}
+
+.category-labels span:hover {
+    opacity: 1; 
 }
 
 /* ==================== */

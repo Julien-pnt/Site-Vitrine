@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/Styles.css">
+    <link rel="shortcut icon" href="../img/icon.png" type="image/x-icon">
+    <script src="../js/Montres.js"></script>
+    <script src="../js/login.js"></script>
+    <title>Montres</title>
+</head>
+<body>
+    <!-- Header section with logo and navigation menu -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="../img/logo.png" alt="Logo" class="logo">
+        </div>
+        <ul class="menu-bar">
+            <li><a href="../html/Acceuil.html">Accueil</a></li>
+            <li><a href="../html/Collections.html">Collections</a></li>
+            <li><a href="../html/Montres.html">Montres</a></li>
+            <li><a href="../html/DescriptionProduits.html">Description produits</a></li>
+            <li><a href="../html/APropos.html">À propos</a></li>
+            <li><a href="../html/Organigramme.html">Organigramme</a></li>
+        </ul>
+    </header>
+
+    <!-- Video background section -->
+    <div class="video-background">
+        <video autoplay loop muted playsinline class="video-bg">
+            <source src="../video/background.mp4" type="video/mp4">
+            Votre navigateur ne supporte pas la vidéo.
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <!-- Search bar section -->
+    <div class="search-container">
+        <input type="text" class="search-bar" placeholder="Rechercher une montre...">
+    </div>
+
+    <!-- Shopping cart icon with item count -->
+    <div class="cart-icon">
+        🛒
+        <span class="cart-count">0</span>
+    </div>
+
+    <!-- User account icon - Déconnecté -->
+    <div class="user-icon">
+        <a href="../html/Connexion.html">👤</a>
+        <div class="dropdown-menu">
+            <a href="../html/Connexion.html">Se connecter</a>
+            <a href="../html/Inscription.html">Créer un compte</a>
+        </div>
+    </div>
+
+    <!-- User account icon - Connecté -->
+    <div class="user-icon">
+        <div class="profile-pic">
+            <img src="../img/avatar.jpg" alt="Photo de profil">
+        </div>
+        <div class="dropdown-menu">
+            <a href="../html/Profil.html">Mon profil</a>
+            <a href="../html/Commandes.html">Mes commandes</a>
+            <a href="../html/Connexion.html" class="logout">Se déconnecter</a>
+        </div>
+    </div>
+
+    <!-- Price Filter Section -->
+    <div class="price-filter">
+        <label for="price-range">Filtrer par prix :</label>
+        <input type="range" id="price-range" min="0" max="50000" value="50000" step="1000">
+        <span id="price-value">50,000 €</span>
+    </div>
+
+    <!-- Sort Section -->
+    <div class="sort-section">
+        <label for="sort-by">Trier par :</label>
+        <select id="sort-by">
+            <option value="price-asc">Prix croissant</option>
+            <option value="price-desc">Prix décroissant</option>
+            <option value="popularity">Popularité</option>
+        </select>
+    </div>
+
+    <!-- Category slider for selecting Homme or Femme -->
+    <div class="category-slider-container">
+        <input type="range" min="0" max="1" step="1" value="0" id="category-slider" oninput="showCategory(this.value)">
+        <div class="category-labels">
+            <span>Homme</span>
+            <span>Femme</span>
+        </div>
+    </div>
+
+    <!-- Section for Homme products -->
+    <div id="homme" class="product-grid">
+    <!-- Product card for Force Titan -->
+        <div class="product-card">
+            <img src="../img/force-titan.jpg" alt="Force Titan" class="product-image">
+            <h3>Force Titan</h3>
+            <p class="price">12,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Dynamique Élite -->
+        <div class="product-card">
+            <img src="../img/dynamique-elite.jpg" alt="Dynamique Élite" class="product-image">
+            <h3>Dynamique Élite</h3>
+            <p class="price">14,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Vitesse Suprême -->
+        <div class="product-card">
+            <img src="../img/vitesse-supreme.jpg" alt="Vitesse Suprême" class="product-image">
+            <h3>Vitesse Suprême</h3>
+            <p class="price">13,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Puissance Infinie -->
+        <div class="product-card">
+            <img src="../img/puissance-infinie.jpg" alt="Puissance Infinie" class="product-image">
+            <h3>Puissance Infinie</h3>
+            <p class="price">15,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Sprint Ultime -->
+        <div class="product-card">
+            <img src="../img/sprint-ultime.jpg" alt="Sprint Ultime" class="product-image">
+            <h3>Sprint Ultime</h3>
+            <p class="price">14,800 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Rivalité Acérée -->
+        <div class="product-card">
+            <img src="../img/rivalite-aceree.jpg" alt="Rivalité Acérée" class="product-image">
+            <h3>Rivalité Acérée</h3>
+            <p class="price">16,200 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Endurance Max -->
+        <div class="product-card">
+            <img src="../img/endurance-max.jpg" alt="Endurance Max" class="product-image">
+            <h3>Endurance Max</h3>
+            <p class="price">15,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Vigile Vortex -->
+        <div class="product-card">
+            <img src="../img/vigile-vortex.jpg" alt="Vigile Vortex" class="product-image">
+            <h3>Vigile Vortex</h3>
+            <p class="price">13,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    </div>
+
+
+    <!-- Section for Femme products -->
+    <div id="femme" class="product-grid" style="display: none;">
+        <!-- Product card for Élan Glamour -->
+        <div class="product-card">
+            <img src="../img/elan-glamour.jpg" alt="Élan Glamour" class="product-image">
+            <h3>Élan Glamour</h3>
+            <p class="price">11,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+        <!-- Product card for Énergie Radieuse -->
+        <div class="product-card">
+            <img src="../img/energie-radieuse.jpg" alt="Énergie Radieuse" class="product-image">
+            <h3>Énergie Radieuse</h3>
+            <p class="price">12,800 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+        <!-- Product card for Vibrance Pure -->
+        <div class="product-card">
+            <img src="../img/vibrance-pure.jpg" alt="Vibrance Pure" class="product-image">
+            <h3>Vibrance Pure</h3>
+            <p class="price">13,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+        <!-- Product card for Aura Athlétique -->
+        <div class="product-card">
+            <img src="../img/aura-athletique.jpg" alt="Aura Athlétique" class="product-image">
+            <h3>Aura Athlétique</h3>
+            <p class="price">14,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+        <!-- Product card for Allure Détente -->
+        <div class="product-card">
+            <img src="../img/allure-detente.jpg" alt="Allure Détente" class="product-image">
+            <h3>Allure Détente</h3>
+            <p class="price">13,200 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+        <!-- Product card for Éclat de Vitesse -->
+        <div class="product-card">
+            <img src="../img/eclat-de-vitesse.jpg" alt="Éclat de Vitesse" class="product-image">
+            <h3>Éclat de Vitesse</h3>
+            <p class="price">14,800 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+        <!-- Product card for Vitalité Gracieuse -->
+        <div class="product-card">
+            <img src="../img/vitalite-gracieuse.jpg" alt="Vitalité Gracieuse" class="product-image">
+            <h3>Vitalité Gracieuse</h3>
+            <p class="price">12,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+        <!-- Product card for Dynamisme Élégant -->
+        <div class="product-card">
+            <img src="../img/dynamisme-elegant.jpg" alt="Dynamisme Élégant" class="product-image">
+            <h3>Dynamisme Élégant</h3>
+            <p class="price">15,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    </div>
+
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2025 Elixir du temps. Tous droits réservés.</p>
+            <ul class="footer-links">
+                <li><a href="../html/Organigramme.html">Contact</a></li>
+                <li><a href="#">Politique de confidentialité</a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>

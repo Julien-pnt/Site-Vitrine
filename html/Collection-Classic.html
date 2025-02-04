@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/Styles.css">
+    <link rel="shortcut icon" href="../img/icon.png" type="image/x-icon">
+    <script src="../js/Montres.js"></script>
+    <script src="../js/login.js"></script>
+    <title>Montres</title>
+</head>
+<body>
+    <!-- Header section with logo and navigation menu -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="../img/logo.png" alt="Logo" class="logo">
+        </div>
+        <ul class="menu-bar">
+            <li><a href="../html/Acceuil.html">Accueil</a></li>
+            <li><a href="../html/Collections.html">Collections</a></li>
+            <li><a href="../html/Montres.html">Montres</a></li>
+            <li><a href="../html/DescriptionProduits.html">Description produits</a></li>
+            <li><a href="../html/APropos.html">À propos</a></li>
+            <li><a href="../html/Organigramme.html">Organigramme</a></li>
+        </ul>
+    </header>
+
+    <!-- Video background section -->
+    <div class="video-background">
+        <video autoplay loop muted playsinline class="video-bg">
+            <source src="../video/background.mp4" type="video/mp4">
+            Votre navigateur ne supporte pas la vidéo.
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <!-- Search bar section -->
+    <div class="search-container">
+        <input type="text" class="search-bar" placeholder="Rechercher une montre...">
+    </div>
+
+    <!-- Shopping cart icon with item count -->
+    <div class="cart-icon">
+        🛒
+        <span class="cart-count">0</span>
+    </div>
+
+    <!-- User account icon - Déconnecté -->
+    <div class="user-icon">
+        <a href="../html/Connexion.html">👤</a>
+        <div class="dropdown-menu">
+            <a href="../html/Connexion.html">Se connecter</a>
+            <a href="../html/Inscription.html">Créer un compte</a>
+        </div>
+    </div>
+
+    <!-- User account icon - Connecté -->
+    <div class="user-icon">
+        <div class="profile-pic">
+            <img src="../img/avatar.jpg" alt="Photo de profil">
+        </div>
+        <div class="dropdown-menu">
+            <a href="../html/Profil.html">Mon profil</a>
+            <a href="../html/Commandes.html">Mes commandes</a>
+            <a href="../html/Connexion.html" class="logout">Se déconnecter</a>
+        </div>
+    </div>
+
+    <!-- Price Filter Section -->
+    <div class="price-filter">
+        <label for="price-range">Filtrer par prix :</label>
+        <input type="range" id="price-range" min="0" max="50000" value="50000" step="1000">
+        <span id="price-value">50,000 €</span>
+    </div>
+
+    <!-- Sort Section -->
+    <div class="sort-section">
+        <label for="sort-by">Trier par :</label>
+        <select id="sort-by">
+            <option value="price-asc">Prix croissant</option>
+            <option value="price-desc">Prix décroissant</option>
+            <option value="popularity">Popularité</option>
+        </select>
+    </div>
+
+    <!-- Category slider for selecting Homme or Femme -->
+    <div class="category-slider-container">
+        <input type="range" min="0" max="1" step="1" value="0" id="category-slider" oninput="showCategory(this.value)">
+        <div class="category-labels">
+            <span>Homme</span>
+            <span>Femme</span>
+        </div>
+    </div>
+
+    <!-- Section for Homme products -->
+    <div id="homme" class="product-grid">
+        <!-- Product card for Élégance Éternelle -->
+            <div class="product-card">
+                <img src="../img/elegance-eternelle.jpg" alt="Élégance Éternelle" class="product-image">
+                <h3>Élégance Éternelle</h3>
+                <p class="price">15,000 €</p>
+                <button class="add-to-cart">Ajouter au panier</button>
+            </div>
+    <!-- Product card for Sérénité Intemporelle -->
+        <div class="product-card">
+            <img src="../img/serenite-intemporelle.jpg" alt="Sérénité Intemporelle" class="product-image">
+            <h3>Sérénité Intemporelle</h3>
+            <p class="price">16,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Reflet Majestueux -->
+        <div class="product-card">
+            <img src="../img/reflet-majestueux.jpg" alt="Reflet Majestueux" class="product-image">
+            <h3>Reflet Majestueux</h3>
+            <p class="price">18,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Héritage Classique -->
+        <div class="product-card">
+            <img src="../img/heritage-classique.jpg" alt="Héritage Classique" class="product-image">
+            <h3>Héritage Classique</h3>
+            <p class="price">14,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Noblesse Élégante -->
+        <div class="product-card">
+            <img src="../img/noblesse-elegante.jpg" alt="Noblesse Élégante" class="product-image">
+            <h3>Noblesse Élégante</h3>
+            <p class="price">17,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Prestige Céleste -->
+        <div class="product-card">
+            <img src="../img/prestige-celeste.jpg" alt="Prestige Céleste" class="product-image">
+            <h3>Prestige Céleste</h3>
+            <p class="price">19,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Charme Révélateur -->
+        <div class="product-card">
+            <img src="../img/charme-revelateur.jpg" alt="Charme Révélateur" class="product-image">
+            <h3>Charme Révélateur</h3>
+            <p class="price">13,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Simplicité Royale -->
+        <div class="product-card">
+            <img src="../img/simplicite-royale.jpg" alt="Simplicité Royale" class="product-image">
+            <h3>Simplicité Royale</h3>
+            <p class="price">14,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    </div>
+
+
+    <!-- Section for Femme products -->
+    <div id="femme" class="product-grid" style="display: none;">
+    <!-- Product card for Grâce Sublime -->
+        <div class="product-card">
+            <img src="../img/grace-sublime.jpg" alt="Grâce Sublime" class="product-image">
+            <h3>Grâce Sublime</h3>
+            <p class="price">12,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Beauté Éternelle -->
+        <div class="product-card">
+            <img src="../img/beaute-eternelle.jpg" alt="Beauté Éternelle" class="product-image">
+            <h3>Beauté Éternelle</h3>
+            <p class="price">13,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Éclat Intemporel -->
+        <div class="product-card">
+            <img src="../img/eclat-intemporel.jpg" alt="Éclat Intemporel" class="product-image">
+            <h3>Éclat Intemporel</h3>
+            <p class="price">14,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Reflet Précieux -->
+        <div class="product-card">
+            <img src="../img/reflet-precieux.jpg" alt="Reflet Précieux" class="product-image">
+            <h3>Reflet Précieux</h3>
+            <p class="price">15,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Harmonie Élégante -->
+        <div class="product-card">
+            <img src="../img/harmonie-elegante.jpg" alt="Harmonie Élégante" class="product-image">
+            <h3>Harmonie Élégante</h3>
+            <p class="price">13,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Sérénité Royale -->
+        <div class="product-card">
+            <img src="../img/serenite-royale.jpg" alt="Sérénité Royale" class="product-image">
+            <h3>Sérénité Royale</h3>
+            <p class="price">14,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Délicatesse Majestueuse -->
+        <div class="product-card">
+            <img src="../img/delicatesse-majestueuse.jpg" alt="Délicatesse Majestueuse" class="product-image">
+            <h3>Délicatesse Majestueuse</h3>
+            <p class="price">12,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Élégance Céleste -->
+        <div class="product-card">
+            <img src="../img/elegance-celeste.jpg" alt="Élégance Céleste" class="product-image">
+            <h3>Élégance Céleste</h3>
+            <p class="price">16,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2025 Elixir du temps. Tous droits réservés.</p>
+            <ul class="footer-links">
+                <li><a href="../html/Organigramme.html">Contact</a></li>
+                <li><a href="#">Politique de confidentialité</a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/Styles.css">
+    <link rel="shortcut icon" href="../img/icon.png" type="image/x-icon">
+    <script src="../js/Montres.js"></script>
+    <script src="../js/login.js"></script>
+    <title>Montres</title>
+</head>
+<body>
+    <!-- Header section with logo and navigation menu -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="../img/logo.png" alt="Logo" class="logo">
+        </div>
+        <ul class="menu-bar">
+            <li><a href="../html/Acceuil.html">Accueil</a></li>
+            <li><a href="../html/Collections.html">Collections</a></li>
+            <li><a href="../html/Montres.html">Montres</a></li>
+            <li><a href="../html/DescriptionProduits.html">Description produits</a></li>
+            <li><a href="../html/APropos.html">À propos</a></li>
+            <li><a href="../html/Organigramme.html">Organigramme</a></li>
+        </ul>
+    </header>
+
+    <!-- Video background section -->
+    <div class="video-background">
+        <video autoplay loop muted playsinline class="video-bg">
+            <source src="../video/background.mp4" type="video/mp4">
+            Votre navigateur ne supporte pas la vidéo.
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <!-- Search bar section -->
+    <div class="search-container">
+        <input type="text" class="search-bar" placeholder="Rechercher une montre...">
+    </div>
+
+    <!-- Shopping cart icon with item count -->
+    <div class="cart-icon">
+        🛒
+        <span class="cart-count">0</span>
+    </div>
+
+    <!-- User account icon - Déconnecté -->
+    <div class="user-icon">
+        <a href="../html/Connexion.html">👤</a>
+        <div class="dropdown-menu">
+            <a href="../html/Connexion.html">Se connecter</a>
+            <a href="../html/Inscription.html">Créer un compte</a>
+        </div>
+    </div>
+
+    <!-- User account icon - Connecté -->
+    <div class="user-icon">
+        <div class="profile-pic">
+            <img src="../img/avatar.jpg" alt="Photo de profil">
+        </div>
+        <div class="dropdown-menu">
+            <a href="../html/Profil.html">Mon profil</a>
+            <a href="../html/Commandes.html">Mes commandes</a>
+            <a href="../html/Connexion.html" class="logout">Se déconnecter</a>
+        </div>
+    </div>
+
+    <!-- Price Filter Section -->
+    <div class="price-filter">
+        <label for="price-range">Filtrer par prix :</label>
+        <input type="range" id="price-range" min="0" max="50000" value="50000" step="1000">
+        <span id="price-value">50,000 €</span>
+    </div>
+
+    <!-- Sort Section -->
+    <div class="sort-section">
+        <label for="sort-by">Trier par :</label>
+        <select id="sort-by">
+            <option value="price-asc">Prix croissant</option>
+            <option value="price-desc">Prix décroissant</option>
+            <option value="popularity">Popularité</option>
+        </select>
+    </div>
+
+    <!-- Category slider for selecting Homme or Femme -->
+    <div class="category-slider-container">
+        <input type="range" min="0" max="1" step="1" value="0" id="category-slider" oninput="showCategory(this.value)">
+        <div class="category-labels">
+            <span>Homme</span>
+            <span>Femme</span>
+        </div>
+    </div>
+
+    <!-- Section for Homme products -->
+    <div id="homme" class="product-grid">
+    <!-- Product card for Chronos Édition Limitée -->
+        <div class="product-card">
+            <img src="../img/chronos-edition-limitee.jpg" alt="Chronos Édition Limitée" class="product-image">
+            <h3>Chronos Édition Limitée</h3>
+            <p class="price">22,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Prestige Unique -->
+        <div class="product-card">
+            <img src="../img/prestige-unique.jpg" alt="Prestige Unique" class="product-image">
+            <h3>Prestige Unique</h3>
+            <p class="price">24,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Héritage Exclusif -->
+        <div class="product-card">
+            <img src="../img/heritage-exclusif.jpg" alt="Héritage Exclusif" class="product-image">
+            <h3>Héritage Exclusif</h3>
+            <p class="price">23,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Souveraineté Singulière -->
+        <div class="product-card">
+            <img src="../img/souverainete-singuliere.jpg" alt="Souveraineté Singulière" class="product-image">
+            <h3>Souveraineté Singulière</h3>
+            <p class="price">21,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Épopée Rare -->
+        <div class="product-card">
+            <img src="../img/epopee-rare.jpg" alt="Épopée Rare" class="product-image">
+            <h3>Épopée Rare</h3>
+            <p class="price">25,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Rareté Royale -->
+        <div class="product-card">
+            <img src="../img/rarete-royale.jpg" alt="Rareté Royale" class="product-image">
+            <h3>Rareté Royale</h3>
+            <p class="price">26,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Essence Limitée -->
+        <div class="product-card">
+            <img src="../img/essence-limitee.jpg" alt="Essence Limitée" class="product-image">
+            <h3>Essence Limitée</h3>
+            <p class="price">24,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Magnificence Unique -->
+        <div class="product-card">
+            <img src="../img/magnificence-unique.jpg" alt="Magnificence Unique" class="product-image">
+            <h3>Magnificence Unique</h3>
+            <p class="price">27,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    </div>
+
+
+    <!-- Section for Femme products -->
+    <div id="femme" class="product-grid" style="display: none;">
+    <!-- Product card for Grâce Limitée -->
+        <div class="product-card">
+            <img src="../img/grace-limitee.jpg" alt="Grâce Limitée" class="product-image">
+            <h3>Grâce Limitée</h3>
+            <p class="price">20,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Splendeur Exclusif -->
+        <div class="product-card">
+            <img src="../img/splendeur-exclusif.jpg" alt="Splendeur Exclusif" class="product-image">
+            <h3>Splendeur Exclusif</h3>
+            <p class="price">22,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Éclat Unique -->
+        <div class="product-card">
+            <img src="../img/eclat-unique.jpg" alt="Éclat Unique" class="product-image">
+            <h3>Éclat Unique</h3>
+            <p class="price">23,500 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Noblesse Singulière -->
+        <div class="product-card">
+            <img src="../img/noblesse-singuliere.jpg" alt="Noblesse Singulière" class="product-image">
+            <h3>Noblesse Singulière</h3>
+            <p class="price">21,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Élégance Rare -->
+        <div class="product-card">
+            <img src="../img/elegance-rare.jpg" alt="Élégance Rare" class="product-image">
+            <h3>Élégance Rare</h3>
+            <p class="price">25,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Précieuse Édition -->
+        <div class="product-card">
+            <img src="../img/precieuse-edition.jpg" alt="Précieuse Édition" class="product-image">
+            <h3>Précieuse Édition</h3>
+            <p class="price">24,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Raffinement Unique -->
+        <div class="product-card">
+            <img src="../img/raffinement-unique.jpg" alt="Raffinement Unique" class="product-image">
+            <h3>Raffinement Unique</h3>
+            <p class="price">23,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    <!-- Product card for Éternité Limitée -->
+        <div class="product-card">
+            <img src="../img/eternite-limitee.jpg" alt="Éternité Limitée" class="product-image">
+            <h3>Éternité Limitée</h3>
+            <p class="price">26,000 €</p>
+            <button class="add-to-cart">Ajouter au panier</button>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2025 Elixir du temps. Tous droits réservés.</p>
+            <ul class="footer-links">
+                <li><a href="../html/Organigramme.html">Contact</a></li>
+                <li><a href="#">Politique de confidentialité</a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>

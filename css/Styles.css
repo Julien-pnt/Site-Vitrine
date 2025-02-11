@@ -602,6 +602,61 @@ a {
 }
 
 /* ==================== */
+/* PRIVACY POLICY STYLES */
+/* ==================== */
+
+.privacy-policy {
+    padding: 4rem 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    color: white;
+}
+
+.privacy-policy h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    background: linear-gradient(to right, #ffd700, #ff7f50);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.privacy-policy h2 {
+    font-size: 1.8rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #ffd700;
+}
+
+.privacy-policy p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.privacy-policy ul {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+}
+
+.privacy-policy ul li {
+    margin-bottom: 0.5rem;
+}
+
+.privacy-policy a {
+    color: #ff7f50;
+    text-decoration: underline;
+}
+
+.privacy-policy a:hover {
+    color: #ff4500;
+}
+
+/* ==================== */
 /* FOOTER */
 /* ==================== */
 

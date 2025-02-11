@@ -3,14 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organigramme - Elixir du Temps</title>
     <link rel="stylesheet" href="../css/Styles.css">
-    <link rel="shortcut icon" href="../img/icon.png" type="image/x-icon">
-    <script src="../js/Montres.js"></script>
-    <script src="../js/login.js"></script>
-    <title>Montres</title>
 </head>
 <body>
-    <!-- Header section with logo and navigation menu -->
+
     <header class="header">
         <div class="logo-container">
             <img src="../img/logo.png" alt="Logo" class="logo">
@@ -34,65 +31,92 @@
         <div class="video-overlay"></div>
     </div>
 
-    <div class="content">
-        <figure class="org-chart cf">
-            <ul class="administration">
-                <li>
-                    <ul class="director">
-                        <li>
-                            <span>Directeur Général</span></a>
-                            <ul class="subdirector">
-                                <li><span>Assistant Directeur</span></a></li>
-                            </ul>
-                            <ul class="departments cf">
-                                <li><span>Administration</span></a></li>
-    
-                                <li class="department dep-a">
-                                    <span>Ventes</span></a>
-                                    <ul class="sections">
-                                        <li class="section"><span>Équipe des Ventes</span></a></li>
-                                        <li class="section"><span>Responsable Régional</span></a></li>
-                                        <li class="section"><span>Représentants Commerciaux</span></a></li>
-                                    </ul>
-                                </li>
-                                <li class="department dep-b">
-                                    <span>Marketing</span></a>
-                                    <ul class="sections">
-                                        <li class="section"><span>Équipe Marketing</span></a></li>
-                                        <li class="section"><span>Responsable Publicité</span></a></li>
-                                        <li class="section"><span>Responsable Digital</span></a></li>
-                                    </ul>
-                                </li>
-                                <li class="department dep-c">
-                                    <span>Finances</span></a>
-                                    <ul class="sections">
-                                        <li class="section"><span>Équipe Comptable</span></a></li>
-                                        <li class="section"><span>Comptable Senior</span></a></li>
-                                        <li class="section"><span>Comptables Junior</span></a></li>
-                                    </ul>
-                                </li>
-                                <li class="department dep-d">
-                                    <span>Création</span></a>
-                                    <ul class="sections">
-                                        <li class="section"><span>Directeur Créatif</span></a></li>
-                                        <li class="section"><span>Responsable Design</span></a></li>
-                                        <li class="section"><span>Responsable Produit</span></a></li>
-                                    </ul>
-                                </li>
-                                <li class="department dep-e">
-                                    <span>Production</span></a>
-                                    <ul class="sections">
-                                        <li class="section"><span>Équipe de Production</span></a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </figure>
+    <div class="organigramme">
+        <!-- Directeur Général -->
+        <div class="level">
+            <div class="node directeur">
+                <p>Directeur Général</p>
+                <p class="name">Julien Pinot</p>
+            </div>
+        </div>
+
+        <!-- Ligne de connexion -->
+        <div class="connector"></div>
+
+        <!-- Niveau 1 : Assistant Directeur et Administration -->
+        <div class="level">
+            <div class="node">
+                <p>Assistant Directeur</p>
+                <p class="name">Marie Durand</p>
+            </div>
+            <div class="node">
+                <p>Administration</p>
+                <p class="name">Sophie Martin</p>
+            </div>
+        </div>
+
+        <!-- Ligne de connexion -->
+        <div class="connector"></div>
+
+        <!-- Niveau 2 : Ventes, Marketing, Finances, Création, Production -->
+        <div class="level">
+            <div class="node">
+                <p>Ventes</p>
+            </div>
+            <div class="node">
+                <p>Marketing</p>
+            </div>
+            <div class="node">
+                <p>Finances</p>
+            </div>
+            <div class="node">
+                <p>Création</p>
+            </div>
+            <div class="node">
+                <p>Production</p>
+            </div>
+        </div>
+
+        <!-- Ligne de connexion -->
+        <div class="connector"></div>
+
+        <!-- Niveau 3 : Équipes -->
+        <div class="level">
+            <!-- Équipe Ventes -->
+            <div class="node sub-node">
+                <p>Équipe des Ventes</p>
+                <p class="name">Responsable Régional : Léa Caron</p>
+                <p class="name">Représentants Commerciaux : Paul Faure</p>
+            </div>
+
+            <!-- Équipe Marketing -->
+            <div class="node sub-node">
+                <p>Équipe Marketing</p>
+                <p class="name">Responsable Publicité : Nina Dubois</p>
+                <p class="name">Responsable Digital : Alice Moreau</p>
+            </div>
+
+            <!-- Équipe Finances -->
+            <div class="node sub-node">
+                <p>Équipe Comptable</p>
+                <p class="name">Comptable Senior : Hugo Fontaine</p>
+                <p class="name">Comptable Junior : Lucien Lefèvre</p>
+            </div>
+
+            <!-- Équipe Création -->
+            <div class="node sub-node">
+                <p>Équipe Créative</p>
+                <p class="name">Directeur Créatif : Julie Marchand</p>
+                <p class="name">Responsable Design : Isabelle Richard</p>
+            </div>
+
+            <!-- Équipe Production -->
+            <div class="node sub-node">
+                <p>Équipe de Production</p>
+                <p class="name">Responsable Produit : Julie Marchand</p>
+            </div>
+        </div>
     </div>
-    
 
      <!-- Footer Section -->
      <footer class="footer">
@@ -104,5 +128,6 @@
             </ul>
         </div>
     </footer>
+
 </body>
 </html>

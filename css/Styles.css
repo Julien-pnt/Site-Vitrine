@@ -605,7 +605,9 @@ a {
 /* PRIVACY POLICY STYLES AND THE PURPOSE AND DESCRIPTION */
 /* ===================================================== */
 
-.privacy-policy,.Historic-content,.DescriptionProduits-content {
+.privacy-policy,
+.Historic-content,
+.DescriptionProduits-content {
     padding: 4rem 2rem;
     max-width: 800px;
     margin: 0 auto;
@@ -615,7 +617,9 @@ a {
     color: white;
 }
 
-.privacy-policy,.Historic-content,.DescriptionProduits-content h1 {
+.privacy-policy h1,
+.Historic-content h1,
+.DescriptionProduits-content h1 {
     font-size: 2.5rem;
     margin-bottom: 1.5rem;
     text-align: center;
@@ -625,36 +629,49 @@ a {
     -webkit-text-fill-color: transparent;
 }
 
-.privacy-policy,.Historic-content,.DescriptionProduits-content h2 {
+.privacy-policy h2,
+.Historic-content h2,
+.DescriptionProduits-content h2 {
     font-size: 1.8rem;
     margin-top: 2rem;
     margin-bottom: 1rem;
     color: #ffd700;
 }
 
-.privacy-policy,.Historic-content,.DescriptionProduits-content p {
+.privacy-policy p,
+.Historic-content p,
+.DescriptionProduits-content p {
     font-size: 1.1rem;
     line-height: 1.6;
     margin-bottom: 1rem;
 }
 
-.privacy-policy,.Historic-content,.DescriptionProduits-content ul {
+.privacy-policy ul,
+.Historic-content ul,
+.DescriptionProduits-content ul {
     margin-bottom: 1.5rem;
     padding-left: 1.5rem;
 }
 
-.privacy-policy,.Historic-content,.DescriptionProduits-content ul li {
+.privacy-policy ul li,
+.Historic-content ul li,
+.DescriptionProduits-content ul li {
     margin-bottom: 0.5rem;
 }
 
-.privacy-policy,.Historic-content,.DescriptionProduits-content a {
+.privacy-policy a,
+.Historic-content a,
+.DescriptionProduits-content a {
     color: #ff7f50;
     text-decoration: underline;
 }
 
-.privacy-policy,.Historic-content,.DescriptionProduits-content a:hover {
+.privacy-policy a:hover,
+.Historic-content a:hover,
+.DescriptionProduits-content a:hover {
     color: #ff4500;
 }
+
 
 
 /* ==================== */

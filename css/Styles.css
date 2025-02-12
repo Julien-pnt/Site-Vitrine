@@ -601,11 +601,11 @@ a {
     -webkit-text-fill-color: transparent;
 }
 
-/* ==================== */
-/* PRIVACY POLICY STYLES */
-/* ==================== */
+/* ===================================== */
+/* PRIVACY POLICY STYLES AND THE PURPOSE */
+/* ===================================== */
 
-.privacy-policy {
+.privacy-policy,.Historic-content {
     padding: 4rem 2rem;
     max-width: 800px;
     margin: 0 auto;
@@ -615,7 +615,7 @@ a {
     color: white;
 }
 
-.privacy-policy h1 {
+.privacy-policy,.Historic-content h1 {
     font-size: 2.5rem;
     margin-bottom: 1.5rem;
     text-align: center;
@@ -625,34 +625,34 @@ a {
     -webkit-text-fill-color: transparent;
 }
 
-.privacy-policy h2 {
+.privacy-policy,.Historic-content h2 {
     font-size: 1.8rem;
     margin-top: 2rem;
     margin-bottom: 1rem;
     color: #ffd700;
 }
 
-.privacy-policy p {
+.privacy-policy,.Historic-content p {
     font-size: 1.1rem;
     line-height: 1.6;
     margin-bottom: 1rem;
 }
 
-.privacy-policy ul {
+.privacy-policy,.Historic-content ul {
     margin-bottom: 1.5rem;
     padding-left: 1.5rem;
 }
 
-.privacy-policy ul li {
+.privacy-policy,.Historic-content ul li {
     margin-bottom: 0.5rem;
 }
 
-.privacy-policy a {
+.privacy-policy,.Historic-content a {
     color: #ff7f50;
     text-decoration: underline;
 }
 
-.privacy-policy a:hover {
+.privacy-policy,.Historic-content a:hover {
     color: #ff4500;
 }
 

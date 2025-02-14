@@ -672,15 +672,11 @@ a {
     color: #ff4500;
 }
 
-
-
 /* ==================== */
 /* ORGANIGRAMME */
 /* ==================== */
 
 /* Styles généraux */
-
-
 .organigramme {
     max-width: 1200px;
     margin: 0 auto;
@@ -819,6 +815,10 @@ a {
     .menu-bar li {
         padding: 0.5rem 1rem;
         margin: 0;
+    }
+
+    .logo {
+        height: 60%;
     }
 
     /* Cart Icon et User Icon */

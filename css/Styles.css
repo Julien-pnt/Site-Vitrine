@@ -758,6 +758,14 @@ a {
     margin: 0 auto 20px auto;
 }
 
+/* Fiches de postes */
+.fichePoste:hover {
+    background: linear-gradient(to right, #ffd700, #ff7f50);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
 /* ==================== */
 /* FOOTER */
 /* ==================== */

@@ -15,14 +15,38 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Produit ajouté au panier !');
+                        showToast(data.message);
                         updateCartIcon();
                     } else {
-                        alert(data.message || 'Erreur lors de l\'ajout au panier');
+                        showToast(data.message || 'Erreur lors de l\'ajout au panier', 'error');
                     }
                 });
         });
     });
+
+    // Passer à la caisse
+    const checkoutButton = document.querySelector('.checkout-button');
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', function () {
+            fetch('panier.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'passer_commande=1',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast(data.message);
+                        updateCartIcon();
+                        window.location.href = '../html/CommandeConfirmee.html'; // Rediriger vers une page de confirmation
+                    } else {
+                        showToast(data.message || 'Erreur lors de la commande', 'error');
+                    }
+                });
+        });
+    }
 
     // Mettre à jour l'icône du panier
     function updateCartIcon() {
@@ -35,6 +59,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     cartCount.textContent = totalItems;
                 }
             });
+    }
+
+    // Afficher une notification
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
     }
 
     // Récupérer le panier au chargement de la page

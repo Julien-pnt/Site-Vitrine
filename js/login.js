@@ -1,32 +1,54 @@
-// Simuler l'état de connexion (true = connecté, false = déconnecté)
-let isLoggedIn = false; // Changez cette valeur pour tester les deux états
+document.addEventListener('DOMContentLoaded', function() {
+    const userIcon = document.getElementById('user-icon');
+    const logoutButton = document.getElementById('logout-button');
 
-// Sélectionnez l'icône utilisateur
-const userIcon = document.getElementById('user-icon');
+    // Vérifier l'état de connexion via une requête API
+    function checkLoginStatus() {
+        fetch('../php/check_login.php')
+            .then(handleFetchErrors)
+            .then(data => {
+                updateUserIcon(data.isLoggedIn);
+            })
+            .catch(error => {
+                console.error('Error checking login status:', error);
+                showToast('Erreur de vérification du statut de connexion', 'error');
+            });
+    }
 
-// Fonction pour mettre à jour l'affichage en fonction de l'état de connexion
-function updateUserIcon() {
-    if (userIcon) {
-        if (isLoggedIn) {
-            userIcon.classList.remove('logged-out');
-            userIcon.classList.add('logged-in');
-        } else {
-            userIcon.classList.remove('logged-in');
-            userIcon.classList.add('logged-out');
+    function updateUserIcon(isLoggedIn) {
+        if (userIcon) {
+            userIcon.classList.toggle('logged-in', isLoggedIn);
+            userIcon.classList.toggle('logged-out', !isLoggedIn);
         }
     }
-}
 
-// Mettre à jour l'affichage au chargement de la page
-updateUserIcon();
+    if (logoutButton) {
+        logoutButton.addEventListener('click', handleLogout);
+    }
 
-// Gérer la déconnexion
-const logoutButton = document.getElementById('logout-button');
-if (logoutButton) {
-    logoutButton.addEventListener('click', (e) => {
-        e.preventDefault(); // Empêcher le comportement par défaut du lien
-        isLoggedIn = false; // Simuler la déconnexion
-        updateUserIcon(); // Mettre à jour l'affichage
-        alert('Vous êtes déconnecté.'); // Afficher un message de déconnexion
-    });
-}
+    function handleLogout(e) {
+        e.preventDefault();
+        fetch('../php/logout.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(handleFetchErrors)
+        .then(data => {
+            if (data.success) {
+                updateUserIcon(false);
+                showToast('Déconnexion réussie');
+                setTimeout(() => window.location.href = '../html/login.html', 1500);
+            }
+        })
+        .catch(error => {
+            console.error('Logout error:', error);
+            showToast('Erreur lors de la déconnexion', 'error');
+        });
+    }
+
+    // Vérifier l'état de connexion au chargement
+    checkLoginStatus();
+});

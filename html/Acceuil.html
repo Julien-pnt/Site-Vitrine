@@ -92,6 +92,20 @@
         </div>
     </div>
 
+    <script>
+        // Vérifier l'état de connexion
+        fetch('../php/check_session.php')
+            .then(response => response.json())
+            .then(data => {
+                const userIcon = document.querySelector('.user-icon');
+                if (data.logged_in) {
+                    userIcon.innerHTML = '<a href="../php/dashboard.php">Mon compte</a>';
+                } else {
+                    userIcon.innerHTML = '<a href="../php/login.php">Se connecter</a>';
+                }
+            });
+    </script>
+
     <!-- Footer Section -->
     <footer class="footer">
         <div class="footer-content">

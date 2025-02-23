@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Elixir du Temps</title>
+    <link rel="stylesheet" href="../css/Styles.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="../img/logo.png" alt="Elixir du Temps Logo" class="logo">
+        </div>
+    </header>
+
+    <!-- Video Background -->
+    <div class="video-background">
+        <video class="video-bg" autoplay muted loop>
+            <source src="../video/background.mp4" type="video/mp4">
+            Votre navigateur ne supporte pas la vidéo.
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <!-- Login Form -->
+    <div class="login-wrapper">
+        <form action="#" class="login-form">
+            <h2>Connexion</h2>
+            <div class="input-field">
+                <input type="email" id="email" name="email" required>
+                <label for="email">Email</label>
+            </div>
+            <div class="input-field">
+                <input type="password" id="password" name="password" required>
+                <label for="password">Mot de passe</label>
+            </div>
+            <div class="forget">
+                <label for="remember">
+                    <input type="checkbox" id="remember">
+                    <p>Se souvenir de moi</p>
+                </label>
+                <a href="#">Mot de passe oublié ?</a>
+            </div>
+            <button type="submit">Se connecter</button>
+            <div class="register">
+                <p>Pas de compte ? <a href="../html/register.html">S'inscrire</a></p>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 Elixir du Temps. Tous droits réservés.</p>
+            <ul class="footer-links">
+                <li><a href="mailto:contact@elixirdutemps.com" class="mon-email">Contact</a></li>
+                <li><a href="../html/PrivacyPolicy.html">Politique de confidentialité</a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>

@@ -41,7 +41,7 @@ function validerMotDePasse($motDePasse) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nom = $_POST['nom'];
     $email = $_POST['email'];
-    $motDePasse = $_POST['motDePasse'];
+    $motDePasse = $_POST['password']; // Corrected to match the form field name
 
     if (!validerNom($nom)) {
         die("Le nom ne peut pas être vide.");

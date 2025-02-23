@@ -1,62 +1,79 @@
 <?php
-require_once 'db.php';
-require_once 'AuthService.php';
-session_start();
-
-header('Content-Type: application/json');
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Méthode non autorisée']);
-    exit;
-}
-
 try {
-    $data = json_decode(file_get_contents('php://input'), true);
-    
-    // Vérification de la présence des champs requis
-    if (empty($data['nom']) || empty($data['email']) || empty($data['password'])) {
-        throw new Exception('Tous les champs sont requis');
-    }
-    
-    $nom = trim($data['nom']);
-    $email = trim($data['email']);
-    $password = $data['password'];
-    
-    // Validation du nom
-    if (strlen($nom) < 2 || strlen($nom) > 255) {
-        throw new Exception('Le nom doit contenir entre 2 et 255 caractères');
-    }
-    
-    // Validation de l'email
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        throw new Exception('Format d\'email invalide');
-    }
-    
-    // Vérification si l'email existe déjà
-    $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
-    $stmt->execute([$email]);
-    if ($stmt->fetch()) {
-        throw new Exception('Cet email est déjà utilisé');
-    }
-    
-    // Validation du mot de passe
-    if (strlen($password) < 8 || !preg_match('/[A-Z]/', $password) || !preg_match('/\d/', $password)) {
-        throw new Exception('Le mot de passe doit contenir au moins 8 caractères, une majuscule et un chiffre');
-    }
-    
-    $auth = new AuthService($pdo);
-    $userId = $auth->register($nom, $email, $password);
-    
-    echo json_encode([
-        'success' => true,
-        'user_id' => $userId,
-        'message' => 'Compte créé avec succès'
+    $connexionPDO = new PDO('mysql:host=127.0.0.1;dbname=elixir_du_temps;charset=UTF8', "root", "", [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     ]);
-} catch (Exception $e) {
-    http_response_code(400);
-    echo json_encode([
-        'success' => false,
-        'message' => $e->getMessage()
-    ]);
+} catch (PDOException $e) {
+    die("Erreur de connexion à la base de données : " . $e->getMessage());
 }
+
+/**
+ * Valide le nom.
+ *
+ * @param string $nom Le nom à valider.
+ * @return bool Vrai si le nom est valide, faux sinon.
+ */
+function validerNom($nom) {
+    return !empty(trim($nom));
+}
+
+/**
+ * Valide l'email.
+ *
+ * @param string $email L'email à valider.
+ * @return bool Vrai si l'email est valide, faux sinon.
+ */
+function validerEmail($email) {
+    return filter_var($email, FILTER_VALIDATE_EMAIL);
+}
+
+/**
+ * Valide le mot de passe.
+ *
+ * @param string $motDePasse Le mot de passe à valider.
+ * @return bool Vrai si le mot de passe est valide, faux sinon.
+ */
+function validerMotDePasse($motDePasse) {
+    // Vérifie que le mot de passe a au moins 8 caractères
+    return strlen($motDePasse) >= 8;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nom = $_POST['nom'];
+    $email = $_POST['email'];
+    $motDePasse = $_POST['motDePasse'];
+
+    if (!validerNom($nom)) {
+        die("Le nom ne peut pas être vide.");
+    }
+
+    if (!validerEmail($email)) {
+        die("L'email n'est pas valide.");
+    }
+
+    if (!validerMotDePasse($motDePasse)) {
+        die("Le mot de passe doit contenir au moins 8 caractères.");
+    }
+
+    try {
+        $requetePreparee = $connexionPDO->prepare(
+            'INSERT INTO `utilisateurs` (`nom`, `email`, `mot_de_passe`)
+            VALUES (:nom, :email, :motDePasse);'
+        );
+
+        $requetePreparee->bindParam(':nom', $nom);
+        $motDePasseHaché = password_hash($motDePasse, PASSWORD_DEFAULT);
+        $requetePreparee->bindParam(':motDePasse', $motDePasseHaché);
+        $requetePreparee->bindParam(':email', $email);
+
+        if ($requetePreparee->execute()) {
+            $idUtilisateur = $connexionPDO->lastInsertId();
+            echo "L'utilisateur a été créé avec succès et porte le numéro $idUtilisateur";
+        } else {
+            echo "Erreur lors de la création de l'utilisateur.";
+        }
+    } catch (Exception $e) {
+        echo "Erreur lors de l'exécution de la requête : " . $e->getMessage();
+    }
+}
+?>

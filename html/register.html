@@ -34,7 +34,7 @@
 
     <!-- Register Form -->
     <div class="register-wrapper">
-        <form action="#" class="register-form">
+        <form action="../php/userCreation.php" class="register-form" method="POST">
             <h2>Inscription</h2>
             <div class="input-field">
                 <input type="text" id="nom" name="nom" required>
@@ -69,5 +69,17 @@
             </ul>
         </div>
     </footer>
+
+    <script>
+        document.querySelector('.register-form').addEventListener('submit', function(event) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (password !== confirmPassword) {
+                event.preventDefault(); // Empêche la soumission du formulaire
+                alert("Les mots de passe ne correspondent pas.");
+            }
+        });
+    </script>
 </body>
 </html>

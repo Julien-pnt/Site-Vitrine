@@ -3,26 +3,40 @@ session_start();
 require 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Utiliser htmlspecialchars au lieu de FILTER_SANITIZE_STRING
+    $nom = htmlspecialchars(trim($_POST['nom']), ENT_QUOTES, 'UTF-8');
     $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
     $password = $_POST['password'];
-    
-    // Validation de l'email
+    $confirmPassword = $_POST['confirm-password'];
+
+    // Validation
+    if (empty($nom)) {
+        $_SESSION['error'] = "Le nom est requis";
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    }
+
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['error'] = "Format d'email invalide";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     }
-    
-    // Validation du mot de passe
+
     if (strlen($password) < 8) {
         $_SESSION['error'] = "Le mot de passe doit contenir au moins 8 caractères";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     }
-    
+
+    if ($password !== $confirmPassword) {
+        $_SESSION['error'] = "Les mots de passe ne correspondent pas";
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    }
+
     try {
         // Vérifier si l'email existe déjà
-        $check = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
+        $check = $pdo->prepare("SELECT COUNT(*) FROM utilisateurs WHERE email = ?");
         $check->execute([$email]);
         if ($check->fetchColumn() > 0) {
             $_SESSION['error'] = "Cet email est déjà utilisé";
@@ -34,8 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password_hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
 
         // Insérer l'utilisateur dans la base de données
-        $stmt = $pdo->prepare("INSERT INTO users (email, password_hash, created_at) VALUES (?, ?, NOW())");
-        $stmt->execute([$email, $password_hash]);
+        $stmt = $pdo->prepare("INSERT INTO utilisateurs (nom, email, mot_de_passe) VALUES (?, ?, ?)");
+        $stmt->execute([$nom, $email, $password_hash]);
 
         $_SESSION['success'] = "Compte créé avec succès";
         header("Location: login.php");
@@ -95,8 +109,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
         
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert alert-success">
+                <?php 
+                    echo htmlspecialchars($_SESSION['success']); 
+                    unset($_SESSION['success']);
+                ?>
+            </div>
+        <?php endif; ?>
+        
         <form method="POST" class="login-form" novalidate>
             <h2>Inscription</h2>
+            <div class="input-field">
+                <input type="text" id="nom" name="nom" required>
+                <label for="nom">Nom</label>
+            </div>
             <div class="input-field">
                 <input type="email" id="email" name="email" required 
                        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
@@ -107,6 +134,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                        minlength="8">
                 <label for="password">Mot de passe</label>
                 <small>Minimum 8 caractères</small>
+            </div>
+            <div class="input-field">
+                <input type="password" id="confirm-password" name="confirm-password" required>
+                <label for="confirm-password">Confirmer le mot de passe</label>
             </div>
             <button type="submit">S'inscrire</button>
             <div class="register">

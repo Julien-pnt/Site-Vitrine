@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$nom, $email, $password_hash]);
 
         $_SESSION['success'] = "Compte créé avec succès";
-        header("Location: login.php");
+        header("Location: ../html/login.html");
         exit;
     } catch (PDOException $e) {
         error_log("Erreur d'inscription : " . $e->getMessage());
@@ -79,12 +79,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <nav>
             <ul class="menu-bar">
-                <li><a href="../index.php">Accueil</a></li>
-                <li><a href="../collections.php">Collections</a></li>
-                <li><a href="../montres.php">Montres</a></li>
-                <li><a href="../description-produits.php">Description produits</a></li>
-                <li><a href="../a-propos.php">À propos</a></li>
-                <li><a href="../organigramme.php">Organigramme</a></li>
+                <li><a href="../html/Accueil.html">Accueil</a></li>
+                <li><a href="../html/Collections.html">Collections</a></li>
+                <li><a href="../html/Montres.html">Montres</a></li>
+                <li><a href="../html/DescriptionProduits.html">Description produits</a></li>
+                <li><a href="../html/APropos.html">À propos</a></li>
+                <li><a href="../html/Organigramme.html">Organigramme</a></li>
             </ul>
         </nav>
     </header>

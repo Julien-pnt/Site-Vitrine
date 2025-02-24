@@ -34,7 +34,9 @@
 
     <!-- Login Form -->
     <div class="login-wrapper">
-        <form action="#" class="login-form">
+        <div id="alert" class="alert" style="display: none;"></div>
+        
+        <form id="loginForm" class="login-form" novalidate>
             <h2>Connexion</h2>
             <div class="input-field">
                 <input type="email" id="email" name="email" required>
@@ -68,5 +70,56 @@
             </ul>
         </div>
     </footer>
+
+    <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const alertDiv = document.getElementById('alert');
+        const rememberMe = document.getElementById('remember').checked;
+        
+        try {
+            const response = await fetch('../php/login.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    email, 
+                    password,
+                    remember: rememberMe 
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Si la connexion réussit
+                window.location.href = '../html/Acceuil.html'; // Redirection vers l'accueil
+            } else {
+                // Afficher le message d'erreur
+                alertDiv.className = 'alert alert-error';
+                alertDiv.textContent = data.message;
+                alertDiv.style.display = 'block';
+                
+                // Cacher le message après 3 secondes
+                setTimeout(() => {
+                    alertDiv.style.display = 'none';
+                }, 3000);
+            }
+        } catch (error) {
+            alertDiv.className = 'alert alert-error';
+            alertDiv.textContent = 'Une erreur est survenue lors de la connexion';
+            alertDiv.style.display = 'block';
+            
+            // Cacher le message après 3 secondes
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 3000);
+        }
+    });
+    </script>
 </body>
 </html>

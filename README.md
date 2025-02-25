@@ -1,64 +1,108 @@
 # Site-Vitrine 🌐
 
-## Travail à faire 📋
+## Description du projet 🏢
+Ce projet est un site vitrine pour une entreprise spécialisée dans la vente de montres. Il vise à présenter l'activité de l'entreprise, son histoire, son catalogue de produits et son organigramme.
 
-- Créer un site vitrine pour l'entreprise 🏢
+## Fonctionnalités principales 🚀
+- **Page d'accueil** : Présente le nom de l'entreprise, son logo et son slogan.
+- **Présentation de l'activité** : Fournit une description détaillée des produits et services proposés.
+- **Historique** : Met en avant les étapes clés de l'évolution de l'entreprise.
+- **Catalogue des produits** : Permet aux visiteurs de consulter différentes collections de montres.
+- **Organigramme** : Affiche la structure de l'entreprise et propose des fiches de poste téléchargeables.
+- **Gestion des utilisateurs** : Système d'authentification permettant aux utilisateurs de se connecter et de s'inscrire.
+- **Gestion du panier** : Fonctionnalité permettant aux utilisateurs d'ajouter des produits à un panier virtuel.
 
-## Structure du site 🗂️
-
-- **Accueil** : Nom de l'entreprise, logo et slogan 🏠
-- **Présentation de l'activité** : Description détaillée des produits 📈
-- **Historique** : Chronologie et faits marquants de l'entreprise 📜
-- **Catalogue des produits** : Liste et description des produits offerts 📦
-- **Organigramme** : Image de l'organigramme et fiches de poste téléchargeables 🗃️
+---
 
 ## Structure du projet 📁
 
 ```plaintext
 └── julien-pnt-site-vitrine/
     ├── README.md
-    ├── Fiche Poste/
-    ├── SQL/
-    │   ├── bdd.sql
-    │   └── schéma-BDD.md
-    ├── css/
-    │   └── Styles.css
-    ├── html/
-    │   ├── APropos.html
-    │   ├── Acceuil.html
-    │   ├── Collection-Classic.html
-    │   ├── Collection-Limited-Edition.html
-    │   ├── Collection-Prestige.html
-    │   ├── Collection-Sport.html
-    │   ├── Collections.html
-    │   ├── DescriptionProduits.html
-    │   ├── Montres.html
-    │   ├── Organigramme.html
-    │   └── PrivacyPolicy.html
-    ├── img/
+    ├── Fiche Poste/                     # Contient les fiches de poste des employés
+    ├── SQL/                              # Scripts SQL pour la gestion de la base de données
+    │   ├── db.sql                        # Script de création de la base de données
+    │   ├── panier.sql                     # Script SQL pour la gestion du panier
+    │   └── schema-relationnel.md         # Schéma relationnel de la base de données
+    ├── css/                              # Contient les fichiers de style CSS
+    │   └── Styles.css                     # Fichier principal de styles
+    ├── html/                             # Contient toutes les pages HTML du site
+    │   ├── APropos.html                   # Page "À propos"
+    │   ├── Acceuil.html                   # Page d'accueil
+    │   ├── Collection-Classic.html        # Page Collection Classique
+    │   ├── Collection-Limited-Edition.html # Page Collection Édition Limitée
+    │   ├── Collection-Prestige.html       # Page Collection Prestige
+    │   ├── Collection-Sport.html          # Page Collection Sport
+    │   ├── Collections.html               # Page listant toutes les collections
+    │   ├── DescriptionProduits.html       # Détails des produits
+    │   ├── Montres.html                   # Vue d'ensemble des montres
+    │   ├── Organigramme.html              # Page de l'organigramme de l'entreprise
+    │   ├── PrivacyPolicy.html             # Politique de confidentialité
+    │   ├── login.html                     # Page de connexion
+    │   └── register.html                  # Page d'inscription
+    ├── img/                              # Contient les images utilisées sur le site
     │   ├── collection-prestige.JPG
     │   └── collection_classique.JPG
-    ├── js/
-    │   ├── Montres.js
-    │   ├── Panier.js
-    │   └── login.js
-    └── video/
+    ├── js/                               # Contient les scripts JavaScript
+    │   ├── Montres.js                     # Gestion de l'affichage des montres
+    │   ├── Panier.js                      # Gestion du panier
+    │   ├── auth.js                        # Gestion de l'authentification
+    │   └── login.js                       # Script de gestion de la connexion
+    ├── php/                              # Scripts PHP pour la gestion des fonctionnalités dynamiques
+    │   ├── AuthService.php                # Service d'authentification
+    │   ├── check.php                      # Vérification des informations utilisateur
+    │   ├── db.php                         # Connexion à la base de données
+    │   ├── login.php                      # Script de connexion utilisateur
+    │   ├── logout.php                     # Script de déconnexion
+    │   ├── panier.php                     # Gestion du panier côté serveur
+    │   └── userCreation.php               # Gestion de l'inscription des utilisateurs
+    └── video/                            # Dossier destiné aux fichiers vidéos
 ```
 
-## Description des dossiers et fichiers 📄
+---
 
-- **Fiche Poste/** : Contient les fiches de poste téléchargeables pour chaque rôle dans l'entreprise.
-- **SQL/** : Contient les fichiers relatifs à la base de données, y compris le script SQL (`bdd.sql`) et un schéma de la base de données (`schéma-BDD.md`).
-- **css/** : Contient le fichier de style CSS (`Styles.css`) pour la mise en forme du site.
-- **html/** : Contient les fichiers HTML pour chaque page du site, y compris la page d'accueil, les collections de montres, la description des produits, l'organigramme, et la politique de confidentialité.
-- **img/** : Contient les images utilisées sur le site, comme les images des collections de montres.
-- **js/** : Contient les fichiers JavaScript pour la gestion des montres, du panier, et de la connexion utilisateur.
-- **video/** : Dossier destiné à contenir les vidéos utilisées sur le site.
+## Instructions d'installation et d'utilisation 🛠️
 
-## Instructions d'utilisation 🛠️
+### Prérequis 📝
+- Un serveur local (XAMPP, WAMP, MAMP, ou LAMP)
+- Un navigateur web
+- MySQL pour la gestion de la base de données
 
-1. Clonez le dépôt sur votre machine locale.
-2. Ouvrez le fichier `Acceuil.html` dans votre navigateur pour accéder à la page d'accueil du site.
-3. Naviguez à travers les différentes pages pour explorer les collections de montres, l'organigramme de l'entreprise, et plus encore.
-4. Pour modifier le style du site, éditez le fichier `Styles.css` dans le dossier `css/`.
-5. Pour ajouter ou modifier des fonctionnalités JavaScript, éditez les fichiers correspondants dans le dossier `js/`.
+### Installation 🏗️
+1. **Cloner le dépôt**
+   ```bash
+   git clone https://github.com/votre-repo/julien-pnt-site-vitrine.git
+   ```
+2. **Placer les fichiers sur un serveur local**
+   - Si vous utilisez XAMPP, placez le dossier `julien-pnt-site-vitrine` dans `htdocs`.
+   - Si vous utilisez WAMP, placez-le dans `www`.
+3. **Importer la base de données**
+   - Ouvrez phpMyAdmin.
+   - Créez une nouvelle base de données (ex: `site_vitrine`).
+   - Importez le fichier `db.sql` et `panier.sql` depuis le dossier `SQL/`.
+4. **Lancer le site**
+   - Ouvrez `http://localhost/julien-pnt-site-vitrine/html/Acceuil.html` dans votre navigateur.
+
+### Personnalisation 🎨
+- **Modifier le style** : Éditez le fichier `css/Styles.css`.
+- **Ajouter ou modifier du contenu HTML** : Modifiez les fichiers dans `html/`.
+- **Ajouter des fonctionnalités dynamiques** : Éditez les scripts dans `js/` et `php/`.
+
+---
+
+## Améliorations futures 📌
+- Ajouter un système de gestion des commandes.
+- Intégrer un espace administrateur pour gérer le catalogue.
+- Améliorer l'expérience utilisateur avec des animations et interactions JavaScript.
+- Optimiser le SEO pour un meilleur référencement.
+
+---
+
+## Auteurs ✍️
+- **Julien Pnt** - Développeur principal
+- **Équipe projet** - La SIO1
+
+---
+
+## Licence 📜
+Ce projet est sous licence MIT. Vous êtes libre de le modifier et de le distribuer sous les conditions de cette licence.

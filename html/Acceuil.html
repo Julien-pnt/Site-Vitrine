@@ -44,9 +44,18 @@
         <span class="cart-count">0</span>
     </div>
 
-    <!-- User account icon - Déconnecté -->
+    <!-- User account icon -->
     <div class="user-icon">
-        <a href="../html/login.html" class="logout">Login</a>
+        <div class="profile-pic">
+            <img src="../img/profile-default-icon.png" alt="Profil" id="profile-image">
+        </div>
+        <div class="dropdown-menu">
+            <a href="../html/login.html" id="login-link">Se connecter</a>
+            <a href="../php/userCreation.php" id="register-link">S'inscrire</a>
+            <a href="../php/dashboard.php" id="account-link" style="display: none;">Mon compte</a>
+            <a href="../html/orders.html" id="orders-link" style="display: none;">Mes commandes</a>
+            <a href="../php/logout.php" id="logout-link" class="logout" style="display: none;">Déconnexion</a>
+        </div>
     </div>
 
     <!-- New Arrivals Section -->
@@ -69,20 +78,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        // Vérifier l'état de connexion
-        fetch('../php/check_session.php')
-            .then(response => response.json())
-            .then(data => {
-                const userIcon = document.querySelector('.user-icon');
-                if (data.logged_in) {
-                    userIcon.innerHTML = '<a href="../php/dashboard.php">Mon compte</a>';
-                } else {
-                    userIcon.innerHTML = '<a href="../php/login.php">Se connecter</a>';
-                }
-            });
-    </script>
 
     <!-- Footer Section -->
     <footer class="footer">

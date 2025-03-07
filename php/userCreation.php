@@ -1,68 +1,45 @@
 <?php
+// Initialiser la session si ce n'est pas déjà fait
 session_start();
-require 'db.php';
+require_once 'db.php';
+require_once 'AuthService.php';
 
+// Traitement du formulaire d'inscription
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Utiliser htmlspecialchars au lieu de FILTER_SANITIZE_STRING
-    $nom = htmlspecialchars(trim($_POST['nom']), ENT_QUOTES, 'UTF-8');
-    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-    $password = $_POST['password'];
-    $confirmPassword = $_POST['confirm-password'];
-
-    // Validation
-    if (empty($nom)) {
-        $_SESSION['error'] = "Le nom est requis";
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit;
-    }
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    // Récupérer les données du formulaire
+    $nom = trim($_POST['nom'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $confirmPassword = $_POST['confirm-password'] ?? '';
+    
+    // Validation des données
+    if (empty($nom) || empty($email) || empty($password) || empty($confirmPassword)) {
+        $_SESSION['error'] = "Tous les champs sont obligatoires";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['error'] = "Format d'email invalide";
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit;
-    }
-
-    if (strlen($password) < 8) {
+    } elseif (strlen($password) < 8) {
         $_SESSION['error'] = "Le mot de passe doit contenir au moins 8 caractères";
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit;
-    }
-
-    if ($password !== $confirmPassword) {
+    } elseif ($password !== $confirmPassword) {
         $_SESSION['error'] = "Les mots de passe ne correspondent pas";
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit;
-    }
-
-    try {
-        // Vérifier si l'email existe déjà
-        $check = $pdo->prepare("SELECT COUNT(*) FROM utilisateurs WHERE email = ?");
-        $check->execute([$email]);
-        if ($check->fetchColumn() > 0) {
-            $_SESSION['error'] = "Cet email est déjà utilisé";
-            header("Location: " . $_SERVER['PHP_SELF']);
+    } else {
+        try {
+            $authService = new AuthService($pdo);
+            $authService->register($nom, $email, $password);
+            $_SESSION['success'] = "Compte créé avec succès! Vous pouvez maintenant vous connecter.";
+            header('Location: login.php');
             exit;
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
         }
-
-        // Hacher le mot de passe
-        $password_hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
-
-        // Insérer l'utilisateur dans la base de données
-        $stmt = $pdo->prepare("INSERT INTO utilisateurs (nom, email, mot_de_passe) VALUES (?, ?, ?)");
-        $stmt->execute([$nom, $email, $password_hash]);
-
-        $_SESSION['success'] = "Compte créé avec succès";
-        header("Location: ../html/login.html");
-        exit;
-    } catch (PDOException $e) {
-        error_log("Erreur d'inscription : " . $e->getMessage());
-        $_SESSION['error'] = "Une erreur est survenue lors de l'inscription";
-        header("Location: " . $_SERVER['PHP_SELF']);
+    }
+    
+    // Redirection en cas d'erreur
+    if (isset($_SESSION['error'])) {
+        header('Location: userCreation.php');
         exit;
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -142,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <button type="submit">S'inscrire</button>
             <div class="register">
-                <p>Déjà un compte ? <a href="../html/login.html">Se connecter</a></p>
+                <p>Déjà un compte ? <a href="login.php">Se connecter</a></p>
             </div>
         </form>
     </div>
@@ -157,5 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </ul>
         </div>
     </footer>
+    
+    <script src="../js/login.js"></script>
 </body>
 </html>

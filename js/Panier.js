@@ -1,82 +1,225 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Ajouter un produit au panier
-    document.querySelectorAll('.add-to-cart').forEach(button => {
-        button.addEventListener('click', function () {
-            const produit_id = this.getAttribute('data-produit-id'); // Récupérer l'ID du produit
-            const quantite = 1; // Par défaut, on ajoute 1 unité
-
-            // Envoyer une requête POST pour ajouter le produit au panier
-            fetch('../php/panier.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `ajouter_panier=1&produit_id=${produit_id}&quantite=${quantite}`,
-            })
-                .then(response => response.json()) // Convertir la réponse en JSON
-                .then(data => {
-                    if (data.success) {
-                        showToast(data.message); // Afficher un message de succès
-                        updateCartIcon(); // Mettre à jour l'icône du panier
-                    } else {
-                        showToast(data.message || 'Erreur lors de l\'ajout au panier', 'error'); // Afficher un message d'erreur
-                    }
-                });
-        });
-    });
-
-    // Passer à la caisse
-    const checkoutButton = document.querySelector('.checkout-button');
-    if (checkoutButton) {
-        checkoutButton.addEventListener('click', function () {
-            // Envoyer une requête POST pour passer la commande
-            fetch('panier.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'passer_commande=1',
-            })
-                .then(response => response.json()) // Convertir la réponse en JSON
-                .then(data => {
-                    if (data.success) {
-                        showToast(data.message); // Afficher un message de succès
-                        updateCartIcon(); // Mettre à jour l'icône du panier
-                        window.location.href = '../html/CommandeConfirmee.html'; // Rediriger vers une page de confirmation
-                    } else {
-                        showToast(data.message || 'Erreur lors de la commande', 'error'); // Afficher un message d'erreur
-                    }
-                });
-        });
-    }
-
-    // Mettre à jour l'icône du panier
-    function updateCartIcon() {
-        // Envoyer une requête GET pour récupérer le panier
+document.addEventListener('DOMContentLoaded', function() {
+    // Éléments relatifs au panier
+    const cartIcon = document.querySelector('.cart-icon');
+    const cartBadge = document.querySelector('.cart-badge');
+    const cartDropdown = document.querySelector('.cart-dropdown');
+    const cartDropdownItems = document.querySelector('.cart-dropdown-items');
+    const cartDropdownTotal = document.querySelector('.cart-dropdown-total-value');
+    const cartDropdownEmpty = document.querySelector('.cart-dropdown-empty');
+    
+    // Fonction pour mettre à jour le panier
+    function updateCartDisplay() {
+        // Si l'utilisateur est connecté, récupérer le contenu du panier
         fetch('../php/panier.php?recuperer_panier=1')
-            .then(response => response.json()) // Convertir la réponse en JSON
+            .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    const cartCount = document.querySelector('.cart-count'); // Sélectionner l'élément de l'icône du panier
-                    const totalItems = data.panier.reduce((sum, item) => sum + item.quantite, 0); // Calculer le nombre total d'articles
-                    cartCount.textContent = totalItems; // Mettre à jour le texte de l'icône du panier
+                    const { articles, total, nombre_articles } = data.data;
+                    
+                    // Mettre à jour le compteur
+                    if (cartBadge) {
+                        cartBadge.textContent = nombre_articles;
+                        
+                        if (nombre_articles > 0) {
+                            cartBadge.classList.add('has-items');
+                            cartBadge.style.display = 'flex';
+                        } else {
+                            cartBadge.classList.remove('has-items');
+                            cartBadge.style.display = 'none';
+                        }
+                    }
+                    
+                    // Mettre à jour le contenu du dropdown
+                    if (cartDropdownItems && cartDropdownTotal && cartDropdownEmpty) {
+                        cartDropdownItems.innerHTML = '';
+                        
+                        if (articles.length === 0) {
+                            cartDropdownItems.style.display = 'none';
+                            cartDropdownEmpty.style.display = 'block';
+                            document.querySelector('.cart-dropdown-total').style.display = 'none';
+                        } else {
+                            cartDropdownItems.style.display = 'block';
+                            cartDropdownEmpty.style.display = 'none';
+                            document.querySelector('.cart-dropdown-total').style.display = 'flex';
+                            
+                            // Afficher les articles
+                            articles.forEach(article => {
+                                const itemHTML = `
+                                    <div class="cart-dropdown-item" data-id="${article.id}">
+                                        <img src="${article.image}" alt="${article.nom}" class="cart-dropdown-item-image">
+                                        <div class="cart-dropdown-item-details">
+                                            <h4>${article.nom}</h4>
+                                            <p>Qté: ${article.quantite}</p>
+                                        </div>
+                                                                               <div class="cart-dropdown-item-price">${parseFloat(article.prix).toLocaleString('fr-FR', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        })} €</div>
+                                        <button class="cart-dropdown-item-remove" data-id="${article.id}">×</button>
+                                    </div>
+                                `;
+                                cartDropdownItems.innerHTML += itemHTML;
+                            });
+                            
+                            // Mettre à jour le total
+                            cartDropdownTotal.textContent = parseFloat(total).toLocaleString('fr-FR', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }) + ' €';
+                            
+                            // Ajouter les gestionnaires d'événements pour les boutons de suppression
+                            document.querySelectorAll('.cart-dropdown-item-remove').forEach(button => {
+                                button.addEventListener('click', function(e) {
+                                    e.stopPropagation(); // Empêcher la fermeture du dropdown
+                                    const productId = this.dataset.id;
+                                    removeFromCart(productId);
+                                });
+                            });
+                        }
+                    }
+                } else {
+                    console.error('Erreur lors de la récupération du panier:', data.message);
+                    
+                    // Utilisateur probablement déconnecté, masquer le badge
+                    if (cartBadge) {
+                        cartBadge.style.display = 'none';
+                    }
+                    
+                    if (cartDropdownEmpty) {
+                        cartDropdownItems.style.display = 'none';
+                        cartDropdownEmpty.style.display = 'block';
+                        document.querySelector('.cart-dropdown-total').style.display = 'none';
+                    }
                 }
+            })
+            .catch(error => {
+                console.error('Erreur réseau:', error);
             });
     }
-
-    // Afficher une notification
-    function showToast(message, type = 'success') {
-        const toast = document.createElement('div'); // Créer un élément div pour la notification
-        toast.className = `toast ${type}`; // Ajouter des classes pour le style
-        toast.textContent = message; // Ajouter le message de la notification
-        document.body.appendChild(toast); // Ajouter la notification au corps du document
-
-        // Supprimer la notification après 3 secondes
+    
+    // Fonction pour supprimer un article du panier
+    function removeFromCart(productId) {
+        const formData = new FormData();
+        formData.append('produit_id', productId);
+        formData.append('supprimer_article', 1);
+        
+        fetch('../php/panier.php', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-Token': getCsrfToken()
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast(data.message);
+                updateCartDisplay();
+            } else {
+                showToast(data.message, true);
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            showToast('Une erreur est survenue', true);
+        });
+    }
+    
+    // Fonction pour obtenir le token CSRF
+    function getCsrfToken() {
+        // Cette fonction suppose que le token CSRF est stocké dans un élément meta
+        // ou est disponible via une API
+        const metaToken = document.querySelector('meta[name="csrf-token"]');
+        if (metaToken) {
+            return metaToken.getAttribute('content');
+        }
+        
+        // Si nous n'avons pas de méta tag, on renvoie une chaîne vide (sera géré côté serveur)
+        return '';
+    }
+    
+    // Fonction pour ajouter un article au panier
+    function addToCart(productId, quantity = 1) {
+        const formData = new FormData();
+        formData.append('produit_id', productId);
+        formData.append('quantite', quantity);
+        formData.append('ajouter_panier', 1);
+        
+        fetch('../php/panier.php', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-Token': getCsrfToken()
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast(data.message);
+                updateCartDisplay();
+            } else {
+                showToast(data.message, true);
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            showToast('Une erreur est survenue', true);
+        });
+    }
+    
+    // Fonction pour afficher un message toast
+    function showToast(message, isError = false) {
+        let toast = document.querySelector('.toast');
+        
+        // Créer le toast s'il n'existe pas
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.className = 'toast';
+            document.body.appendChild(toast);
+        }
+        
+        // Appliquer le style d'erreur si nécessaire
+        if (isError) {
+            toast.classList.add('error');
+        } else {
+            toast.classList.remove('error');
+        }
+        
+        // Afficher le message
+        toast.textContent = message;
+        toast.classList.add('show');
+        
+        // Cacher après 3 secondes
         setTimeout(() => {
-            toast.remove();
+            toast.classList.remove('show');
         }, 3000);
     }
-
-    // Récupérer le panier au chargement de la page
-    updateCartIcon();
+    
+    // Mettre à jour le panier au chargement de la page
+    updateCartDisplay();
+    
+    // Gérer les clics sur les boutons "Ajouter au panier" pour toutes les pages
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', function(e) {
+            if (!this.closest('form')) { // Ne s'applique que pour les boutons autonomes
+                e.preventDefault();
+                const productId = this.dataset.id;
+                
+                if (productId) {
+                    addToCart(productId);
+                }
+            }
+        });
+    });
+    
+    // Gérer les soumissions de formulaire pour ajouter au panier
+    document.querySelectorAll('.add-to-cart-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const productId = this.querySelector('[name="produit_id"]').value;
+            const quantity = this.querySelector('[name="quantite"]').value || 1;
+            
+            addToCart(productId, quantity);
+        });
+    });
 });

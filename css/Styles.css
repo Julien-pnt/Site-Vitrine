@@ -184,6 +184,7 @@ a {
 
 /* Styles pour l'icône utilisateur (commun à plusieurs pages) */
 .user-icon {
+    margin-right: 3%;
     position: fixed;
     top: 2rem;
     right: 7rem;

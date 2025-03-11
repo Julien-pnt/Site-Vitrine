@@ -45,24 +45,17 @@
         <span class="cart-count">0</span>
     </div>
 
-    <!-- User account icon - Déconnecté -->
-    <div class="user-icon">
-        <a href="../html/Connexion.html">👤</a>
-        <div class="dropdown-menu">
-            <a href="../html/Connexion.html">Se connecter</a>
-            <a href="../html/Inscription.html">Créer un compte</a>
-        </div>
-    </div>
-
-    <!-- User account icon - Connecté -->
-    <div class="user-icon">
+     <!-- User account icon -->
+     <div class="user-icon">
         <div class="profile-pic">
-            <img src="../img/avatar.jpg" alt="Photo de profil">
+            <img src="../img/profile-default-icon.png" alt="Profil" id="profile-image">
         </div>
         <div class="dropdown-menu">
-            <a href="../html/Profil.html">Mon profil</a>
-            <a href="../html/Commandes.html">Mes commandes</a>
-            <a href="../html/Connexion.html" class="logout">Se déconnecter</a>
+            <a href="../html/login.html" id="login-link">Se connecter</a>
+            <a href="../php/userCreation.php" id="register-link">S'inscrire</a>
+            <a href="../php/dashboard.php" id="account-link" style="display: none;">Mon compte</a>
+            <a href="../html/orders.html" id="orders-link" style="display: none;">Mes commandes</a>
+            <a href="../php/logout.php" id="logout-link" class="logout" style="display: none;">Déconnexion</a>
         </div>
     </div>
 

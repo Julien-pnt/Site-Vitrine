@@ -40,7 +40,7 @@ Ce projet est un site vitrine pour une entreprise spécialisée dans la vente de
 
 ```plaintext
 └── julien-pnt-site-vitrine/
-   ├── README.md
+   ├── README.md                        # Documentation du projet
    ├── config/                          # Configuration et scripts SQL
    │   ├── db.sql                       # Script de création de la base de données
    │   └── schema-relationnel.md        # Schéma relationnel de la base de données
@@ -53,22 +53,47 @@ Ce projet est un site vitrine pour une entreprise spécialisée dans la vente de
    │   │   ├── img/                     # Images utilisées sur le site
    │   │   │   ├── layout/              # Images liées à la mise en page
    │   │   │   └── products/            # Images des produits
+   │   │   │       ├── collection-prestige.JPG
+   │   │   │       └── collection_classique.JPG
    │   │   ├── js/                      # Scripts JavaScript
    │   │   │   └── modules/             # Modules JavaScript
+   │   │   │       ├── Montres.js       # Gestion des montres et affichage
+   │   │   │       ├── Panier.js        # Fonctionnalités du panier d'achat
+   │   │   │       ├── auth.js          # Gestion de l'authentification
+   │   │   │       └── login.js         # Processus de connexion
    │   │   └── video/                   # Fichiers vidéos
    │   ├── pages/                       # Pages HTML du site
    │   │   ├── APropos.html             # Page "À propos"
-   │   │   ├── Accueil.html             # Page d'accueil
+   │   │   ├── Acceuil.html             # Page d'accueil (note: faute d'orthographe, devrait être "Accueil")
    │   │   ├── auth/                    # Pages d'authentification
+   │   │   │   ├── login.html           # Page de connexion
+   │   │   │   └── register.html        # Page d'inscription
    │   │   ├── collections/             # Pages des collections
+   │   │   │   ├── Collection-Classic.html      # Collection classique
+   │   │   │   ├── Collection-Limited-Edition.html  # Collection édition limitée
+   │   │   │   ├── Collection-Prestige.html     # Collection prestige
+   │   │   │   ├── Collection-Sport.html        # Collection sport
+   │   │   │   └── Collections.html             # Vue globale des collections
    │   │   ├── legal/                   # Pages légales
+   │   │   │   └── PrivacyPolicy.html   # Politique de confidentialité
    │   │   └── products/                # Pages des produits
+   │   │       ├── DescriptionProduits.html  # Description détaillée des produits
+   │   │       └── Montres.html         # Catalogue de montres
    │   └── php/                         # Scripts PHP
    │       └── api/                     # API PHP
    │           ├── auth/                # API pour l'authentification
+   │           │   ├── AuthService.php  # Service d'authentification
+   │           │   ├── check.php        # Vérification des sessions
+   │           │   ├── login.php        # Traitement de la connexion
+   │           │   ├── logout.php       # Déconnexion utilisateur
+   │           │   └── userCreation.php # Création de comptes utilisateur
    │           └── products/            # API pour les produits
+   │               ├── comparer.php     # Comparaison de produits
+   │               ├── my-cart.php      # Affichage du panier personnel
+   │               └── panier.php       # Gestion du panier
    └── src/                             # Code source côté serveur
        └── Services/                    # Services métier
+           └── confirmation-commande.php # Traitement des confirmations de commande
 ```
 
 ## Instructions d'installation et d'utilisation 🛠️

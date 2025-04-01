@@ -1,16 +1,16 @@
 # Site-Vitrine 🌐
 
 ## Description du projet 🏢
-Ce projet est un site vitrine pour une entreprise spécialisée dans la vente de montres. Il vise à présenter l'activité de l'entreprise, son histoire, son catalogue de produits et son organigramme.
+Ce projet est un site vitrine pour une entreprise spécialisée dans la vente de montres. Il a pour objectif de présenter l'activité de l'entreprise, son histoire, son catalogue de produits et son organigramme.
 
 ## Fonctionnalités principales 🚀
-- **Page d'accueil** : Présente le nom de l'entreprise, son logo et son slogan.
-- **Présentation de l'activité** : Fournit une description détaillée des produits et services proposés.
-- **Historique** : Met en avant les étapes clés de l'évolution de l'entreprise.
-- **Catalogue des produits** : Permet aux visiteurs de consulter différentes collections de montres.
-- **Organigramme** : Affiche la structure de l'entreprise et propose des fiches de poste téléchargeables.
-- **Gestion des utilisateurs** : Système d'authentification permettant aux utilisateurs de se connecter et de s'inscrire.
-- **Gestion du panier** : Fonctionnalité permettant aux utilisateurs d'ajouter des produits à un panier virtuel.
+- **Page d'accueil** : Présentation du nom de l'entreprise, son logo et son slogan.
+- **Présentation de l'activité** : Description détaillée des produits et services proposés.
+- **Historique** : Mise en avant des étapes clés de l'évolution de l'entreprise.
+- **Catalogue des produits** : Consultation des différentes collections de montres.
+- **Organigramme** : Affichage de la structure de l'entreprise avec des fiches de poste téléchargeables.
+- **Gestion des utilisateurs** : Système d'authentification pour la connexion et l'inscription des utilisateurs.
+- **Gestion du panier** : Fonctionnalité permettant d'ajouter des produits à un panier virtuel.
 
 ---
 
@@ -18,45 +18,60 @@ Ce projet est un site vitrine pour une entreprise spécialisée dans la vente de
 
 ```plaintext
 └── julien-pnt-site-vitrine/
-    ├── README.md
-    ├── Fiche Poste/                     # Contient les fiches de poste des employés
-    ├── SQL/                              # Scripts SQL pour la gestion de la base de données
-    │   ├── db.sql                        # Script de création de la base de données
-    │   ├── panier.sql                     # Script SQL pour la gestion du panier
-    │   └── schema-relationnel.md         # Schéma relationnel de la base de données
-    ├── css/                              # Contient les fichiers de style CSS
-    │   └── Styles.css                     # Fichier principal de styles
-    ├── html/                             # Contient toutes les pages HTML du site
-    │   ├── APropos.html                   # Page "À propos"
-    │   ├── Acceuil.html                   # Page d'accueil
-    │   ├── Collection-Classic.html        # Page Collection Classique
-    │   ├── Collection-Limited-Edition.html # Page Collection Édition Limitée
-    │   ├── Collection-Prestige.html       # Page Collection Prestige
-    │   ├── Collection-Sport.html          # Page Collection Sport
-    │   ├── Collections.html               # Page listant toutes les collections
-    │   ├── DescriptionProduits.html       # Détails des produits
-    │   ├── Montres.html                   # Vue d'ensemble des montres
-    │   ├── Organigramme.html              # Page de l'organigramme de l'entreprise
-    │   ├── PrivacyPolicy.html             # Politique de confidentialité
-    │   ├── login.html                     # Page de connexion
-    │   └── register.html                  # Page d'inscription
-    ├── img/                              # Contient les images utilisées sur le site
-    │   ├── collection-prestige.JPG
-    │   └── collection_classique.JPG
-    ├── js/                               # Contient les scripts JavaScript
-    │   ├── Montres.js                     # Gestion de l'affichage des montres
-    │   ├── Panier.js                      # Gestion du panier
-    │   ├── auth.js                        # Gestion de l'authentification
-    │   └── login.js                       # Script de gestion de la connexion
-    ├── php/                              # Scripts PHP pour la gestion des fonctionnalités dynamiques
-    │   ├── AuthService.php                # Service d'authentification
-    │   ├── check.php                      # Vérification des informations utilisateur
-    │   ├── db.php                         # Connexion à la base de données
-    │   ├── login.php                      # Script de connexion utilisateur
-    │   ├── logout.php                     # Script de déconnexion
-    │   ├── panier.php                     # Gestion du panier côté serveur
-    │   └── userCreation.php               # Gestion de l'inscription des utilisateurs
-    └── video/                            # Dossier destiné aux fichiers vidéos
+   ├── README.md
+   ├── config/                          # Configuration et scripts SQL
+   │   ├── db.sql                       # Script de création de la base de données
+   │   └── schema-relationnel.md        # Schéma relationnel de la base de données
+   ├── public/                          # Fichiers accessibles publiquement
+   │   ├── .htaccess                    # Fichier de configuration Apache
+   │   ├── assets/                      # Ressources statiques
+   │   │   ├── Fiches-Postes/           # Fiches de poste des employés
+   │   │   ├── css/                     # Fichiers de style CSS
+   │   │   │   └── Styles.css           # Fichier principal de styles
+   │   │   ├── img/                     # Images utilisées sur le site
+   │   │   │   ├── layout/              # Images liées à la mise en page
+   │   │   │   └── products/            # Images des produits
+   │   │   │       ├── collection-prestige.JPG
+   │   │   │       └── collection_classique.JPG
+   │   │   ├── js/                      # Scripts JavaScript
+   │   │   │   └── modules/             # Modules JavaScript
+   │   │   │       ├── Montres.js       # Gestion de l'affichage des montres
+   │   │   │       ├── Panier.js        # Gestion du panier
+   │   │   │       ├── auth.js          # Gestion de l'authentification
+   │   │   │       └── login.js         # Script de gestion de la connexion
+   │   │   └── video/                   # Fichiers vidéos
+   │   ├── pages/                       # Pages HTML du site
+   │   │   ├── APropos.html             # Page "À propos"
+   │   │   ├── Acceuil.html             # Page d'accueil
+   │   │   ├── auth/                    # Pages liées à l'authentification
+   │   │   │   ├── login.html           # Page de connexion
+   │   │   │   └── register.html        # Page d'inscription
+   │   │   ├── collections/             # Pages des collections
+   │   │   │   ├── Collection-Classic.html
+   │   │   │   ├── Collection-Limited-Edition.html
+   │   │   │   ├── Collection-Prestige.html
+   │   │   │   ├── Collection-Sport.html
+   │   │   │   └── Collections.html     # Page listant toutes les collections
+   │   │   ├── legal/                   # Pages légales
+   │   │   │   └── PrivacyPolicy.html   # Politique de confidentialité
+   │   │   └── products/                # Pages des produits
+   │   │       ├── DescriptionProduits.html # Détails des produits
+   │   │       └── Montres.html         # Vue d'ensemble des montres
+   │   └── php/                         # Scripts PHP pour les fonctionnalités dynamiques
+   │       └── api/                     # API PHP
+   │           ├── auth/                # API pour l'authentification
+   │           │   ├── AuthService.php  # Service d'authentification
+   │           │   ├── check.php        # Vérification des informations utilisateur
+   │           │   ├── login.php        # Script de connexion utilisateur
+   │           │   ├── logout.php       # Script de déconnexion
+   │           │   └── userCreation.php # Gestion de l'inscription des utilisateurs
+   │           └── products/            # API pour les produits
+   │               ├── comparer.php     # Comparaison de produits
+   │               ├── my-cart.php      # Gestion du panier utilisateur
+   │               └── panier.php       # Gestion du panier côté serveur
+   └── src/                             # Code source côté serveur
+       └── Services/
+           └── confirmation-commande.php # Service de confirmation de commande
 ```
 
 ---
@@ -64,8 +79,8 @@ Ce projet est un site vitrine pour une entreprise spécialisée dans la vente de
 ## Instructions d'installation et d'utilisation 🛠️
 
 ### Prérequis 📝
-- Un serveur local (XAMPP, WAMP, MAMP, ou LAMP)
-- Un navigateur web
+- Serveur local (XAMPP, WAMP, MAMP, ou LAMP)
+- Navigateur web
 - MySQL pour la gestion de la base de données
 
 ### Installation 🏗️
@@ -74,25 +89,25 @@ Ce projet est un site vitrine pour une entreprise spécialisée dans la vente de
    git clone https://github.com/votre-repo/julien-pnt-site-vitrine.git
    ```
 2. **Placer les fichiers sur un serveur local**
-   - Si vous utilisez XAMPP, placez le dossier `julien-pnt-site-vitrine` dans `htdocs`.
-   - Si vous utilisez WAMP, placez-le dans `www`.
+   - Avec XAMPP : placez le dossier `julien-pnt-site-vitrine` dans `htdocs`.
+   - Avec WAMP : placez-le dans `www`.
 3. **Importer la base de données**
    - Ouvrez phpMyAdmin.
    - Créez une nouvelle base de données (ex: `site_vitrine`).
-   - Importez le fichier `db.sql` et `panier.sql` depuis le dossier `SQL/`.
+   - Importez les fichiers `db.sql` depuis le dossier `config/`.
 4. **Lancer le site**
-   - Ouvrez `http://localhost/julien-pnt-site-vitrine/html/Acceuil.html` dans votre navigateur.
+   - Accédez à `http://localhost/julien-pnt-site-vitrine/public/pages/Acceuil.html` dans votre navigateur.
 
 ### Personnalisation 🎨
-- **Modifier le style** : Éditez le fichier `css/Styles.css`.
-- **Ajouter ou modifier du contenu HTML** : Modifiez les fichiers dans `html/`.
-- **Ajouter des fonctionnalités dynamiques** : Éditez les scripts dans `js/` et `php/`.
+- **Modifier le style** : Éditez `public/assets/css/Styles.css`.
+- **Modifier le contenu HTML** : Modifiez les fichiers dans `public/pages/`.
+- **Ajouter des fonctionnalités dynamiques** : Travaillez sur les scripts dans `public/assets/js/modules/` et `public/php/api/`.
 
 ---
 
 ## Améliorations futures 📌
-- Ajouter un système de gestion des commandes.
-- Intégrer un espace administrateur pour gérer le catalogue.
+- Intégrer un système de gestion des commandes.
+- Ajouter un espace administrateur pour gérer le catalogue.
 - Améliorer l'expérience utilisateur avec des animations et interactions JavaScript.
 - Optimiser le SEO pour un meilleur référencement.
 

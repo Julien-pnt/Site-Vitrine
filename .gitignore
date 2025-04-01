@@ -1,1 +1,43 @@
- 
+ # Fichiers .gitignore pour projet e-commerce (HTML/PHP/JS)
+
+### Fichiers système ###
+.DS_Store
+.idea/
+Thumbs.db
+*.swp
+*.swo
+
+### Dependencies ###
+/node_modules/
+/vendor/
+/composer.lock
+
+### Fichiers de configuration sensibles ###
+/config/
+.env
+*.local
+/db-config.php
+
+### Fichiers de cache et logs ###
+/tmp/
+*.log
+/cache/
+
+### Uploads utilisateurs ###
+/public/assets/img/temp/*
+!/public/assets/img/temp/.gitkeep
+/public/uploads/
+!/public/uploads/.gitkeep
+
+### Fichiers compilés ###
+/public/assets/js/bundles/
+/public/assets/css/*.min.css
+
+### Base de données ###
+*.sql
+*.sqlite
+/dumps/
+
+### Exceptions (conservez ces fichiers) ###
+!public/pages/**/*.html
+!public/assets/**/*.{js,css,webp}

@@ -13,8 +13,6 @@
 - [Structure du projet](#structure-du-projet-)
 - [Instructions d'installation](#instructions-dinstallation-et-dutilisation-)
 - [Personnalisation](#personnalisation-)
-- [Bonnes pratiques de développement](#bonnes-pratiques-de-développement-)
-- [Améliorations futures](#améliorations-futures-)
 - [Dépannage](#dépannage-)
 - [Auteurs](#auteurs-)
 - [Licence](#licence-)

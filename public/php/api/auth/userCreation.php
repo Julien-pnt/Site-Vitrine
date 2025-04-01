@@ -86,113 +86,185 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription - Elixir du Temps</title>
-    <link rel="stylesheet" href="/public/assets/css/Styles.css">
+    
+    <!-- Script pour corriger le fondu blanc -->
+    <script>
+        // Force l'affichage immédiat du contenu
+        document.documentElement.style.opacity = "1";
+        function ensureVisibility() {
+            document.body.classList.add('video-loaded');
+        }
+        // S'exécute dès que possible
+        document.addEventListener('DOMContentLoaded', ensureVisibility);
+        // Backup au cas où DOMContentLoaded ne se déclencherait pas
+        setTimeout(ensureVisibility, 100);
+    </script>
+    
+    <meta name="description" content="Créez votre compte Elixir du Temps et accédez à des fonctionnalités exclusives.">
+    <meta name="keywords" content="inscription, compte, elixir du temps, montres de luxe">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Inscription - Elixir du Temps">
+    <meta property="og:description" content="Créez votre compte Elixir du Temps">
+    <meta property="og:image" content="/public/assets/img/layout/social-share.jpg">
+    
+    <!-- Ressources -->
+    <link rel="stylesheet" href="/public/assets/css/main.css">
+    <link rel="stylesheet" href="/public/assets/css/auth.css">
     <link rel="shortcut icon" href="/public/assets/img/layout/icon.png" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="auth-page video-loaded">
     <!-- Header Section -->
     <header class="header">
         <div class="logo-container">
-            <img src="/public/assets/img/layout/logo.png" alt="Elixir du Temps Logo" class="logo">
+            <a href="/public/pages/Accueil.html">
+                <img src="/public/assets/img/layout/logo.png" alt="Elixir du Temps Logo" class="logo" width="180" height="60">
+            </a>
         </div>
-        <nav>
+        <nav aria-label="Navigation principale">
             <ul class="menu-bar">
                 <li><a href="/public/pages/Accueil.html">Accueil</a></li>
                 <li><a href="/public/pages/collections/Collections.html">Collections</a></li>
                 <li><a href="/public/pages/products/Montres.html">Montres</a></li>
-                <li><a href="/public/pages/products/DescriptionProduits.html">Description produits</a></li>
                 <li><a href="/public/pages/APropos.html">À propos</a></li>
+                <li><a href="/public/pages/Contact.html">Contact</a></li>
             </ul>
         </nav>
     </header>
 
-    <!-- Video Background -->
-    <div class="video-background">
-        <video class="video-bg" autoplay muted loop playsinline>
-            <source src="/public/assets/video/background.mp4" type="video/mp4">
-            Votre navigateur ne supporte pas la vidéo.
-        </video>
-        <div class="video-overlay"></div>
+    <!-- Background pour authentification -->
+    <div class="auth-background">
+        <div class="auth-overlay"></div>
     </div>
 
     <!-- Formulaire d'inscription -->
-    <div class="login-wrapper">
-        <?php if (isset($_SESSION['error'])): ?>
-            <div class="alert alert-error">
-                <?php 
-                    echo htmlspecialchars($_SESSION['error']); 
-                    unset($_SESSION['error']);
-                ?>
-            </div>
-        <?php endif; ?>
-        
-        <?php if (isset($_SESSION['success'])): ?>
-            <div class="alert alert-success">
-                <?php 
-                    echo htmlspecialchars($_SESSION['success']); 
-                    unset($_SESSION['success']);
-                ?>
-            </div>
-        <?php endif; ?>
-        
-        <form method="POST" class="login-form" novalidate>
-            <h2>Inscription</h2>
-            <!-- Token CSRF -->
-            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+    <div class="auth-wrapper">
+        <div class="auth-form-container">
+            <h1 class="auth-title">Créer un compte</h1>
             
-            <div class="input-field">
-                <input type="text" id="nom" name="nom" required minlength="2">
-                <label for="nom">Nom</label>
-            </div>
-            <div class="input-field">
-                <input type="email" id="email" name="email" required 
-                       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
-                <label for="email">Email</label>
-            </div>
-            <div class="input-field">
-                <input type="password" id="password" name="password" required minlength="8">
-                <label for="password">Mot de passe</label>
-                <small>Minimum 8 caractères, incluant majuscule, chiffre et caractère spécial</small>
-            </div>
-            <div class="input-field">
-                <input type="password" id="confirm-password" name="confirm-password" required>
-                <label for="confirm-password">Confirmer le mot de passe</label>
-            </div>
-            
-            <div class="password-strength-meter">
-                <div class="meter-label">Force du mot de passe:</div>
-                <div class="meter">
-                    <div class="meter-progress"></div>
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-error">
+                    <?php 
+                        echo htmlspecialchars($_SESSION['error']); 
+                        unset($_SESSION['error']);
+                    ?>
                 </div>
-            </div>
+            <?php endif; ?>
             
-            <div class="policy-agreement">
-                <label>
-                    <input type="checkbox" name="agree_policy" required>
-                    <span>J'accepte les <a href="/public/pages/legal/PrivacyPolicy.html" target="_blank">conditions d'utilisation</a></span>
-                </label>
-            </div>
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="alert alert-success">
+                    <?php 
+                        echo htmlspecialchars($_SESSION['success']); 
+                        unset($_SESSION['success']);
+                    ?>
+                </div>
+            <?php endif; ?>
             
-            <button type="submit" id="submit-btn" disabled>S'inscrire</button>
-            <div class="register">
-                <p>Déjà un compte ? <a href="/public/php/api/auth/login.php">Se connecter</a></p>
-            </div>
-        </form>
+            <form method="POST" class="auth-form" novalidate>
+                <!-- Token CSRF -->
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                
+                <div class="input-field">
+                    <input type="text" id="nom" name="nom" required minlength="2">
+                    <label for="nom">Nom</label>
+                </div>
+                <div class="input-field">
+                    <input type="email" id="email" name="email" required 
+                           pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                    <label for="email">Email</label>
+                </div>
+                <div class="input-field">
+                    <input type="password" id="password" name="password" required minlength="8">
+                    <label for="password">Mot de passe</label>
+                    <small>Minimum 8 caractères, incluant majuscule, chiffre et caractère spécial</small>
+                </div>
+                <div class="input-field">
+                    <input type="password" id="confirm-password" name="confirm-password" required>
+                    <label for="confirm-password">Confirmer le mot de passe</label>
+                </div>
+                
+                <div class="password-strength-meter">
+                    <div class="meter-label">Force du mot de passe:</div>
+                    <div class="meter">
+                        <div class="meter-progress"></div>
+                    </div>
+                </div>
+                
+                <div class="policy-agreement">
+                    <label>
+                        <input type="checkbox" name="agree_policy" required>
+                        <span>J'accepte les <a href="/public/pages/legal/PrivacyPolicy.html" target="_blank">conditions d'utilisation</a> et la <a href="/public/pages/legal/PrivacyPolicy.html" target="_blank">politique de confidentialité</a>.</span>
+                    </label>
+                </div>
+                
+                <button type="submit" id="submit-btn" disabled>Créer mon compte</button>
+                
+                <div class="auth-alt">
+                    <p>Déjà un compte ? <a href="/public/php/api/auth/login.php">Se connecter</a></p>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Footer Section -->
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; <?php echo date('Y'); ?> Elixir du Temps. Tous droits réservés.</p>
-            <ul class="footer-links">
-                <li><a href="mailto:contact@elixirdutemps.com" class="mon-email">Contact</a></li>
-                <li><a href="/public/pages/legal/PrivacyPolicy.html">Politique de confidentialité</a></li>
-            </ul>
+            <div class="footer-columns">
+                <div class="footer-column">
+                    <h3>Elixir du Temps</h3>
+                    <p>L'excellence horlogère depuis 1985</p>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Informations</h3>
+                    <ul>
+                        <li><a href="/public/pages/legal/PrivacyPolicy.html">Politique de confidentialité</a></li>
+                        <li><a href="/public/pages/legal/CGV.html">Conditions de vente</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact</h3>
+                    <address>
+                        <p>15 rue de la Paix<br>75002 Paris, France</p>
+                        <p>Email: <a href="mailto:contact@elixirdutemps.com">contact@elixirdutemps.com</a></p>
+                        <p>Tél: <a href="tel:+33145887766">+33 (0)1 45 88 77 66</a></p>
+                    </address>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; <?php echo date('Y'); ?> Elixir du Temps. Tous droits réservés.</p>
+            </div>
         </div>
     </footer>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Fix pour le problème de fondu blanc
+            document.body.classList.add('video-loaded');
+            
+            // Gestion de l'animation des labels
+            const inputs = document.querySelectorAll('.input-field input');
+            inputs.forEach(input => {
+                // Si l'input a déjà une valeur (par exemple après une erreur de soumission)
+                if (input.value) {
+                    input.classList.add('has-content');
+                }
+                
+                input.addEventListener('input', function() {
+                    if (this.value) {
+                        this.classList.add('has-content');
+                    } else {
+                        this.classList.remove('has-content');
+                    }
+                });
+            });
+            
             const passwordField = document.getElementById('password');
             const confirmField = document.getElementById('confirm-password');
             const meterProgress = document.querySelector('.meter-progress');

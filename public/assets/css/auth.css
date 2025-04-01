@@ -7,7 +7,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #1a1a2e, #102542);
+    background: radial-gradient(circle at center, #1c324f, #0a1a2d);
     z-index: -2;
 }
 
@@ -18,8 +18,21 @@
     width: 100%;
     height: 100%;
     background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    opacity: 0.8;
     z-index: -1;
+}
+
+/* Structure générale des pages d'authentification */
+body.auth-page {
+    opacity: 1 !important; /* Correction du bug de fondu */
+}
+
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    padding: 60px 20px;
+    position: relative;
 }
 
 /* Section principale */
@@ -33,19 +46,21 @@
     z-index: 1;
 }
 
-.auth-container {
+.auth-container,
+.auth-form-container {
     background-color: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
     padding: 40px;
-    border-radius: 10px;
+    border-radius: 8px;
     width: 100%;
-    max-width: 450px;
+    max-width: 500px;
     margin: 0 auto;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.auth-container:hover {
+.auth-container:hover,
+.auth-form-container:hover {
     transform: translateY(-5px);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
 }
@@ -72,14 +87,16 @@
 }
 
 /* Amélioration des champs de formulaire */
-.form-group {
+.form-group,
+.input-field {
     position: relative;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 
-.form-group input {
+.form-group input,
+.input-field input {
     width: 100%;
-    padding: 12px 15px 12px 40px; /* Espace pour l'icône */
+    padding: 12px 15px 12px 15px;
     border: none;
     border-radius: 4px;
     background-color: #f7f7f7;
@@ -89,15 +106,17 @@
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.input-field input:focus {
     background-color: #fff;
     box-shadow: 0 0 0 2px rgba(172, 139, 86, 0.3), inset 0 1px 3px rgba(0, 0, 0, 0.1);
     outline: none;
 }
 
-.form-group label {
+.form-group label,
+.input-field label {
     position: absolute;
-    left: 40px; /* Aligné avec le texte après l'icône */
+    left: 15px;
     top: 12px;
     color: #777;
     font-size: 16px;
@@ -105,12 +124,82 @@
     pointer-events: none;
 }
 
-.form-group.active label {
+.form-group.active label,
+.input-field input:focus ~ label,
+.input-field input:valid ~ label {
     transform: translateY(-25px);
     left: 0;
     font-size: 14px;
     color: var(--primary-color);
     font-weight: 500;
+}
+
+.input-field small {
+    display: block;
+    font-size: 12px;
+    color: #777;
+    margin-top: 5px;
+}
+
+/* Indicateur de force du mot de passe */
+.password-strength-meter {
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.meter-label {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.meter {
+    height: 5px;
+    background-color: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.meter-progress {
+    height: 100%;
+    width: 0;
+    background-color: #ff4d4d;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+/* Case à cocher pour les conditions */
+.policy-agreement {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 25px;
+}
+
+.policy-agreement label {
+    display: flex;
+    align-items: flex-start;
+    cursor: pointer;
+    user-select: none;
+}
+
+.policy-agreement input[type="checkbox"] {
+    margin-right: 10px;
+    margin-top: 3px;
+}
+
+.policy-agreement span {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.policy-agreement a {
+    color: var(--primary-color);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.policy-agreement a:hover {
+    border-bottom-color: var(--primary-color);
 }
 
 /* Icônes dans les champs */
@@ -149,14 +238,13 @@
     margin-bottom: 25px;
     display: flex;
     align-items: center;
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 1;
+    animation: fadeIn 0.3s ease;
 }
 
-.alert.show {
-    opacity: 1;
-    transform: translateY(0);
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .alert-error {
@@ -172,7 +260,8 @@
 }
 
 /* Amélioration du bouton Se connecter */
-.auth-button {
+.auth-button,
+button[type="submit"] {
     width: 100%;
     padding: 14px;
     border: none;
@@ -188,15 +277,24 @@
     overflow: hidden;
 }
 
-.auth-button:hover {
+.auth-button:hover,
+button[type="submit"]:hover {
     background-color: var(--secondary-color);
     transform: translateY(-2px);
     box-shadow: 0 6px 10px rgba(16, 37, 66, 0.25);
 }
 
-.auth-button:active {
+.auth-button:active,
+button[type="submit"]:active {
     transform: translateY(0);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+button[type="submit"]:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 /* Animation du bouton lors du chargement */
@@ -328,6 +426,26 @@
     z-index: 1;
 }
 
+/* Lien d'authentification alternatif */
+.auth-alt {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 15px;
+    color: #555;
+}
+
+.auth-alt a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.auth-alt a:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
 /* Footer du formulaire */
 .auth-footer {
     text-align: center;
@@ -341,7 +459,8 @@
 
 /* Design responsive */
 @media (max-width: 768px) {
-    .auth-container {
+    .auth-container,
+    .auth-form-container {
         padding: 30px 20px;
     }
     

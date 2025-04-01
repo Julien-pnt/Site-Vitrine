@@ -106,87 +106,232 @@ if (isset($_SESSION['success'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - Elixir du Temps</title>
-    <link rel="stylesheet" href="/public/assets/css/Styles.css">
+    <meta name="description" content="Connectez-vous à votre compte Elixir du Temps pour accéder à vos commandes et préférences.">
+    <meta name="keywords" content="connexion, compte, elixir du temps, montres de luxe">
+    
+    <!-- Script pour corriger le fondu blanc -->
+    <script>
+        // Force l'affichage immédiat du contenu
+        document.documentElement.style.opacity = "1";
+        function ensureVisibility() {
+            document.body.classList.add('video-loaded');
+        }
+        // S'exécute dès que possible
+        document.addEventListener('DOMContentLoaded', ensureVisibility);
+        // Backup au cas où DOMContentLoaded ne se déclencherait pas
+        setTimeout(ensureVisibility, 100);
+    </script>
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Connexion - Elixir du Temps">
+    <meta property="og:description" content="Accédez à votre espace client Elixir du Temps.">
+    <meta property="og:image" content="/public/assets/img/layout/social-share.jpg">
+    
+    <!-- Ressources -->
+    <link rel="stylesheet" href="/public/assets/css/main.css">
+    <link rel="stylesheet" href="/public/assets/css/auth.css">
     <link rel="shortcut icon" href="/public/assets/img/layout/icon.png" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <title>Connexion - Elixir du Temps</title>
 </head>
-<body>
-    <!-- Header Section -->
+
+<body class="auth-page video-loaded">
+    <!-- Header section with logo and navigation menu -->
     <header class="header">
         <div class="logo-container">
-            <img src="/public/assets/img/layout/logo.png" alt="Elixir du Temps Logo" class="logo">
+            <a href="/public/pages/Accueil.html" aria-label="Accueil Elixir du Temps">
+                <img src="/public/assets/img/layout/logo.png" alt="Logo Elixir du Temps" class="logo" width="180" height="60">
+            </a>
         </div>
-        <nav>
+        <nav aria-label="Navigation principale">
             <ul class="menu-bar">
                 <li><a href="/public/pages/Accueil.html">Accueil</a></li>
-                <li><a href="/public/pages/collections/Collections.html">Collections</a></li>
-                <li><a href="/public/pages/products/Montres.html">Montres</a></li>
-                <li><a href="/public/pages/products/DescriptionProduits.html">Description produits</a></li>
+                <li><a href="/public/pages/Collections.html">Collections</a></li>
+                <li><a href="/public/pages/Montres.html">Montres</a></li>
                 <li><a href="/public/pages/APropos.html">À propos</a></li>
+                <li><a href="/public/pages/Contact.html">Contact</a></li>
             </ul>
         </nav>
-    </header>
-
-    <!-- Video Background -->
-    <div class="video-background">
-        <video class="video-bg" autoplay muted loop playsinline>
-            <source src="/public/assets/video/background.mp4" type="video/mp4">
-            Votre navigateur ne supporte pas la vidéo.
-        </video>
-        <div class="video-overlay"></div>
-    </div>
-
-    <!-- Formulaire de connexion -->
-    <div class="login-wrapper">
-        <?php if ($error): ?>
-            <div class="alert alert-error">
-                <?php echo htmlspecialchars($error); ?>
-            </div>
-        <?php endif; ?>
         
-        <?php if ($success): ?>
-            <div class="alert alert-success">
-                <?php echo htmlspecialchars($success); ?>
-            </div>
-        <?php endif; ?>
-        
-        <form method="POST" class="login-form" novalidate>
-            <h2>Connexion</h2>
-            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+        <!-- User and Cart Icons -->
+        <div class="user-cart-container">
+            <a href="login.php" class="user-icon active" aria-current="page">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-user">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
             
-            <div class="input-field">
-                <input type="email" id="email" name="email" required>
-                <label for="email">Email</label>
+            <div class="cart-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-cart">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span class="cart-badge">0</span>
             </div>
-            <div class="input-field">
-                <input type="password" id="password" name="password" required>
-                <label for="password">Mot de passe</label>
-            </div>
-            <div class="forget">
-                <label>
-                    <input type="checkbox" name="remember">
-                    <p>Se souvenir de moi</p>
-                </label>
-                <a href="reset-password.php">Mot de passe oublié ?</a>
-            </div>
-            <button type="submit">Se connecter</button>
-            <div class="register">
-                <p>Pas encore de compte ? <a href="register.html">S'inscrire</a></p>
-            </div>
-        </form>
+        </div>
+    </header>
+    
+    <!-- Background avec image de secours -->
+    <div class="auth-background">
+        <div class="auth-overlay"></div>
     </div>
+    
+    <!-- Authentication Section -->
+    <section class="auth-section">
+        <div class="auth-container">
+            <h1 class="auth-title">Connexion</h1>
+            
+            <?php if ($error): ?>
+                <div id="alert" class="alert alert-error show">
+                    <?php echo htmlspecialchars($error); ?>
+                </div>
+            <?php endif; ?>
+            
+            <?php if ($success): ?>
+                <div id="alert" class="alert alert-success show">
+                    <?php echo htmlspecialchars($success); ?>
+                </div>
+            <?php endif; ?>
+            
+            <form id="loginForm" class="auth-form" method="POST" novalidate>
+                <!-- Token CSRF -->
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                
+                <div class="form-group">
+                    <!-- Icône email -->
+                    <svg class="form-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    <input type="email" id="email" name="email" required>
+                    <label for="email">Adresse email</label>
+                    <div class="form-border"></div>
+                </div>
+                
+                <div class="form-group">
+                    <!-- Icône mot de passe -->
+                    <svg class="form-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <input type="password" id="password" name="password" required>
+                    <label for="password">Mot de passe</label>
+                    <div class="form-border"></div>
+                </div>
+                
+                <div class="form-options">
+                    <label class="remember-label">
+                        <input type="checkbox" id="remember" name="remember">
+                        <span class="checkbox-custom"></span>
+                        <span>Se souvenir de moi</span>
+                    </label>
+                    <a href="password-reset.php" class="forgot-link">Mot de passe oublié ?</a>
+                </div>
+                
+                <button type="submit" id="loginButton" class="btn-primary auth-button">Se connecter</button>
+                
+                <div class="auth-divider">
+                    <span>ou</span>
+                </div>
+                
+                <div class="auth-footer">
+                    <p>Vous n'avez pas de compte ?</p>
+                    <a href="userCreation.php" class="btn-outline">Créer un compte</a>
+                </div>
+            </form>
+        </div>
+    </section>
 
-    <!-- Footer Section -->
+    <!-- Footer Section (simplifié) -->
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; <?php echo date('Y'); ?> Elixir du Temps. Tous droits réservés.</p>
-            <ul class="footer-links">
-                <li><a href="mailto:contact@elixirdutemps.com" class="mon-email">Contact</a></li>
-                <li><a href="/public/pages/legal/PrivacyPolicy.html">Politique de confidentialité</a></li>
-            </ul>
+            <div class="footer-columns">
+                <div class="footer-column">
+                    <h3>Elixir du Temps</h3>
+                    <p>L'excellence horlogère depuis 1985</p>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Informations</h3>
+                    <ul>
+                        <li><a href="/public/pages/APropos.html">À propos</a></li>
+                        <li><a href="/public/pages/Contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact</h3>
+                    <address>
+                        <p>15 rue de la Paix<br>75002 Paris, France</p>
+                        <p>Tél: <a href="tel:+33145887766">+33 (0)1 45 88 77 66</a></p>
+                    </address>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; <?php echo date('Y'); ?> Elixir du Temps. Tous droits réservés.</p>
+            </div>
         </div>
     </footer>
-    
-    <script src="/public/assets/js/modules/login.js"></script>
+
+    <!-- Script d'animation et de validation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fix pour le problème de fondu blanc
+            document.body.classList.add('video-loaded');
+            
+            // Animation des labels de formulaire
+            const formInputs = document.querySelectorAll('.form-group input');
+            if (formInputs) {
+                formInputs.forEach(input => {
+                    // Vérifier si l'input a déjà une valeur au chargement
+                    if (input.value) {
+                        input.parentElement.classList.add('active');
+                    }
+                    
+                    // Ajouter/supprimer la classe active au focus/blur
+                    input.addEventListener('focus', () => {
+                        input.parentElement.classList.add('active');
+                    });
+                    
+                    input.addEventListener('blur', () => {
+                        if (!input.value) {
+                            input.parentElement.classList.remove('active');
+                        }
+                    });
+                });
+            }
+            
+            // Animation de checkbox personnalisée
+            const checkboxes = document.querySelectorAll('.remember-label input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const customCheckbox = this.nextElementSibling;
+                    if (this.checked) {
+                        customCheckbox.classList.add('checked');
+                    } else {
+                        customCheckbox.classList.remove('checked');
+                    }
+                });
+            });
+            
+            // Auto-masquage des messages d'alerte après 4 secondes
+            const alertDiv = document.getElementById('alert');
+            if (alertDiv) {
+                setTimeout(() => {
+                    alertDiv.classList.remove('show');
+                    setTimeout(() => {
+                        alertDiv.style.display = 'none';
+                    }, 300);
+                }, 4000);
+            }
+        });
+    </script>
 </body>
 </html>

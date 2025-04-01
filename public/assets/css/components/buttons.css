@@ -1,0 +1,80 @@
+/* Styles des boutons */
+button, .btn-primary, .btn-secondary, .btn-outline {
+  cursor: pointer;
+  font-family: 'Raleway', sans-serif;
+  font-weight: 500;
+  border: none;
+  transition: var(--transition);
+}
+
+.btn-primary, .btn-secondary {
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.btn-primary:hover {
+  background-color: var(--secondary-color);
+}
+
+.btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-outline {
+  display: inline-block;
+  padding: 0.9rem 2rem;
+  border: 2px solid var(--secondary-color);
+  color: var(--secondary-color);
+  border-radius: 4px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: var(--transition);
+}
+
+.btn-outline:hover {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.explore-button {
+  display: inline-block;
+  padding: 0.7rem 1.5rem;
+  background-color: var(--secondary-color);
+  color: white;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.explore-button:hover {
+  background-color: var(--primary-color);
+}
+
+.add-to-cart {
+  background-color: var(--secondary-color);
+  color: white;
+  padding: 0.7rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.add-to-cart:hover {
+  background-color: var(--primary-color);
+}

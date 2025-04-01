@@ -1,0 +1,13 @@
+/* Styles généraux de mise en page */
+section:not(.hero) {
+  padding: 5rem 5%;
+  position: relative;
+}
+
+section:not(.hero):nth-child(odd) {
+  background-color: white;
+}
+
+section:not(.hero):nth-child(even) {
+  background-color: #f9f9f9;
+}

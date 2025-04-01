@@ -1,0 +1,13 @@
+/* Variables CSS globales */
+:root {
+  --primary-color: #ac8b56;
+  --secondary-color: #102542;
+  --dark-color: #232323;
+  --light-color: #f8f8f8;
+  --accent-color: #d4af37;
+  --text-dark: #333333;
+  --text-light: #f8f8f8;
+  --border-color: #e0e0e0;
+  --transition: all 0.3s ease;
+  --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,107 @@
+/* Styles responsive */
+@media screen and (max-width: 768px) {
+  .timeline::after {
+    left: 31px;
+  }
+  
+  .timeline-item {
+    width: 100%;
+    padding-left: 70px;
+    padding-right: 25px;
+  }
+  
+  .timeline-item:nth-child(even) {
+    left: 0;
+  }
+  
+  .timeline-item:nth-child(odd)::after,
+  .timeline-item:nth-child(even)::after {
+    left: 15px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .hero-title {
+    font-size: 2.8rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.3rem;
+  }
+  
+  .section-header h2 {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .header {
+    gap: 1rem;
+  }
+  
+  .menu-bar {
+    gap: 1.2rem;
+  }
+  
+  .menu-bar a {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+  }
+  
+  .logo-container {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  
+  .user-cart-container {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  
+  nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin: 1rem 0 0;
+    justify-self: center;
+    width: 100%;
+  }
+  
+  .menu-bar {
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .hero-title {
+    font-size: 2.2rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .btn-primary, .btn-secondary {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  section:not(.hero) {
+    padding: 3rem 3%;
+  }
+  
+  .footer-bottom {
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+  }
+  
+  .payment-methods {
+    justify-content: center;
+    margin-top: 1rem;
+  }
+}

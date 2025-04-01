@@ -1,1 +1,85 @@
- 
+ <IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # =====================
+    # CONFIGURATION DE BASE
+    # =====================
+    Options -Indexes -ExecCGI
+    FileETag None
+    ServerSignature Off
+
+    # =====================
+    # SÉCURITÉ RENFORCÉE
+    # =====================
+    <FilesMatch "\.(env|sql|ini|log)$">
+        Require all denied
+    </FilesMatch>
+
+    # Blocage des injections
+    RewriteCond %{QUERY_STRING} (;|<|>|'|"|\)|%0A|%0D|%22|%27|%3C|%3E|%00) [NC,OR]
+    RewriteCond %{QUERY_STRING} (base64_encode|localhost|mosconfig) [NC,OR]
+    RewriteRule ^(.*)$ - [F,L]
+
+    # =====================
+    # REWRITING D'URL
+    # =====================
+    # Pages statiques
+    RewriteRule ^$ /pages/Acceuil.html [L]
+    RewriteRule ^a-propos$ /pages/APropos.html [L]
+    RewriteRule ^mentions-legales$ /pages/legal/PrivacyPolicy.html [L]
+
+    # Collections
+    RewriteRule ^collections$ /pages/collections/Collections.html [L]
+    RewriteRule ^collections/classique$ /pages/collections/Collection-Classic.html [L]
+    RewriteRule ^collections/prestige$ /pages/collections/Collection-Prestige.html [L]
+    RewriteRule ^collections/sport$ /pages/collections/Collection-Sport.html [L]
+    RewriteRule ^collections/edition-limitee$ /pages/collections/Collection-Limited-Edition.html [L]
+
+    # Produits
+    RewriteRule ^montres$ /pages/products/Montres.html [L]
+    RewriteRule ^produit/([a-z0-9-]+)$ /pages/products/DescriptionProduits.html?ref=$1 [NC,L]
+
+    # Authentification
+    RewriteRule ^connexion$ /pages/auth/login.html [L]
+    RewriteRule ^inscription$ /pages/auth/register.html [L]
+
+    # API
+    RewriteRule ^api/auth/([a-z-]+)$ /php/api/auth/$1.php [L]
+    RewriteRule ^api/produits/([a-z-]+)$ /php/api/products/$1.php [L]
+
+    # =====================
+    # PERFORMANCES
+    # =====================
+    <IfModule mod_deflate.c>
+        AddOutputFilterByType DEFLATE text/html text/css application/javascript
+    </IfModule>
+
+    <FilesMatch "\.(css|js|jpg|jpeg|png|gif|webp|svg)$">
+        Header set Cache-Control "max-age=31536000, public"
+    </FilesMatch>
+
+    # =====================
+    # ERREURS
+    # =====================
+    ErrorDocument 404 /pages/Acceuil.html
+    ErrorDocument 403 /pages/Acceuil.html
+</IfModule>
+
+# =====================
+# PROTECTION SPÉCIFIQUE
+# =====================
+# Blocage des accès directs aux fichiers PHP
+<Files ~ "\.(php)$">
+    Deny from all
+</Files>
+
+# Autoriser uniquement l'accès via les réécritures
+<FilesMatch "^index\.php$">
+    Allow from all
+</FilesMatch>
+
+# Empêcher le hotlinking
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?votredomaine\.com [NC]
+RewriteRule \.(jpg|jpeg|png|gif|webp)$ - [NC,F,L]

@@ -6,6 +6,19 @@
     <meta name="description" content="Connectez-vous à votre compte Elixir du Temps pour accéder à vos commandes et préférences.">
     <meta name="keywords" content="connexion, compte, elixir du temps, montres de luxe">
     
+    <!-- Script pour corriger le fondu blanc -->
+    <script>
+        // Force l'affichage immédiat du contenu
+        document.documentElement.style.opacity = "1";
+        function ensureVisibility() {
+            document.body.classList.add('video-loaded');
+        }
+        // S'exécute dès que possible
+        document.addEventListener('DOMContentLoaded', ensureVisibility);
+        // Backup au cas où DOMContentLoaded ne se déclencherait pas
+        setTimeout(ensureVisibility, 100);
+    </script>
+    
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Connexion - Elixir du Temps">
@@ -13,7 +26,7 @@
     <meta property="og:image" content="../../assets/img/layout/social-share.jpg">
     
     <!-- Ressources -->
-    <link rel="stylesheet" href="../../assets/css/Styles.css">
+    <link rel="stylesheet" href="../../assets/css/main.css">
     <link rel="stylesheet" href="../../assets/css/auth.css">
     <link rel="shortcut icon" href="../../assets/img/layout/icon.png" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,44 +34,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <title>Connexion - Elixir du Temps</title>
-    
-    <!-- Style inline de secours -->
-    <style>
-        /* Style minimal de secours si les CSS externes ne se chargent pas */
-        body { font-family: 'Raleway', sans-serif; margin: 0; padding: 0; color: #333; }
-        .header { padding: 20px; background-color: #fff; }
-        .auth-background { background-color: #f5f5f5; }
-        .auth-section { padding: 40px 20px; }
-        .auth-container { background-color: #fff; padding: 30px; max-width: 500px; margin: 0 auto; }
-        .form-group { margin-bottom: 20px; }
-        .form-group input { width: 100%; padding: 10px 0; margin-top: 5px; }
-        .form-options { display: flex; justify-content: space-between; margin: 20px 0; }
-        button { padding: 10px 20px; background-color: #AC8B56; color: #fff; border: none; cursor: pointer; }
-        .footer { background-color: #1A1A1A; color: #fff; padding: 40px 20px; margin-top: 40px; }
-    </style>
 </head>
 
-<body>
+<body class="video-loaded">
     <!-- Header section with logo and navigation menu -->
     <header class="header">
         <div class="logo-container">
-            <a href="/accueil" aria-label="Accueil Elixir du Temps">
+            <a href="../Accueil.html" aria-label="Accueil Elixir du Temps">
                 <img src="../../assets/img/layout/logo.png" alt="Logo Elixir du Temps" class="logo" width="180" height="60">
             </a>
         </div>
         <nav aria-label="Navigation principale">
             <ul class="menu-bar">
-                <li><a href="/accueil">Accueil</a></li>
-                <li><a href="/collections">Collections</a></li>
-                <li><a href="/montres">Montres</a></li>
-                <li><a href="/a-propos">À propos</a></li>
-                <li><a href="/contact">Contact</a></li>
+                <li><a href="../Accueil.html">Accueil</a></li>
+                <li><a href="../Collections.html">Collections</a></li>
+                <li><a href="../Montres.html">Montres</a></li>
+                <li><a href="../APropos.html">À propos</a></li>
+                <li><a href="../Contact.html">Contact</a></li>
             </ul>
         </nav>
         
         <!-- User and Cart Icons -->
         <div class="user-cart-container">
-            <a href="/connexion" class="user-icon active" aria-current="page">
+            <a href="login.html" class="user-icon active" aria-current="page">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-user">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
@@ -90,12 +88,22 @@
             
             <form id="loginForm" class="auth-form" novalidate>
                 <div class="form-group">
+                    <!-- Icône email -->
+                    <svg class="form-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
                     <input type="email" id="email" name="email" required>
                     <label for="email">Adresse email</label>
                     <div class="form-border"></div>
                 </div>
                 
                 <div class="form-group">
+                    <!-- Icône mot de passe -->
+                    <svg class="form-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
                     <input type="password" id="password" name="password" required>
                     <label for="password">Mot de passe</label>
                     <div class="form-border"></div>
@@ -107,10 +115,10 @@
                         <span class="checkbox-custom"></span>
                         <span>Se souvenir de moi</span>
                     </label>
-                    <a href="/password-reset" class="forgot-link">Mot de passe oublié ?</a>
+                    <a href="password-reset.html" class="forgot-link">Mot de passe oublié ?</a>
                 </div>
                 
-                <button type="submit" class="btn-primary auth-button">Se connecter</button>
+                <button type="submit" id="loginButton" class="btn-primary auth-button">Se connecter</button>
                 
                 <div class="auth-divider">
                     <span>ou</span>
@@ -118,7 +126,7 @@
                 
                 <div class="auth-footer">
                     <p>Vous n'avez pas de compte ?</p>
-                    <a href="/inscription" class="btn-outline">Créer un compte</a>
+                    <a href="register.html" class="btn-outline">Créer un compte</a>
                 </div>
             </form>
         </div>
@@ -136,8 +144,8 @@
                 <div class="footer-column">
                     <h3>Informations</h3>
                     <ul>
-                        <li><a href="/a-propos">À propos</a></li>
-                        <li><a href="/contact">Contact</a></li>
+                        <li><a href="../APropos.html">À propos</a></li>
+                        <li><a href="../Contact.html">Contact</a></li>
                     </ul>
                 </div>
                 
@@ -156,74 +164,7 @@
         </div>
     </footer>
 
-    <script>
-    // Attendre que le DOM soit chargé avant d'exécuter le script
-    document.addEventListener('DOMContentLoaded', function() {
-        // Pour éviter les erreurs silencieuses
-        try {
-            // Animation des labels de formulaire
-            const formInputs = document.querySelectorAll('.form-group input');
-            if (formInputs) {
-                formInputs.forEach(input => {
-                    // Vérifier si l'input a déjà une valeur au chargement
-                    if (input.value) {
-                        input.parentElement.classList.add('active');
-                    }
-                    
-                    // Ajouter/supprimer la classe active au focus/blur
-                    input.addEventListener('focus', () => {
-                        input.parentElement.classList.add('active');
-                    });
-                    
-                    input.addEventListener('blur', () => {
-                        if (!input.value) {
-                            input.parentElement.classList.remove('active');
-                        }
-                    });
-                });
-            }
-            
-            // Gestion du formulaire de connexion
-            const loginForm = document.getElementById('loginForm');
-            if (loginForm) {
-                loginForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    
-                    const email = document.getElementById('email').value;
-                    const password = document.getElementById('password').value;
-                    const alertDiv = document.getElementById('alert');
-                    
-                    // Validation basique côté client
-                    if (!email || !password) {
-                        alertDiv.className = 'alert alert-error';
-                        alertDiv.textContent = 'Veuillez remplir tous les champs';
-                        alertDiv.style.display = 'block';
-                        
-                        setTimeout(() => {
-                            alertDiv.style.opacity = '0';
-                            setTimeout(() => {
-                                alertDiv.style.display = 'none';
-                                alertDiv.style.opacity = '1';
-                            }, 300);
-                        }, 3000);
-                        return;
-                    }
-                    
-                    // Simulation de connexion réussie pour le développement
-                    alertDiv.className = 'alert alert-success';
-                    alertDiv.textContent = 'Connexion réussie. Redirection...';
-                    alertDiv.style.display = 'block';
-                    
-                    // Redirection simulée
-                    setTimeout(() => {
-                        window.location.href = '/accueil';
-                    }, 1500);
-                });
-            }
-        } catch (error) {
-            console.error("Erreur dans le script de login:", error);
-        }
-    });
-    </script>
+    <!-- Script d'animation et de validation -->
+    <script src="../../assets/js/auth.js"></script>
 </body>
 </html>

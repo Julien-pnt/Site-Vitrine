@@ -1,0 +1,286 @@
+/* ==================== */
+/* COLLECTIONS PAGE */
+/* ==================== */
+
+/* Styles spécifiques pour la page Collections */
+.collections-header {
+    text-align: center;
+    padding: 4rem 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.collections-header h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(to right, #ffd700, #ff7f50);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.collections-header p {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.collections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 3rem;
+    padding: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.collection-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 1.5rem;
+    overflow: hidden;
+    transition: transform 0.3s ease-in-out;
+}
+
+.collection-card:hover {
+    transform: translateY(-10px);
+}
+
+.collection-image {
+    position: relative;
+    height: 300px;
+    overflow: hidden;
+}
+
+.collection-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+}
+
+.collection-card:hover .collection-image img {
+    transform: scale(1.1);
+}
+
+.collection-info {
+    padding: 2rem;
+    text-align: center;
+}
+
+.collection-info h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #ffd700;
+}
+
+.collection-info p {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.price-range {
+    display: block;
+    font-size: 1.2rem;
+    color: #ff7f50;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+}
+
+.explore-button {
+    background: linear-gradient(90deg, #ffd700, #ff7f50);
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.explore-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+/* ==================== */
+/* NEW ARRIVALS SECTION */
+/* ==================== */
+
+/* Styles pour la section des nouvelles arrivées (page Accueil) */
+.new-arrivals {
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.new-arrivals h2 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    background: linear-gradient(to right, #ffd700, #ff7f50);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ===================================================== */
+/* PRIVACY POLICY STYLES AND THE PURPOSE AND DESCRIPTION */
+/* ===================================================== */
+
+.privacy-policy,
+.Historic-content,
+.DescriptionProduits-content {
+    padding: 4rem 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    color: white;
+}
+
+.privacy-policy h1,
+.Historic-content h1,
+.DescriptionProduits-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    background: linear-gradient(to right, #ffd700, #ff7f50);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.privacy-policy h2,
+.Historic-content h2,
+.DescriptionProduits-content h2 {
+    font-size: 1.8rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #ffd700;
+}
+
+.privacy-policy p,
+.Historic-content p,
+.DescriptionProduits-content p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.privacy-policy ul,
+.Historic-content ul,
+.DescriptionProduits-content ul {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+}
+
+.privacy-policy ul li,
+.Historic-content ul li,
+.DescriptionProduits-content ul li {
+    margin-bottom: 0.5rem;
+}
+
+.privacy-policy a,
+.Historic-content a,
+.DescriptionProduits-content a {
+    color: #ff7f50;
+    text-decoration: underline;
+}
+
+.privacy-policy a:hover,
+.Historic-content a:hover,
+.DescriptionProduits-content a:hover {
+    color: #ff4500;
+}
+
+/* ==================== */
+/* ORGANIGRAMME */
+/* ==================== */
+
+/* Styles généraux */
+.organigramme {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* Niveaux de l'organigramme */
+.level {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+/* Nœuds de l'organigramme */
+.node {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    width: 200px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.node:hover {
+    transform: translateY(-0.5rem);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.node p {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.node .name {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 10px;
+}
+
+/* Nœud du Directeur Général */
+.directeur {
+    background: linear-gradient(90deg, #ff7f50, #ff4500);
+    border-color: #ff7f50;
+}
+
+.directeur p {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.directeur .name {
+    color: white;
+}
+
+/* Sous-nœuds (équipes) */
+.sub-node {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    width: 250px;
+}
+
+.sub-node p {
+    font-size: 1rem;
+}
+
+.sub-node .name {
+    font-size: 0.9rem;
+}
+
+/* Connecteurs */
+.connector {
+    width: 2px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 0 auto 20px auto;
+}
+
+/* Fiches de postes */
+.fichePoste:hover {
+    color: #ff7f50;
+}

@@ -1,43 +1,168 @@
- # Fichiers .gitignore pour projet e-commerce (HTML/PHP/JS)
+# Fichier .gitignore pour projet e-commerce Elixir du Temps
+# Configuration complète pour environnement HTML/PHP/JS
 
-### Fichiers système ###
+### Fichiers système et temporaires ###
+# Fichiers système macOS
 .DS_Store
-.idea/
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Fichiers système Windows
 Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Fichiers temporaires Linux
+*~
+.directory
+.Trash-*
+
+### Éditeurs et IDE ###
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# PhpStorm / IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea_modules/
+
+# Vim
 *.swp
 *.swo
+.vim/
 
-### Dependencies ###
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Eclipse
+.project
+.settings/
+.classpath
+*.pydevproject
+
+### Dépendances et gestionnaires de paquets ###
+# Node.js
 /node_modules/
+/package-lock.json
+/npm-debug.log*
+/yarn-debug.log*
+/yarn-error.log*
+/yarn.lock
+/.pnp
+.pnp.js
+
+# Composer (PHP)
 /vendor/
 /composer.lock
+/composer.phar
 
 ### Fichiers de configuration sensibles ###
-/config/
+# Exclure tous les fichiers de configuration, sauf les exemples ou templates
+/config/*
+!/config/db.sql
+!/config/schema-relationnel.md
+!/config/example.*.php
+!/config/example.*.json
+!/config/example.*.yml
+
+# Fichiers d'environnement et configuration locale
 .env
+.env.*
+!.env.example
 *.local
 /db-config.php
+/config.php
+/settings.php
 
 ### Fichiers de cache et logs ###
 /tmp/
-*.log
+/temp/
 /cache/
+/logs/
+*.log
+*.cache
+.sass-cache/
+/phpunit.result.cache
 
-### Uploads utilisateurs ###
+### Uploads et contenus générés par les utilisateurs ###
+# Dossier de téléchargement temporaire
 /public/assets/img/temp/*
 !/public/assets/img/temp/.gitkeep
-/public/uploads/
+
+# Dossier d'uploads utilisateurs
+/public/uploads/*
 !/public/uploads/.gitkeep
 
-### Fichiers compilés ###
-/public/assets/js/bundles/
+# Images utilisateurs redimensionnées
+/public/assets/img/users/*
+!/public/assets/img/users/.gitkeep
+
+### Fichiers compilés et build ###
+# CSS compilés
 /public/assets/css/*.min.css
+/public/assets/css/dist/
+
+# JavaScript compilés
+/public/assets/js/bundles/
+/public/assets/js/dist/
+/public/assets/js/*.min.js
+
+# Fichiers de build
+/build/
+/dist/
 
 ### Base de données ###
+# Fichiers SQL et SQLite
 *.sql
+!db_schema.sql
+!config/db.sql
 *.sqlite
+*.sqlite3
 /dumps/
+/backups/
 
-### Exceptions (conservez ces fichiers) ###
+### Tests et documentation ###
+/coverage/
+/docs/build/
+/phpunit.xml
+.phpunit.cache/
+
+### Secrets et clés ###
+*.pem
+*.key
+*.cert
+*.crt
+
+### Exceptions (fichiers à conserver) ###
+# Pages HTML (conserver toutes les pages HTML du site)
 !public/pages/**/*.html
-!public/assets/**/*.{js,css,webp}
+
+# Assets essentiels (conserver JS, CSS, images nécessaires)
+!public/assets/js/main.js
+!public/assets/js/essential/*.js
+!public/assets/css/Styles.css
+!public/assets/img/layout/*.{jpg,png,gif,webp,svg}
+!public/assets/img/products/*.{jpg,png,gif,webp,svg}
+!public/assets/img/collections/*.{jpg,png,gif,webp,svg}
+
+# Vidéos d'arrière-plan
+!public/assets/video/background.mp4
+
+# Documentation technique
+!README.md
+!CONTRIBUTING.md
+!LICENSE

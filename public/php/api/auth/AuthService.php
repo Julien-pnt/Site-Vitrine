@@ -52,6 +52,11 @@ class AuthService {
     
     /**
      * Authentifie un utilisateur
+     * 
+     * @param string $email Email de l'utilisateur
+     * @param string $password Mot de passe en clair
+     * @return array Information de l'utilisateur connecté
+     * @throws Exception Si les identifiants sont invalides ou si un problème survient
      */
     public function login($email, $password) {
         // Validation d'email

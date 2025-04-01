@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 );
                 
                 $authService = new AuthService($pdo);
-                $user = $authService->login($email, $password);
+                $userData = $authService->login($email, $password);
                 
                 // Définir un cookie si "Se souvenir de moi" est coché
                 if ($remember) {
@@ -82,6 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Rediriger vers l'accueil
                 header('Location: /public/pages/Accueil.html');
                 exit;
+                
             } catch (Exception $e) {
                 $error = $e->getMessage();
             }

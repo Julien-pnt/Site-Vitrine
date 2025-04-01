@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/Styles.css">
+    <meta name="description" content="Découvrez l'histoire, les valeurs et l'engagement d'Elixir du Temps, marque horlogère de luxe fondée en 1985 à Genève.">
+    <meta name="keywords" content="Elixir du Temps, horlogerie, montres de luxe, histoire horlogère, Genève, montres suisses">
+    <link rel="stylesheet" href="../assets/css/Styles.css">
     <link rel="shortcut icon" href="../img/icon.png" type="image/x-icon">
-    <script src="../js/login.js"></script>
     <title>Site Officiel - Elixir du temps - A propos de nous</title>
 </head>
 <body>
@@ -14,14 +15,15 @@
         <div class="logo-container">
             <img src="../img/logo.png" alt="Elixir du Temps Logo" class="logo">
         </div>
-        <nav>
-            <ul class="menu-bar">
-                <li><a href="../html/Acceuil.html">Accueil</a></li>
-                <li><a href="../html/Collections.html">Collections</a></li>
-                <li><a href="../html/Montres.html">Montres</a></li>
-                <li><a href="../html/DescriptionProduits.html">Description produits</a></li>
-                <li><a href="../html/APropos.html">À propos</a></li>
-                <li><a href="../html/Organigramme.html">Organigramme</a></li>
+        <!-- Pour la navigation -->
+        <nav aria-label="Navigation principale">
+            <ul class="menu-bar" role="menubar">
+                <li role="none"><a href="../pages/Accueil.html" role="menuitem">Accueil</a></li>
+                <li role="none"><a href="../pages/Collections.html" role="menuitem">Collections</a></li>
+                <li role="none"><a href="../pages/Montres.html" role="menuitem">Montres</a></li>
+                <li role="none"><a href="../pages/DescriptionProduits.html" role="menuitem">Description produits</a></li>
+                <li role="none"><a href="../pages/APropos.html" role="menuitem" aria-current="page">À propos</a></li>
+                <li role="none"><a href="../pages/Organigramme.html" role="menuitem">Organigramme</a></li>
             </ul>
         </nav>
     </header>
@@ -41,18 +43,18 @@
             <img src="../img/profile-default-icon.png" alt="Profil" id="profile-image">
         </div>
         <div class="dropdown-menu">
-            <a href="../html/login.html" id="login-link">Se connecter</a>
+            <a href="../pages/login.html" id="login-link">Se connecter</a>
             <a href="../php/userCreation.php" id="register-link">S'inscrire</a>
             <a href="../php/dashboard.php" id="account-link" style="display: none;">Mon compte</a>
-            <a href="../html/orders.html" id="orders-link" style="display: none;">Mes commandes</a>
+            <a href="../pages/orders.html" id="orders-link" style="display: none;">Mes commandes</a>
             <a href="../php/logout.php" id="logout-link" class="logout" style="display: none;">Déconnexion</a>
         </div>
     </div>
 
 
     <!-- Historic Content -->
-    <section class="Historic-content">
-        <div class="Historic-container">
+    <main class="about-content">
+        <div class="about-container">
             <h1>Chez Elixir du Temps, le Luxe à travers les Âges</h1>
             <p>Fondée en 1985 à Genève, Elixir du Temps a vu le jour dans une ville reconnue mondialement pour son héritage horloger. Depuis ses modestes débuts dans un petit atelier niché au cœur de cette ville historique, nous avons redéfini le luxe et l'élégance à travers une collection de montres exceptionnelles. Notre marque incarne l'essence même du raffinement et du savoir-faire horloger.</p>
 
@@ -60,7 +62,43 @@
             <p>Elixir du Temps a pour mission de célébrer l'art de l'horlogerie en offrant des montres qui allient technologie de pointe, design innovant et matériaux de la plus haute qualité. Chaque montre que nous créons est une œuvre d'art, conçue pour être à la fois intemporelle et avant-gardiste. Nous croyons que chaque montre doit être un symbole de sophistication et de précision, reflétant la personnalité unique de son propriétaire.</p>
 
             <h2>Notre Histoire</h2>
-            <p>Depuis sa fondation en 1985, Elixir du Temps s'est consacré à créer des pièces uniques qui transcendent le temps. Nos maîtres horlogers, forts de décennies d'expérience, mettent leur expertise et leur créativité au service de créations exceptionnelles qui racontent une histoire à chaque battement. Au fil des années, nous avons élargi notre présence à travers le monde, avec des boutiques emblématiques à Paris, New York, Tokyo et Dubaï.</p>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">1985</div>
+                    <div class="timeline-content">
+                        <h3>Fondation</h3>
+                        <p>Création d'Elixir du Temps dans un petit atelier à Genève par nos fondateurs passionnés.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">1995</div>
+                    <div class="timeline-content">
+                        <h3>Première Collection Iconique</h3>
+                        <p>Lancement de notre collection "Chronos" qui établit notre réputation d'excellence horlogère.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2005</div>
+                    <div class="timeline-content">
+                        <h3>Expansion Internationale</h3>
+                        <p>Ouverture de nos premières boutiques à Paris et New York, marquant le début de notre présence mondiale.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2015</div>
+                    <div class="timeline-content">
+                        <h3>Innovation Technologique</h3>
+                        <p>Introduction de notre mouvement breveté "Tempus Precision" combinant tradition et technologie de pointe.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2025</div>
+                    <div class="timeline-content">
+                        <h3>Aujourd'hui</h3>
+                        <p>Elixir du Temps est présent dans 25 pays avec une gamme de collections qui allient artisanat traditionnel et design contemporain.</p>
+                    </div>
+                </div>
+            </div>
 
             <h2>Nos Valeurs</h2>
             <ul>
@@ -75,7 +113,7 @@
             <h2>Engagement Durable</h2>
             <p>Nous sommes également engagés dans une démarche de développement durable, en utilisant des matériaux responsables et en privilégiant des procédés de fabrication respectueux de l'environnement. Découvrez l'univers d'Elixir du Temps et laissez-vous séduire par l'essence de l'élégance.</p>
         </div>
-    </section>
+    </main>
 
     <!-- Footer Section -->
     <footer class="footer">
@@ -83,9 +121,10 @@
             <p>&copy; 2025 Elixir du Temps. Tous droits réservés.</p>
             <ul class="footer-links">
                 <li><a href="mailto:contact@elixirdutemps.com" class="mon-email">Contact</a></li>
-                <li><a href="../html/PrivacyPolicy.html">Politique de confidentialité</a></li>
+                <li><a href="../pages/PrivacyPolicy.html">Politique de confidentialité</a></li>
             </ul>
         </div>
     </footer>
+    <script src="../js/login.js"></script>
 </body>
 </html>

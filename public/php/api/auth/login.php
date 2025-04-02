@@ -225,13 +225,9 @@ if (isset($_SESSION['success'])) {
                     <div class="form-border"></div>
                 </div>
                 
-                <div class="form-options">
-                    <label class="remember-label">
-                        <input type="checkbox" id="remember" name="remember">
-                        <span class="checkbox-custom"></span>
-                        <span>Se souvenir de moi</span>
-                    </label>
-                    <a href="password-reset.php" class="forgot-link">Mot de passe oublié ?</a>
+                <!-- Ajouter le lien "Mot de passe oublié" ici -->
+                <div class="forgot-password">
+                    <a href="password-reset.php">Mot de passe oublié ?</a>
                 </div>
                 
                 <button type="submit" id="loginButton" class="btn-primary auth-button">Se connecter</button>

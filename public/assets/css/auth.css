@@ -505,3 +505,22 @@ button[type="submit"]:disabled {
         margin-top: 10px;
     }
 }
+
+/* Ajout de styles pour le mot de passe oublié */
+.forgot-password {
+    text-align: right;
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+
+.forgot-password a {
+    color: #888;
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.forgot-password a:hover {
+    color: #c9a86b;
+    text-decoration: underline;
+}

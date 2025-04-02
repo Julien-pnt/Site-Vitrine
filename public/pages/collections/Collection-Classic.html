@@ -3,212 +3,521 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/Styles.css">
-    <link rel="shortcut icon" href="../img/icon.png" type="image/x-icon">
-    <script src="../js/Montres.js"></script>
-    <script src="../js/login.js"></script>
-    <title>Site Officiel - Elixir du temps - Collection Classic</title>
+    <meta name="description" content="Découvrez notre Collection Classic - Des montres élégantes qui incarnent l'excellence horlogère d'Elixir du Temps.">
+    <meta name="keywords" content="montres de luxe, collection classic, elixir du temps, horlogerie, montres élégantes">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Collection Classic - Elixir du Temps">
+    <meta property="og:description" content="Découvrez notre Collection Classic - Des montres élégantes qui incarnent l'excellence horlogère d'Elixir du Temps.">
+    <meta property="og:image" content="../../assets/img/collections/classic-collection-social.jpg">
+    
+    <!-- Script pour corriger le fondu blanc -->
+    <script>
+        // Force l'affichage immédiat du contenu
+        document.documentElement.style.opacity = "1";
+        function ensureVisibility() {
+            document.body.classList.add('video-loaded');
+        }
+        // S'exécute dès que possible
+        document.addEventListener('DOMContentLoaded', ensureVisibility);
+        // Backup au cas où DOMContentLoaded ne se déclencherait pas
+        setTimeout(ensureVisibility, 100);
+    </script>
+    
+    <!-- Style pour gérer la transition -->
+    <style>
+        html, body {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        
+        body.video-loaded {
+            opacity: 1;
+        }
+        
+        .loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #121212;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        body.video-loaded .loader-container {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(201, 168, 107, 0.3);
+            border-top-color: #c9a86b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+    </style>
+    
+    <!-- Ressources -->
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/collections.css">
+    <link rel="shortcut icon" href="../../assets/img/layout/icon.png" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <title>Collection Classic - Elixir du Temps</title>
 </head>
-<body>
-    <!-- Header section with logo and navigation menu -->
-    <header class="header">
-        <div class="logo-container">
-            <img src="../img/logo.png" alt="Logo" class="logo">
-        </div>
-        <ul class="menu-bar">
-            <li><a href="../html/Acceuil.html">Accueil</a></li>
-            <li><a href="../html/Collections.html">Collections</a></li>
-            <li><a href="../html/Montres.html">Montres</a></li>
-            <li><a href="../html/DescriptionProduits.html">Description produits</a></li>
-            <li><a href="../html/APropos.html">À propos</a></li>
-            <li><a href="../html/Organigramme.html">Organigramme</a></li>
-        </ul>
-    </header>
-
-    <!-- Video background section -->
-    <div class="video-background">
-        <video autoplay loop muted playsinline class="video-bg">
-            <source src="../video/background.mp4" type="video/mp4">
-            Votre navigateur ne supporte pas la vidéo.
-        </video>
-        <div class="video-overlay"></div>
-    </div>
-
-    <!-- Search bar section -->
-    <div class="search-container">
-        <input type="text" class="search-bar" placeholder="Rechercher une montre...">
-    </div>
-
-        <!-- User account icon -->
-        <div class="user-icon">
-            <div class="profile-pic">
-                <img src="../img/profile-default-icon.png" alt="Profil" id="profile-image">
-            </div>
-            <div class="dropdown-menu">
-                <a href="../html/login.html" id="login-link">Se connecter</a>
-                <a href="../php/userCreation.php" id="register-link">S'inscrire</a>
-                <a href="../php/dashboard.php" id="account-link" style="display: none;">Mon compte</a>
-                <a href="../html/orders.html" id="orders-link" style="display: none;">Mes commandes</a>
-                <a href="../php/logout.php" id="logout-link" class="logout" style="display: none;">Déconnexion</a>
-            </div>
-        </div>
-
-    <!-- Shopping cart icon with item count -->
-    <div class="cart-icon">
-        🛒
-        <span class="cart-count">0</span>
-    </div>
-
-
-    <!-- Sort Section -->
-    <div class="sort-section">
-        <label for="sort-by">Trier par :</label>
-        <select id="sort-by">
-            <option value="price-asc">Prix croissant</option>
-            <option value="price-desc">Prix décroissant</option>
-            <option value="popularity">Popularité</option>
-        </select>
-    </div>
-
-    <!-- Category slider for selecting Homme or Femme -->
-    <div class="category-slider-container">
-        <input type="range" min="0" max="1" step="1" value="0" id="category-slider" oninput="showCategory(this.value)">
-        <div class="category-labels">
-            <span>Homme</span>
-            <span>Femme</span>
+<body class="video-loaded">
+    <!-- Loader -->
+    <div class="loader-container">
+        <div class="loader">
+            <span class="visually-hidden">Chargement en cours...</span>
         </div>
     </div>
     
-    <!-- Section for Homme products -->
-    <div id="homme" class="product-grid">
-        <!-- Product card for Élégance Éternelle -->
-            <div class="product-card">
-                <img src="../img/elegance-eternal.jpg" alt="Élégance Éternelle" class="product-image">
-                <h3>Élégance Éternelle</h3>
-                <p class="price">15,000 €</p>
-                <button class="add-to-cart">Ajouter au panier</button>
+    <!-- Header section with logo and navigation menu -->
+    <header class="header">
+        <div class="logo-container">
+            <a href="../Accueil.html" aria-label="Accueil Elixir du Temps">
+                <img src="../../assets/img/layout/logo.png" alt="Logo Elixir du Temps" class="logo" width="180" height="60" fetchpriority="high">
+            </a>
+        </div>
+        <nav aria-label="Navigation principale">
+            <ul class="menu-bar">
+                <li><a href="../Accueil.html">Accueil</a></li>
+                <li><a href="../Collections.html">Collections</a></li>
+                <li><a href="../Montres.html">Montres</a></li>
+                <li><a href="../APropos.html">À propos</a></li>
+                <li><a href="../Contact.html">Contact</a></li>
+            </ul>
+        </nav>
+        
+        <!-- User and Cart Icons -->
+        <div class="user-cart-container">
+            <a href="../auth/login.html" class="user-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-user">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <div class="dropdown-menu">
+                    <a href="../auth/login.html" id="login-link">Se connecter</a>
+                    <a href="../../php/api/auth/register.php" id="register-link">S'inscrire</a>
+                    <a href="../user/MonCompte.html" id="account-link" style="display: none;">Mon compte</a>
+                    <a href="../user/MesCommandes.html" id="orders-link" style="display: none;">Mes commandes</a>
+                    <a href="../../php/api/auth/logout.php" id="logout-link" class="logout" style="display: none;">Déconnexion</a>
+                </div>
+            </a>
+            
+            <div class="cart-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-cart">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span class="cart-badge">0</span>
+                <div class="cart-dropdown">
+                    <h3 class="cart-dropdown-title">Mon panier</h3>
+                    <div class="cart-dropdown-items">
+                        <div class="cart-dropdown-empty">
+                            <p>Votre panier est vide</p>
+                            <a href="../Montres.html" class="cart-dropdown-button primary">Découvrir nos montres</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-    <!-- Product card for Sérénité Intemporelle -->
-        <div class="product-card">
-            <img src="../img/Sérénité-Intemporelle.jpg" alt="Sérénité Intemporelle" class="product-image">
-            <h3>Sérénité Intemporelle</h3>
-            <p class="price">16,500 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
         </div>
-    <!-- Product card for Reflet Majestueux -->
-        <div class="product-card">
-            <img src="../img/Reflet-Majestueux.jpg" alt="Reflet Majestueux" class="product-image">
-            <h3>Reflet Majestueux</h3>
-            <p class="price">18,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Héritage Classique -->
-        <div class="product-card">
-            <img src="../img/heritage-classique.jpg" alt="Héritage Classique" class="product-image">
-            <h3>Héritage Classique</h3>
-            <p class="price">14,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Noblesse Élégante -->
-        <div class="product-card">
-            <img src="../img/noblesse-elegante.jpg" alt="Noblesse Élégante" class="product-image">
-            <h3>Noblesse Élégante</h3>
-            <p class="price">17,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Prestige Céleste -->
-        <div class="product-card">
-            <img src="../img/prestige-celeste.jpg" alt="Prestige Céleste" class="product-image">
-            <h3>Prestige Céleste</h3>
-            <p class="price">19,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Charme Révélateur -->
-        <div class="product-card">
-            <img src="../img/charme-revelateur.jpg" alt="Charme Révélateur" class="product-image">
-            <h3>Charme Révélateur</h3>
-            <p class="price">13,500 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Simplicité Royale -->
-        <div class="product-card">
-            <img src="../img/simplicite-royale.jpg" alt="Simplicité Royale" class="product-image">
-            <h3>Simplicité Royale</h3>
-            <p class="price">14,500 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
+    </header>
+
+    <!-- Ajouter la vidéo d'arrière-plan manquante -->
+    <div class="video-background">
+        <video class="video-bg" autoplay muted loop playsinline preload="auto">
+            <source src="../../assets/video/background.mp4" type="video/mp4">
+            <!-- Fallback image si la vidéo ne se charge pas -->
+            <img src="../../assets/img/collections/classic-hero.jpg" alt="Collection Classic" class="fallback-img">
+        </video>
+        <div class="video-overlay"></div>
+        
+        <!-- Hero content sur la vidéo -->
+        <div class="collection-hero">
+            <div class="collection-hero-content">
+                <h1 class="collection-title">Collection Classic</h1>
+                <p class="collection-description">L'élégance intemporelle dans sa forme la plus pure. Notre collection Classic rend hommage aux traditions horlogères avec une touche contemporaine.</p>
+            </div>
         </div>
     </div>
 
+    <!-- Filtres et Recherche -->
+    <section class="collection-filters">
+        <div class="container">
+            <div class="filters-row">
+                <div class="search-container">
+                    <input type="text" class="search-bar" placeholder="Rechercher une montre..." aria-label="Rechercher une montre">
+                    <button class="search-button" aria-label="Rechercher">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="filter-options">
+                    <div class="sort-section">
+                        <label for="sort-by">Trier par :</label>
+                        <select id="sort-by" aria-label="Trier les montres par">
+                            <option value="nouveaute">Nouveautés</option>
+                            <option value="price-asc">Prix croissant</option>
+                            <option value="price-desc">Prix décroissant</option>
+                            <option value="popularity">Popularité</option>
+                        </select>
+                    </div>
+                    
+                    <div class="gender-filter">
+                        <span>Catégorie :</span>
+                        <div class="gender-buttons">
+                            <button id="homme-button" class="gender-button active" aria-pressed="true">Homme</button>
+                            <button id="femme-button" class="gender-button" aria-pressed="false">Femme</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <!-- Section for Femme products -->
-    <div id="femme" class="product-grid" style="display: none;">
-    <!-- Product card for Grâce Sublime -->
-        <div class="product-card">
-            <img src="../img/grace-sublime.jpg" alt="Grâce Sublime" class="product-image">
-            <h3>Grâce Sublime</h3>
-            <p class="price">12,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Beauté Éternelle -->
-        <div class="product-card">
-            <img src="../img/beaute-eternelle.jpg" alt="Beauté Éternelle" class="product-image">
-            <h3>Beauté Éternelle</h3>
-            <p class="price">13,500 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Éclat Intemporel -->
-        <div class="product-card">
-            <img src="../img/eclat-intemporel.jpg" alt="Éclat Intemporel" class="product-image">
-            <h3>Éclat Intemporel</h3>
-            <p class="price">14,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Reflet Précieux -->
-        <div class="product-card">
-            <img src="../img/reflet-precieux.jpg" alt="Reflet Précieux" class="product-image">
-            <h3>Reflet Précieux</h3>
-            <p class="price">15,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Harmonie Élégante -->
-        <div class="product-card">
-            <img src="../img/harmonie-elegante.jpg" alt="Harmonie Élégante" class="product-image">
-            <h3>Harmonie Élégante</h3>
-            <p class="price">13,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Sérénité Royale -->
-        <div class="product-card">
-            <img src="../img/serenite-royale.jpg" alt="Sérénité Royale" class="product-image">
-            <h3>Sérénité Royale</h3>
-            <p class="price">14,500 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Délicatesse Majestueuse -->
-        <div class="product-card">
-            <img src="../img/delicatesse-majestueuse.jpg" alt="Délicatesse Majestueuse" class="product-image">
-            <h3>Délicatesse Majestueuse</h3>
-            <p class="price">12,500 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Élégance Céleste -->
-        <div class="product-card">
-            <img src="../img/elegance-celeste.jpg" alt="Élégance Céleste" class="product-image">
-            <h3>Élégance Céleste</h3>
-            <p class="price">16,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    </div>
+    <!-- Section produits -->
+    <section class="products-section">
+        <div class="container">
+            <!-- Section pour Homme products -->
+            <div id="homme-products" class="product-grid active">
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/elegance-eternal.jpg" alt="Montre Élégance Éternelle" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="101">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Élégance Éternelle</h3>
+                        <p class="product-price">15 000 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="101">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="101" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Ajouter d'autres produits de la même façon -->
+                <!-- ... -->
+            </div>
 
-    <!-- Footer Section -->
+            <!-- Section pour Femme products -->
+            <div id="femme-products" class="product-grid">
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/elegance-rose.jpg" alt="Montre Élégance Rose" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="201">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Élégance Rose</h3>
+                        <p class="product-price">13 500 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="201">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="201" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Recommandations -->
+    <section class="recommendations">
+        <div class="container">
+            <h2 class="section-title">Vous pourriez aussi aimer</h2>
+            <div class="recommendations-carousel">
+                <!-- Produits recommandés -->
+                <div class="recommendation-item">
+                    <img src="../../assets/img/products/heritage-prestige.jpg" alt="Heritage Prestige" loading="lazy">
+                    <h3>Heritage Prestige</h3>
+                    <p>12 500 €</p>
+                    <a href="../montres/heritage-prestige.html" class="view-product">Découvrir</a>
+                </div>
+                <!-- Ajouter d'autres recommandations -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer amélioré -->
     <footer class="footer">
         <div class="footer-content">
-            <p>© 2025 Elixir du temps. Tous droits réservés.</p>
-            <ul class="footer-links">
-                <li><a href="mailto:contact@elixirdutemps.com" class="mon-email">Contact</a></li>
-                <li><a href="../html/PrivacyPolicy.html">Politique de confidentialité</a></li>
-            </ul>
+            <div class="footer-columns">
+                <div class="footer-column">
+                    <h3>Elixir du Temps</h3>
+                    <p>L'excellence horlogère depuis 1985</p>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Collections</h3>
+                    <ul>
+                        <li><a href="Collection-Classic.html">Collection Classic</a></li>
+                        <li><a href="Collection-Sport.html">Collection Sport</a></li>
+                        <li><a href="Collection-Vintage.html">Collection Vintage</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Informations</h3>
+                    <ul>
+                        <li><a href="../APropos.html">À propos</a></li>
+                        <li><a href="../Contact.html">Contact</a></li>
+                        <li><a href="../PrivacyPolicy.html">Politique de confidentialité</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact</h3>
+                    <address>
+                        <p>15 rue de la Paix<br>75002 Paris, France</p>
+                        <p>Tél: <a href="tel:+33145887766">+33 (0)1 45 88 77 66</a></p>
+                        <p>Email: <a href="mailto:contact@elixirdutemps.com">contact@elixirdutemps.com</a></p>
+                    </address>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Elixir du Temps. Tous droits réservés.</p>
+                <div class="social-icons">
+                    <a href="https://instagram.com" aria-label="Instagram" target="_blank" rel="noopener">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </a>
+                    <a href="https://facebook.com" aria-label="Facebook" target="_blank" rel="noopener">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                    </a>
+                </div>
+            </div>
         </div>
     </footer>
+
+    <!-- Ajouter juste avant la fermeture de la balise body -->
+    <div id="quick-view-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-product-title"></h2>
+                <button class="close-modal" aria-label="Fermer">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-product-image">
+                    <img id="modal-product-image" src="" alt="">
+                </div>
+                <div class="modal-product-details">
+                    <p id="modal-product-price" class="modal-price"></p>
+                    <div class="modal-product-description">
+                        <p>Description détaillée du produit.</p>
+                    </div>
+                    <div class="modal-product-actions">
+                        <button id="modal-add-to-cart" class="btn-primary">Ajouter au panier</button>
+                        <a id="modal-view-details" class="btn-outline">Voir les détails</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Code pour la fonctionnalité d'aperçu rapide
+        document.addEventListener('DOMContentLoaded', function() {
+            const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+            const modal = document.getElementById('quick-view-modal');
+            const closeModalButton = document.querySelector('.close-modal');
+            
+            if (quickViewButtons.length && modal) {
+                quickViewButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const productId = this.getAttribute('data-product-id');
+                        // Ici vous pourriez charger les détails du produit via AJAX
+                        // Pour l'instant, on simule avec les données de la carte
+                        const productCard = this.closest('.product-card');
+                        const title = productCard.querySelector('.product-title').textContent;
+                        const price = productCard.querySelector('.product-price').textContent;
+                        const imageSrc = productCard.querySelector('.product-image').getAttribute('src');
+                        
+                        document.getElementById('modal-product-title').textContent = title;
+                        document.getElementById('modal-product-price').textContent = price;
+                        document.getElementById('modal-product-image').setAttribute('src', imageSrc);
+                        document.getElementById('modal-product-image').setAttribute('alt', title);
+                        
+                        modal.style.display = 'flex';
+                        document.body.style.overflow = 'hidden'; // Empêche le défilement
+                    });
+                });
+                
+                closeModalButton.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = ''; // Réactive le défilement
+                });
+                
+                // Fermer la modal en cliquant en dehors
+                window.addEventListener('click', function(event) {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+        });
+    </script>
+    <script src="../../assets/js/main.js" defer></script>
+    <script src="../../assets/js/cart.js" defer></script>
+    <script src="../../assets/js/auth.js" defer></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Fix pour le problème de fondu blanc
+    document.body.classList.add('video-loaded');
+    
+    // Filtrage par genre
+    const hommeButton = document.getElementById('homme-button');
+    const femmeButton = document.getElementById('femme-button');
+    const hommeProducts = document.getElementById('homme-products');
+    const femmeProducts = document.getElementById('femme-products');
+    
+    if (hommeButton && femmeButton) {
+        hommeButton.addEventListener('click', function() {
+            hommeButton.classList.add('active');
+            femmeButton.classList.remove('active');
+            hommeProducts.classList.add('active');
+            femmeProducts.classList.remove('active');
+            hommeButton.setAttribute('aria-pressed', 'true');
+            femmeButton.setAttribute('aria-pressed', 'false');
+        });
+        
+        femmeButton.addEventListener('click', function() {
+            femmeButton.classList.add('active');
+            hommeButton.classList.remove('active');
+            femmeProducts.classList.add('active');
+            hommeProducts.classList.remove('active');
+            femmeButton.setAttribute('aria-pressed', 'true');
+            hommeButton.setAttribute('aria-pressed', 'false');
+        });
+    }
+    
+    // Recherche de produits
+    const searchBar = document.querySelector('.search-bar');
+    const sortSelect = document.getElementById('sort-by');
+    
+    if (searchBar) searchBar.addEventListener('input', filterProducts);
+    if (sortSelect) sortSelect.addEventListener('change', sortProducts);
+    
+    function filterProducts() {
+        const searchTerm = searchBar.value.toLowerCase();
+        const activeGrid = document.querySelector('.product-grid.active');
+        if (!activeGrid) return;
+        
+        const products = activeGrid.querySelectorAll('.product-card');
+        
+        products.forEach(product => {
+            const title = product.querySelector('.product-title').textContent.toLowerCase();
+            if (title.includes(searchTerm)) {
+                product.style.display = 'block';
+            } else {
+                product.style.display = 'none';
+            }
+        });
+    }
+    
+    function sortProducts() {
+        const option = sortSelect.value;
+        const activeGrid = document.querySelector('.product-grid.active');
+        if (!activeGrid) return;
+        
+        const products = Array.from(activeGrid.querySelectorAll('.product-card'));
+        
+        products.sort((a, b) => {
+            const priceA = parseFloat(a.querySelector('.product-price').textContent.replace(/[^0-9.-]+/g,""));
+            const priceB = parseFloat(b.querySelector('.product-price').textContent.replace(/[^0-9.-]+/g,""));
+            
+            if (option === 'price-asc') {
+                return priceA - priceB;
+            } else if (option === 'price-desc') {
+                return priceB - priceA;
+            }
+            return 0;
+        });
+        
+        products.forEach(product => {
+            activeGrid.appendChild(product);
+        });
+    }
+    
+    // Gestion des boutons d'ajout aux favoris
+    const wishlistButtons = document.querySelectorAll('.add-to-wishlist-btn');
+    wishlistButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            this.classList.toggle('active');
+            const productId = this.getAttribute('data-product-id');
+            // Vous pourriez implémenter ici l'ajout réel aux favoris
+        });
+    });
+});
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fix pour le fondu blanc
+        document.body.classList.add('video-loaded');
+        
+        // Gestion de la vidéo
+        const video = document.querySelector('.video-bg');
+        const fallbackImg = document.querySelector('.fallback-img');
+        
+        if (video) {
+            // En cas d'erreur de chargement de la vidéo, afficher l'image de secours
+            video.addEventListener('error', function() {
+                if (fallbackImg) {
+                    fallbackImg.style.display = 'block';
+                }
+            });
+            
+            // Si la vidéo ne démarre pas après 3 secondes, afficher l'image de secours
+            setTimeout(function() {
+                if (video.paused || video.readyState < 2) {
+                    if (fallbackImg) {
+                        fallbackImg.style.display = 'block';
+                    }
+                }
+            }, 3000);
+        }
+    });
+</script>
 </body>
 </html>

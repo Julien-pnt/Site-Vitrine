@@ -225,6 +225,18 @@ CREATE TABLE pages (
     INDEX idx_slug (slug)
 ) ENGINE=InnoDB;
 
+-- Table pour les réinitialisations de mot de passe
+CREATE TABLE password_resets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES utilisateurs(id) ON DELETE CASCADE,
+    INDEX idx_token (token),
+    INDEX idx_expiration (expires_at)
+) ENGINE=InnoDB;
+
 -- --------------------------------------------------------
 -- DONNÉES INITIALES
 -- --------------------------------------------------------

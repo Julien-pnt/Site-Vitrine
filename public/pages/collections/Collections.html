@@ -11,12 +11,12 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Collections - Elixir du Temps">
     <meta property="og:description" content="Découvrez nos collections exclusives de montres de luxe, alliant tradition horlogère et design moderne.">
-    <meta property="og:image" content="../assets/img/layout/social-share.jpg">
+    <meta property="og:image" content="/assets/img/layout/social-share.jpg">
     
     <!-- Ressources -->
-    <link rel="stylesheet" href="../assets/css/main.css">
-    <link rel="stylesheet" href="../assets/css/collections.css">
-    <link rel="shortcut icon" href="../assets/img/layout/icon.png" type="image/x-icon">
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/collections.css">
+    <link rel="shortcut icon" href="/assets/img/layout/icon.png" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -27,33 +27,33 @@
     <!-- Header section with logo and navigation menu -->
     <header class="header">
         <div class="logo-container">
-            <a href="../Accueil.html" aria-label="Accueil Elixir du Temps">
-                <img src="../assets/img/layout/logo.png" alt="Logo Elixir du Temps" class="logo" width="180" height="60">
+            <a href="/pages/Accueil.html" aria-label="Accueil Elixir du Temps">
+                <img src="/assets/img/layout/logo.png" alt="Logo Elixir du Temps" class="logo" width="180" height="60">
             </a>
         </div>
         <nav aria-label="Navigation principale">
             <ul class="menu-bar">
-                <li><a href="../Accueil.html">Accueil</a></li>
-                <li><a href="Collections.html" aria-current="page">Collections</a></li>
-                <li><a href="../products/Montres.html">Montres</a></li>
-                <li><a href="../APropos.html">À propos</a></li>
-                <li><a href="../Contact.html">Contact</a></li>
+                <li><a href="/pages/Accueil.html">Accueil</a></li>
+                <li><a href="/pages/collections/Collections.html" aria-current="page">Collections</a></li>
+                <li><a href="/pages/products/Montres.html">Montres</a></li>
+                <li><a href="/pages/APropos.html">À propos</a></li>
+                <li><a href="/pages/Contact.html">Contact</a></li>
             </ul>
         </nav>
         
         <!-- User and Cart Icons -->
         <div class="user-cart-container">
-            <a href="../auth/login.html" class="user-icon">
+            <a href="/pages/auth/login.html" class="user-icon"></a>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-user">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                 </svg>
                 <div class="dropdown-menu">
-                    <a href="../auth/login.html" id="login-link">Se connecter</a>
-                    <a href="../../php/api/auth/register.php" id="register-link">S'inscrire</a>
-                    <a href="../user/MonCompte.html" id="account-link" style="display: none;">Mon compte</a>
-                    <a href="../user/MesCommandes.html" id="orders-link" style="display: none;">Mes commandes</a>
-                    <a href="../../php/api/auth/logout.php" id="logout-link" class="logout" style="display: none;">Déconnexion</a>
+                    <a href="/pages/auth/login.html" id="login-link">Se connecter</a>
+                    <a href="/php/api/auth/register.php" id="register-link">S'inscrire</a>
+                    <a href="/pages/user/MonCompte.html" id="account-link" style="display: none;">Mon compte</a>
+                    <a href="/pages/user/MesCommandes.html" id="orders-link" style="display: none;">Mes commandes</a>
+                    <a href="/php/api/auth/logout.php" id="logout-link" class="logout" style="display: none;">Déconnexion</a>
                 </div>
             </a>
             
@@ -69,7 +69,7 @@
                     <div class="cart-dropdown-items">
                         <div class="cart-dropdown-empty">
                             <p>Votre panier est vide</p>
-                            <a href="../products/Montres.html" class="cart-dropdown-button primary">Découvrir nos montres</a>
+                            <a href="/pages/products/Montres.html" class="cart-dropdown-button primary">Découvrir nos montres</a>
                         </div>
                     </div>
                 </div>
@@ -80,9 +80,9 @@
     <!-- Video Background -->
     <div class="video-background">
         <video class="video-bg" autoplay muted loop playsinline>
-            <source src="../assets/video/background.mp4" type="video/mp4">
+            <source src="/assets/video/background.mp4" type="video/mp4">
             <!-- Fallback image si la vidéo ne se charge pas -->
-            <img src="../assets/img/collections/collections-hero.jpg" alt="Nos Collections" class="fallback-img">
+            <img src="/assets/img/collections/collections-hero.jpg" alt="Nos Collections" class="fallback-img">
         </video>
         <div class="video-overlay"></div>
     </div>
@@ -101,52 +101,52 @@
             <!-- Collection Classic -->
             <div class="collection-card">
                 <div class="collection-image">
-                    <img src="../assets/img/collections/collection_classique.JPG" alt="Collection Classic" loading="lazy">
+                    <img src="/assets/img/collections/collection_classique.JPG" alt="Collection Classic" loading="lazy">
                 </div>
                 <div class="collection-info">
                     <h2>Collection Classic</h2>
                     <p>L'élégance intemporelle dans sa forme la plus pure</p>
                     <span class="price-range">À partir de 8 500 €</span>
-                    <a href="Collection-Classic.html" class="explore-button">Explorer la collection</a>
+                    <a href="/pages/collections/Collection-Classic.html" class="explore-button">Explorer la collection</a>
                 </div>
             </div>
 
             <!-- Collection Sport -->
             <div class="collection-card">
                 <div class="collection-image">
-                    <img src="../assets/img/collections/edition-sport.jpg" alt="Collection Sport" loading="lazy">
+                    <img src="/assets/img/collections/edition-sport.jpg" alt="Collection Sport" loading="lazy">
                 </div>
                 <div class="collection-info">
                     <h2>Collection Sport</h2>
                     <p>Performance et style pour les aventuriers urbains</p>
                     <span class="price-range">À partir de 12 000 €</span>
-                    <a href="Collection-Sport.html" class="explore-button">Explorer la collection</a>
+                    <a href="/pages/collections/Collection-Sport.html" class="explore-button">Explorer la collection</a>
                 </div>
             </div>
 
             <!-- Collection Prestige -->
             <div class="collection-card">
                 <div class="collection-image">
-                    <img src="../assets/img/collections/collection-prestige.JPG" alt="Collection Prestige" loading="lazy">
+                    <img src="/assets/img/collections/collection-prestige.JPG" alt="Collection Prestige" loading="lazy">
                 </div>
                 <div class="collection-info">
                     <h2>Collection Prestige</h2>
                     <p>Le summum du luxe et de la sophistication</p>
                     <span class="price-range">À partir de 25 000 €</span>
-                    <a href="Collection-Prestige.html" class="explore-button">Explorer la collection</a>
+                    <a href="/pages/collections/Collection-Prestige.html" class="explore-button">Explorer la collection</a>
                 </div>
             </div>
 
             <!-- Collection Limited Edition -->
             <div class="collection-card">
                 <div class="collection-image">
-                    <img src="../assets/img/collections/edition-limit.jpg" alt="Collection Limited Edition" loading="lazy">
+                    <img src="/assets/img/collections/edition-limit.jpg" alt="Collection Limited Edition" loading="lazy">
                 </div>
                 <div class="collection-info">
                     <h2>Éditions Limitées</h2>
                     <p>Des pièces uniques pour les collectionneurs avertis</p>
                     <span class="price-range">À partir de 50 000 €</span>
-                    <a href="Collection-Limited-Edition.html" class="explore-button">Explorer la collection</a>
+                    <a href="/pages/collections/Collection-Limited-Edition.html" class="explore-button">Explorer la collection</a>
                 </div>
             </div>
         </div>
@@ -172,19 +172,19 @@
                 <div class="footer-column">
                     <h3>Collections</h3>
                     <ul>
-                        <li><a href="Collection-Classic.html">Collection Classic</a></li>
-                        <li><a href="Collection-Sport.html">Collection Sport</a></li>
-                        <li><a href="Collection-Limited-Edition.html">Édition Limitée</a></li>
-                        <li><a href="Collection-Prestige.html">Collection Prestige</a></li>
+                        <li><a href="/pages/collections/Collection-Classic.html">Collection Classic</a></li>
+                        <li><a href="/pages/collections/Collection-Sport.html">Collection Sport</a></li>
+                        <li><a href="/pages/collections/Collection-Limited-Edition.html">Édition Limitée</a></li>
+                        <li><a href="/pages/collections/Collection-Prestige.html">Collection Prestige</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-column">
                     <h3>Informations</h3>
                     <ul>
-                        <li><a href="../APropos.html">À propos</a></li>
-                        <li><a href="../Contact.html">Contact</a></li>
-                        <li><a href="../legal/PrivacyPolicy.html">Politique de confidentialité</a></li>
+                        <li><a href="/pages/APropos.html">À propos</a></li>
+                        <li><a href="/pages/Contact.html">Contact</a></li>
+                        <li><a href="/pages/legal/PrivacyPolicy.html">Politique de confidentialité</a></li>
                     </ul>
                 </div>
                 
@@ -215,9 +215,9 @@
     </footer>
 
     <!-- Scripts chargés à la fin pour optimiser le chargement -->
-    <script src="../assets/js/main.js" defer></script>
-    <script src="../assets/js/cart.js" defer></script>
-    <script src="../assets/js/auth.js" defer></script>
+    <script src="/assets/js/main.js" defer></script>
+    <script src="/assets/js/cart.js" defer></script>
+    <script src="/assets/js/auth.js" defer></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Fix pour le problème de fondu blanc

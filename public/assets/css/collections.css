@@ -18,6 +18,12 @@ body {
     padding: 0;
     background-color: var(--color-white);
     overflow-x: hidden;
+    animation: page-fade-in 0.8s ease;
+}
+
+@keyframes page-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .container {
@@ -469,6 +475,315 @@ body.video-loaded .loader-container {
     margin: 30px auto 0;
     font-weight: 300;
     opacity: 0.9;
+}
+
+/* ================ Styles spécifiques pour Collections.html ================ */
+
+/* Hero section avec video */
+.collections-hero {
+    position: relative;
+    height: 70vh;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4rem;
+}
+
+.collections-hero-content {
+    max-width: 900px;
+    text-align: center;
+    padding: 0 2rem;
+    z-index: 3;
+    color: var(--color-white);
+    opacity: 0;
+    transform: translateY(30px);
+    animation: hero-fade-in 1.2s forwards 0.3s;
+}
+
+@keyframes hero-fade-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 5vw, 4.5rem);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: 2px;
+    color: var(--color-white);
+    text-shadow: 1px 1px 15px rgba(0, 0, 0, 0.5);
+    position: relative;
+    display: inline-block;
+}
+
+.hero-title::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: var(--color-gold);
+    border-radius: 3px;
+}
+
+.hero-subtitle {
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
+    font-weight: 300;
+    max-width: 700px;
+    margin: 2rem auto 0;
+    line-height: 1.7;
+    text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Collections Grid */
+.featured-collections {
+    padding: 4rem 2rem 8rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.collections-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    margin-top: 3rem;
+}
+
+.collection-card {
+    background-color: var(--color-white);
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.4s ease-out, box-shadow 0.4s ease;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.collection-card.fade-in.visible {
+    animation: card-fade-in 0.8s forwards;
+}
+
+@keyframes card-fade-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.collection-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.collection-image {
+    position: relative;
+    height: 350px;
+    overflow: hidden;
+}
+
+.collection-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.collection-card:hover .collection-image img {
+    transform: scale(1.08);
+}
+
+.collection-info {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    position: relative;
+}
+
+.collection-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 3px;
+    background-color: var(--color-gold);
+    border-radius: 3px;
+    opacity: 0;
+    transition: opacity 0.4s ease, width 0.4s ease;
+}
+
+.collection-card:hover .collection-info::before {
+    width: 80px;
+    opacity: 1;
+}
+
+.collection-info h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 0.75rem;
+    transition: color 0.3s ease;
+}
+
+.collection-card:hover .collection-info h2 {
+    color: var(--color-gold);
+}
+
+.collection-info p {
+    color: var(--color-text-light);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.price-range {
+    display: block;
+    color: var(--color-gold);
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    margin-bottom: 1.5rem;
+    transform: translateY(0);
+    transition: transform 0.3s ease;
+}
+
+.collection-card:hover .price-range {
+    transform: translateY(-5px);
+}
+
+.explore-button {
+    display: inline-block;
+    background-color: var(--color-dark);
+    color: var(--color-white);
+    padding: 12px 28px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 14px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    border: 2px solid var(--color-dark);
+    opacity: 0;
+    transform: translateY(10px);
+    animation: button-appear 0.5s forwards 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes button-appear {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.explore-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-gold);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.explore-button:hover {
+    background-color: transparent;
+    border-color: var(--color-gold);
+    color: var(--color-white);
+    transform: translateY(-3px);
+}
+
+.explore-button:hover::before {
+    left: 0;
+}
+
+/* Responsive design for collections grid */
+@media (max-width: 1200px) {
+    .collections-grid {
+        gap: 30px;
+    }
+    
+    .collection-image {
+        height: 300px;
+    }
+}
+
+@media (max-width: 992px) {
+    .collections-hero {
+        height: 60vh;
+    }
+    
+    .collection-image {
+        height: 280px;
+    }
+    
+    .collection-info {
+        padding: 1.75rem 1.25rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .collections-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .collections-hero {
+        height: 50vh;
+    }
+    
+    .hero-title {
+        font-size: clamp(2.5rem, 8vw, 3.5rem);
+    }
+    
+    .collection-image {
+        height: 320px;
+    }
+    
+    .featured-collections {
+        padding: 3rem 1.5rem 6rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .collections-hero {
+        height: 45vh;
+    }
+    
+    .hero-title {
+        font-size: clamp(2rem, 7vw, 2.5rem);
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .collection-image {
+        height: 250px;
+    }
+    
+    .collection-info h2 {
+        font-size: 1.5rem;
+    }
+    
+    .featured-collections {
+        padding: 2rem 1rem 4rem;
+    }
+    
+    .collections-grid {
+        gap: 30px;
+        margin-top: 2rem;
+    }
 }
 
 /* ================ Filtres et Recherche ================ */

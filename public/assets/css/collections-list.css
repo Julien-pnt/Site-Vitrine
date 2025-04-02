@@ -1,0 +1,307 @@
+/* Styles spécifiques pour la page Collections */
+
+/* Correction de la vidéo d'arrière-plan et de la section héro */
+.video-background {
+    position: relative;
+    height: 75vh;
+    width: 100%;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.video-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6));
+    z-index: 2;
+}
+
+/* Correction du héro pour qu'il s'aligne correctement avec la vidéo */
+.hero {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 75vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.hero-content {
+    max-width: 800px;
+}
+
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.5);
+    letter-spacing: 2px;
+}
+
+.hero-subtitle {
+    font-family: 'Raleway', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: #ffffff;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+    text-shadow: 0px 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Styles pour la section des collections */
+.featured-collections {
+    padding: 5rem 5% 7rem;
+    background-color: #f9f9f9;
+}
+
+.collections-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Styles pour les cartes de collection */
+.collection-card {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.collection-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.collection-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.collection-image {
+    position: relative;
+    height: 350px;
+    overflow: hidden;
+}
+
+.collection-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+}
+
+.collection-card:hover .collection-image img {
+    transform: scale(1.05);
+}
+
+.collection-info {
+    padding: 2rem;
+    text-align: center;
+    background-color: #fff;
+}
+
+.collection-info h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
+    color: #232323;
+    position: relative;
+    display: inline-block;
+}
+
+.collection-info h2::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -8px;
+    width: 40px;
+    height: 2px;
+    background-color: #d4af37;
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+}
+
+.collection-card:hover .collection-info h2::after {
+    width: 60px;
+}
+
+.collection-info p {
+    color: #666;
+    margin-bottom: 1.2rem;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.price-range {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: #a67c00;
+    margin: 1.2rem 0;
+}
+
+.explore-button {
+    display: inline-block;
+    padding: 12px 28px;
+    background-color: transparent;
+    color: #222;
+    border: 1px solid #222;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.explore-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background-color: #111;
+    transition: all 0.4s cubic-bezier(0.42, 0, 0.58, 1);
+    z-index: -1;
+}
+
+.explore-button:hover {
+    color: #fff;
+    border-color: #111;
+}
+
+.explore-button:hover::before {
+    left: 0;
+}
+
+/* Animation de fondu */
+.fade-in {
+    animation-fill-mode: both;
+    animation-duration: 1s;
+}
+
+/* Fix pour le problème de fondu blanc */
+body.video-loaded .video-background {
+    opacity: 1;
+}
+
+/* Animation séquentielle pour les cartes */
+.collection-card:nth-child(1) {
+    animation-delay: 0.2s;
+}
+
+.collection-card:nth-child(2) {
+    animation-delay: 0.4s;
+}
+
+.collection-card:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.collection-card:nth-child(4) {
+    animation-delay: 0.8s;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+    .collections-grid {
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .hero-title {
+        font-size: 3.2rem;
+    }
+    
+    .collections-grid {
+        grid-template-columns: 1fr;
+        max-width: 700px;
+    }
+    
+    .collection-image {
+        height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .video-background, .hero {
+        height: 65vh;
+    }
+    
+    .hero-title {
+        font-size: 2.8rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .featured-collections {
+        padding: 4rem 5% 5rem;
+    }
+    
+    .collection-image {
+        height: 320px;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-title {
+        font-size: 2.4rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .collection-image {
+        height: 250px;
+    }
+    
+    .collection-info {
+        padding: 1.5rem;
+    }
+}
+
+/* Keyframes pour les animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

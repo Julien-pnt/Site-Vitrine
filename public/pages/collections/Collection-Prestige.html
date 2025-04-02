@@ -3,211 +3,791 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/Styles.css">
-    <link rel="shortcut icon" href="../img/icon.png" type="image/x-icon">
-    <script src="../js/Montres.js"></script>
-    <script src="../js/login.js"></script>
-    <title>Site Officiel - Elixir du temps - Collection Prestige</title>
+    <meta name="description" content="Découvrez notre Collection Prestige - Des montres d'exception au luxe incomparable par Elixir du Temps.">
+    <meta name="keywords" content="montres de luxe, prestige, elixir du temps, horlogerie, montres haut de gamme, luxe, élégance">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Collection Prestige - Elixir du Temps">
+    <meta property="og:description" content="Découvrez notre Collection Prestige - Des montres d'exception au luxe incomparable par Elixir du Temps.">
+    <meta property="og:image" content="../../assets/img/collections/prestige-collection-social.jpg">
+    
+    <!-- Script pour corriger le fondu blanc -->
+    <script>
+        // Force l'affichage immédiat du contenu
+        document.documentElement.style.opacity = "1";
+        function ensureVisibility() {
+            document.body.classList.add('video-loaded');
+        }
+        // S'exécute dès que possible
+        document.addEventListener('DOMContentLoaded', ensureVisibility);
+        // Backup au cas où DOMContentLoaded ne se déclencherait pas
+        setTimeout(ensureVisibility, 100);
+    </script>
+    
+    <!-- Style pour gérer la transition -->
+    <style>
+        html, body {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        
+        .loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #121212;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        body.video-loaded .loader-container {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(201, 168, 107, 0.3);
+            border-top-color: #c9a86b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+    </style>
+    
+    <!-- Ressources -->
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/collections.css">
+    <link rel="shortcut icon" href="../../assets/img/layout/icon.png" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <title>Collection Prestige - Elixir du Temps</title>
 </head>
-<body>
+<body class="video-loaded">
+    <!-- Loader -->
+    <div class="loader-container">
+        <div class="loader">
+            <span class="visually-hidden">Chargement en cours...</span>
+        </div>
+    </div>
+
     <!-- Header section with logo and navigation menu -->
     <header class="header">
         <div class="logo-container">
-            <img src="../img/logo.png" alt="Logo" class="logo">
+            <a href="../Accueil.html" aria-label="Accueil Elixir du Temps">
+                <img src="../../assets/img/layout/logo.png" alt="Logo Elixir du Temps" class="logo" width="180" height="60">
+            </a>
         </div>
-        <ul class="menu-bar">
-            <li><a href="../html/Acceuil.html">Accueil</a></li>
-            <li><a href="../html/Collections.html">Collections</a></li>
-            <li><a href="../html/Montres.html">Montres</a></li>
-            <li><a href="../html/DescriptionProduits.html">Description produits</a></li>
-            <li><a href="../html/APropos.html">À propos</a></li>
-            <li><a href="../html/Organigramme.html">Organigramme</a></li>
-        </ul>
+        <nav aria-label="Navigation principale">
+            <ul class="menu-bar">
+                <li><a href="../Accueil.html">Accueil</a></li>
+                <li><a href="../Collections.html">Collections</a></li>
+                <li><a href="../Montres.html">Montres</a></li>
+                <li><a href="../APropos.html">À propos</a></li>
+                <li><a href="../Contact.html">Contact</a></li>
+            </ul>
+        </nav>
+        
+        <!-- User and Cart Icons -->
+        <div class="user-cart-container">
+            <a href="../auth/login.html" class="user-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-user">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <div class="dropdown-menu">
+                    <a href="../auth/login.html" id="login-link">Se connecter</a>
+                    <a href="../../php/api/auth/register.php" id="register-link">S'inscrire</a>
+                    <a href="../user/MonCompte.html" id="account-link" style="display: none;">Mon compte</a>
+                    <a href="../user/MesCommandes.html" id="orders-link" style="display: none;">Mes commandes</a>
+                    <a href="../../php/api/auth/logout.php" id="logout-link" class="logout" style="display: none;">Déconnexion</a>
+                </div>
+            </a>
+            
+            <div class="cart-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-cart">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span class="cart-badge">0</span>
+                <div class="cart-dropdown">
+                    <h3 class="cart-dropdown-title">Mon panier</h3>
+                    <div class="cart-dropdown-items">
+                        <div class="cart-dropdown-empty">
+                            <p>Votre panier est vide</p>
+                            <a href="../Montres.html" class="cart-dropdown-button primary">Découvrir nos montres</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <!-- Video background section -->
+    <!-- Video background et introduction -->
     <div class="video-background">
-        <video autoplay loop muted playsinline class="video-bg">
-            <source src="../video/background.mp4" type="video/mp4">
-            Votre navigateur ne supporte pas la vidéo.
+        <video class="video-bg" autoplay muted loop playsinline preload="auto">
+            <source src="../../assets/video/background.mp4" type="video/mp4">
+            <!-- Fallback image si la vidéo ne se charge pas -->
+            <img src="../../assets/img/collections/prestige-hero.jpg" alt="Collection Prestige" class="fallback-img">
         </video>
         <div class="video-overlay"></div>
-    </div>
-
-    <!-- Search bar section -->
-    <div class="search-container">
-        <input type="text" class="search-bar" placeholder="Rechercher une montre...">
-    </div>
-
-    <!-- Shopping cart icon with item count -->
-    <div class="cart-icon">
-        🛒
-        <span class="cart-count">0</span>
-    </div>
-
-    <!-- User account icon -->
-    <div class="user-icon">
-        <div class="profile-pic">
-            <img src="../img/profile-default-icon.png" alt="Profil" id="profile-image">
-        </div>
-        <div class="dropdown-menu">
-            <a href="../html/login.html" id="login-link">Se connecter</a>
-            <a href="../php/userCreation.php" id="register-link">S'inscrire</a>
-            <a href="../php/dashboard.php" id="account-link" style="display: none;">Mon compte</a>
-            <a href="../html/orders.html" id="orders-link" style="display: none;">Mes commandes</a>
-            <a href="../php/logout.php" id="logout-link" class="logout" style="display: none;">Déconnexion</a>
+        
+        <!-- Hero content sur la vidéo -->
+        <div class="collection-hero">
+            <div class="collection-hero-content">
+                <h1 class="collection-title">Collection Prestige</h1>
+                <p class="collection-description">L'excellence à son apogée. Notre collection Prestige incarne le sommet du savoir-faire horloger, où chaque détail reflète notre quête incessante de perfection et d'excellence.</p>
+            </div>
         </div>
     </div>
 
-    <!-- Sort Section -->
-    <div class="sort-section">
-        <label for="sort-by">Trier par :</label>
-        <select id="sort-by">
-            <option value="price-asc">Prix croissant</option>
-            <option value="price-desc">Prix décroissant</option>
-            <option value="popularity">Popularité</option>
-        </select>
-    </div>
+    <!-- Filtres et Recherche -->
+    <section class="collection-filters">
+        <div class="container">
+            <div class="filters-row">
+                <div class="search-container">
+                    <input type="text" class="search-bar" placeholder="Rechercher une montre..." aria-label="Rechercher une montre">
+                    <button class="search-button" aria-label="Rechercher">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="filter-options">
+                    <div class="sort-section">
+                        <label for="sort-by">Trier par :</label>
+                        <select id="sort-by" aria-label="Trier les montres par">
+                            <option value="nouveaute">Nouveautés</option>
+                            <option value="price-asc">Prix croissant</option>
+                            <option value="price-desc">Prix décroissant</option>
+                            <option value="popularity">Popularité</option>
+                        </select>
+                    </div>
+                    
+                    <div class="gender-filter">
+                        <span>Catégorie :</span>
+                        <div class="gender-buttons">
+                            <button id="homme-button" class="gender-button active" aria-pressed="true">Homme</button>
+                            <button id="femme-button" class="gender-button" aria-pressed="false">Femme</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <!-- Category slider for selecting Homme or Femme -->
-    <div class="category-slider-container">
-        <input type="range" min="0" max="1" step="1" value="0" id="category-slider" oninput="showCategory(this.value)">
-        <div class="category-labels">
-            <span>Homme</span>
-            <span>Femme</span>
-        </div>
-    </div>
+    <!-- Section produits -->
+    <section class="products-section">
+        <div class="container">
+            <!-- Section pour Homme products -->
+            <div id="homme-products" class="product-grid active">
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/majeste-royale.jpg" alt="Majesté Royale" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="501">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Majesté Royale</h3>
+                        <p class="product-price">20 000 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="501">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="501" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/noblesse-eternelle.jpg" alt="Noblesse Éternelle" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="502">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Noblesse Éternelle</h3>
+                        <p class="product-price">22 500 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="502">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="502" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/prestige-supreme.jpg" alt="Prestige Suprême" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="503">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Prestige Suprême</h3>
+                        <p class="product-price">23 000 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="503">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="503" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/charme-imperial.jpg" alt="Charme Impérial" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="504">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Charme Impérial</h3>
+                        <p class="product-price">21 500 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="504">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="504" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/souverainete-elegante.jpg" alt="Souveraineté Élégante" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="505">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Souveraineté Élégante</h3>
+                        <p class="product-price">19 000 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="505">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="505" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/grandeur-prestige.jpg" alt="Grandeur Prestige" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="506">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Grandeur Prestige</h3>
+                        <p class="product-price">24 000 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="506">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="506" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/eminence-luxueuse.jpg" alt="Éminence Luxueuse" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="507">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Éminence Luxueuse</h3>
+                        <p class="product-price">25 000 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="507">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="507" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/magnificence-classique.jpg" alt="Magnificence Classique" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="508">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Magnificence Classique</h3>
+                        <p class="product-price">21 000 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="508">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="508" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <!-- Section for Homme products -->
-    <div id="homme" class="product-grid">
-    <!-- Product card for Majesté Royale -->
-        <div class="product-card">
-            <img src="../img/majeste-royale.jpg" alt="Majesté Royale" class="product-image">
-            <h3>Majesté Royale</h3>
-            <p class="price">20,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
+            <!-- Section pour Femme products -->
+            <div id="femme-products" class="product-grid">
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/eclat-princier.jpg" alt="Éclat Princier" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="601">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Éclat Princier</h3>
+                        <p class="product-price">18 000 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="601">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="601" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/beaute-imperiale.jpg" alt="Beauté Impériale" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="602">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Beauté Impériale</h3>
+                        <p class="product-price">19 500 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="602">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="602" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/prestige-divine.jpg" alt="Prestige Divine" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="603">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Prestige Divine</h3>
+                        <p class="product-price">20 000 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="603">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="603" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/grace-royale.jpg" alt="Grâce Royale" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="604">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Grâce Royale</h3>
+                        <p class="product-price">18 500 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="604">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="604" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/splendeur-elegante.jpg" alt="Splendeur Élégante" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="605">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Splendeur Élégante</h3>
+                        <p class="product-price">21 000 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="605">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="605" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/raffinement-supreme.jpg" alt="Raffinement Suprême" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="606">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Raffinement Suprême</h3>
+                        <p class="product-price">22 000 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="606">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="606" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/delicatesse-majestueuse.jpg" alt="Délicatesse Majestueuse" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="607">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Délicatesse Majestueuse</h3>
+                        <p class="product-price">19 000 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="607">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="607" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/elegance-souveraine.jpg" alt="Élégance Souveraine" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="608">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Élégance Souveraine</h3>
+                        <p class="product-price">20 500 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="608">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="608" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    <!-- Product card for Noblesse Éternelle -->
-        <div class="product-card">
-            <img src="../img/noblesse-eternelle.jpg" alt="Noblesse Éternelle" class="product-image">
-            <h3>Noblesse Éternelle</h3>
-            <p class="price">22,500 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Prestige Suprême -->
-        <div class="product-card">
-            <img src="../img/prestige-supreme.jpg" alt="Prestige Suprême" class="product-image">
-            <h3>Prestige Suprême</h3>
-            <p class="price">23,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Charme Impérial -->
-        <div class="product-card">
-            <img src="../img/charme-imperial.jpg" alt="Charme Impérial" class="product-image">
-            <h3>Charme Impérial</h3>
-            <p class="price">21,500 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Souveraineté Élégante -->
-        <div class="product-card">
-            <img src="../img/souverainete-elegante.jpg" alt="Souveraineté Élégante" class="product-image">
-            <h3>Souveraineté Élégante</h3>
-            <p class="price">19,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Grandeur Prestige -->
-        <div class="product-card">
-            <img src="../img/grandeur-prestige.jpg" alt="Grandeur Prestige" class="product-image">
-            <h3>Grandeur Prestige</h3>
-            <p class="price">24,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Éminence Luxueuse -->
-        <div class="product-card">
-            <img src="../img/eminence-luxueuse.jpg" alt="Éminence Luxueuse" class="product-image">
-            <h3>Éminence Luxueuse</h3>
-            <p class="price">25,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Magnificence Classique -->
-        <div class="product-card">
-            <img src="../img/magnificence-classique.jpg" alt="Magnificence Classique" class="product-image">
-            <h3>Magnificence Classique</h3>
-            <p class="price">21,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-</div>
+    </section>
 
-<!-- Section for Femme products -->
-    <div id="femme" class="product-grid" style="display: none;">
-    <!-- Product card for Éclat Princier -->
-        <div class="product-card">
-            <img src="../img/eclat-princier.jpg" alt="Éclat Princier" class="product-image">
-            <h3>Éclat Princier</h3>
-            <p class="price">18,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
+    <!-- Section Recommandations -->
+    <section class="recommendations">
+        <div class="container">
+            <h2 class="section-title">Vous pourriez aussi aimer</h2>
+            <div class="recommendations-carousel">
+                <!-- Produits recommandés -->
+                <div class="recommendation-item">
+                    <img src="../../assets/img/products/classique-elegance.jpg" alt="Classique Élégance" loading="lazy">
+                    <h3>Classique Élégance</h3>
+                    <p>12 500 €</p>
+                    <a href="../montres/classique-elegance.html" class="view-product">Découvrir</a>
+                </div>
+                <div class="recommendation-item">
+                    <img src="../../assets/img/products/temps-infini.jpg" alt="Temps Infini" loading="lazy">
+                    <h3>Temps Infini</h3>
+                    <p>14 800 €</p>
+                    <a href="../montres/temps-infini.html" class="view-product">Découvrir</a>
+                </div>
+                <div class="recommendation-item">
+                    <img src="../../assets/img/products/sport-chrono.jpg" alt="Sport Chrono" loading="lazy">
+                    <h3>Sport Chrono</h3>
+                    <p>9 500 €</p>
+                    <a href="../montres/sport-chrono.html" class="view-product">Découvrir</a>
+                </div>
+                <div class="recommendation-item">
+                    <img src="../../assets/img/products/chronos-edition-limitee.jpg" alt="Chronos Édition Limitée" loading="lazy">
+                    <h3>Chronos Édition Limitée</h3>
+                    <p>22 000 €</p>
+                    <a href="../montres/chronos-edition-limitee.html" class="view-product">Découvrir</a>
+                </div>
+            </div>
         </div>
-    <!-- Product card for Beauté Impériale -->
-        <div class="product-card">
-            <img src="../img/beaute-imperiale.jpg" alt="Beauté Impériale" class="product-image">
-            <h3>Beauté Impériale</h3>
-            <p class="price">19,500 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Prestige Divine -->
-        <div class="product-card">
-            <img src="../img/prestige-divine.jpg" alt="Prestige Divine" class="product-image">
-            <h3>Prestige Divine</h3>
-            <p class="price">20,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Grâce Royale -->
-        <div class="product-card">
-            <img src="../img/grace-royale.jpg" alt="Grâce Royale" class="product-image">
-            <h3>Grâce Royale</h3>
-            <p class="price">18,500 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Splendeur Élégante -->
-        <div class="product-card">
-            <img src="../img/splendeur-elegante.jpg" alt="Splendeur Élégante" class="product-image">
-            <h3>Splendeur Élégante</h3>
-            <p class="price">21,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Raffinement Suprême -->
-        <div class="product-card">
-            <img src="../img/raffinement-supreme.jpg" alt="Raffinement Suprême" class="product-image">
-            <h3>Raffinement Suprême</h3>
-            <p class="price">22,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Délicatesse Majestueuse -->
-        <div class="product-card">
-            <img src="../img/delicatesse-majestueuse.jpg" alt="Délicatesse Majestueuse" class="product-image">
-            <h3>Délicatesse Majestueuse</h3>
-            <p class="price">19,000 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    <!-- Product card for Élégance Souveraine -->
-        <div class="product-card">
-            <img src="../img/elegance-souveraine.jpg" alt="Élégance Souveraine" class="product-image">
-            <h3>Élégance Souveraine</h3>
-            <p class="price">20,500 €</p>
-            <button class="add-to-cart">Ajouter au panier</button>
-        </div>
-    </div>
+    </section>
 
-
-    <!-- Footer Section -->
+    <!-- Footer amélioré -->
     <footer class="footer">
         <div class="footer-content">
-            <p>© 2025 Elixir du temps. Tous droits réservés.</p>
-            <ul class="footer-links">
-                <li><a href="mailto:contact@elixirdutemps.com" class="mon-email">Contact</a></li>
-                <li><a href="../html/PrivacyPolicy.html">Politique de confidentialité</a></li>
-            </ul>
+            <div class="footer-columns">
+                <div class="footer-column">
+                    <h3>Elixir du Temps</h3>
+                    <p>L'excellence horlogère depuis 1985</p>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Collections</h3>
+                    <ul>
+                        <li><a href="Collection-Classic.html">Collection Classic</a></li>
+                        <li><a href="Collection-Sport.html">Collection Sport</a></li>
+                        <li><a href="Collection-Limited-Edition.html">Édition Limitée</a></li>
+                        <li><a href="Collection-Prestige.html">Collection Prestige</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Informations</h3>
+                    <ul>
+                        <li><a href="../APropos.html">À propos</a></li>
+                        <li><a href="../Contact.html">Contact</a></li>
+                        <li><a href="../PrivacyPolicy.html">Politique de confidentialité</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact</h3>
+                    <address>
+                        <p>15 rue de la Paix<br>75002 Paris, France</p>
+                        <p>Tél: <a href="tel:+33145887766">+33 (0)1 45 88 77 66</a></p>
+                        <p>Email: <a href="mailto:contact@elixirdutemps.com">contact@elixirdutemps.com</a></p>
+                    </address>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Elixir du Temps. Tous droits réservés.</p>
+                <div class="social-icons">
+                    <a href="https://instagram.com" aria-label="Instagram" target="_blank" rel="noopener">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </a>
+                    <a href="https://facebook.com" aria-label="Facebook" target="_blank" rel="noopener">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                    </a>
+                </div>
+            </div>
         </div>
     </footer>
+
+    <!-- Modal d'aperçu rapide -->
+    <div id="quick-view-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-product-title"></h2>
+                <button class="close-modal" aria-label="Fermer">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-product-image">
+                    <img id="modal-product-image" src="" alt="">
+                </div>
+                <div class="modal-product-details">
+                    <p id="modal-product-price" class="modal-price"></p>
+                    <div class="modal-product-description">
+                        <p>Notre Collection Prestige représente l'excellence du savoir-faire horloger. Chaque montre est conçue avec les matériaux les plus nobles et assemblée avec une précision extraordinaire. Le mouvement mécanique à remontage automatique est fini à la main dans les moindres détails, et chaque élément a été sélectionné pour sa qualité exceptionnelle.</p>
+                    </div>
+                    <div class="modal-product-actions">
+                        <button id="modal-add-to-cart" class="btn-primary">Ajouter au panier</button>
+                        <a id="modal-view-details" class="btn-outline">Voir les détails</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts chargés à la fin pour optimiser le chargement -->
+    <script src="../../assets/js/main.js" defer></script>
+    <script src="../../assets/js/cart.js" defer></script>
+    <script src="../../assets/js/auth.js" defer></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fix pour le problème de fondu blanc
+        document.body.classList.add('video-loaded');
+        
+        // Filtrage par genre
+        const hommeButton = document.getElementById('homme-button');
+        const femmeButton = document.getElementById('femme-button');
+        const hommeProducts = document.getElementById('homme-products');
+        const femmeProducts = document.getElementById('femme-products');
+        
+        if (hommeButton && femmeButton) {
+            hommeButton.addEventListener('click', function() {
+                hommeButton.classList.add('active');
+                femmeButton.classList.remove('active');
+                hommeProducts.classList.add('active');
+                femmeProducts.classList.remove('active');
+                hommeButton.setAttribute('aria-pressed', 'true');
+                femmeButton.setAttribute('aria-pressed', 'false');
+            });
+            
+            femmeButton.addEventListener('click', function() {
+                femmeButton.classList.add('active');
+                hommeButton.classList.remove('active');
+                femmeProducts.classList.add('active');
+                hommeProducts.classList.remove('active');
+                femmeButton.setAttribute('aria-pressed', 'true');
+                hommeButton.setAttribute('aria-pressed', 'false');
+            });
+        }
+        
+        // Recherche de produits
+        const searchBar = document.querySelector('.search-bar');
+        const sortSelect = document.getElementById('sort-by');
+        
+        if (searchBar) searchBar.addEventListener('input', filterProducts);
+        if (sortSelect) sortSelect.addEventListener('change', sortProducts);
+        
+        function filterProducts() {
+            const searchTerm = searchBar.value.toLowerCase();
+            const activeGrid = document.querySelector('.product-grid.active');
+            if (!activeGrid) return;
+            
+            const products = activeGrid.querySelectorAll('.product-card');
+            
+            products.forEach(product => {
+                const title = product.querySelector('.product-title').textContent.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    product.style.display = 'block';
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+        }
+        
+        function sortProducts() {
+            const option = sortSelect.value;
+            const activeGrid = document.querySelector('.product-grid.active');
+            if (!activeGrid) return;
+            
+            const products = Array.from(activeGrid.querySelectorAll('.product-card'));
+            
+            products.sort((a, b) => {
+                const priceA = parseFloat(a.querySelector('.product-price').textContent.replace(/[^0-9.-]+/g,""));
+                const priceB = parseFloat(b.querySelector('.product-price').textContent.replace(/[^0-9.-]+/g,""));
+                
+                if (option === 'price-asc') {
+                    return priceA - priceB;
+                } else if (option === 'price-desc') {
+                    return priceB - priceA;
+                }
+                return 0;
+            });
+            
+            products.forEach(product => {
+                activeGrid.appendChild(product);
+            });
+        }
+        
+        // Modal d'aperçu rapide
+        const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+        const modal = document.getElementById('quick-view-modal');
+        const closeModalButton = document.querySelector('.close-modal');
+        
+        if (quickViewButtons.length && modal) {
+            quickViewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-product-id');
+                    const productCard = this.closest('.product-card');
+                    const title = productCard.querySelector('.product-title').textContent;
+                    const price = productCard.querySelector('.product-price').textContent;
+                    const imageSrc = productCard.querySelector('.product-image').getAttribute('src');
+                    
+                    document.getElementById('modal-product-title').textContent = title;
+                    document.getElementById('modal-product-price').textContent = price;
+                    document.getElementById('modal-product-image').setAttribute('src', imageSrc);
+                    document.getElementById('modal-product-image').setAttribute('alt', title);
+                    
+                    modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+            
+            closeModalButton.addEventListener('click', function() {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            });
+            
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
+            });
+        }
+        
+        // Gestion des boutons d'ajout aux favoris
+        const wishlistButtons = document.querySelectorAll('.add-to-wishlist-btn');
+        wishlistButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+    });
+    </script>
 </body>
 </html>

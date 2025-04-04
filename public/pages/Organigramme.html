@@ -3,136 +3,540 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/Styles.css">
-    <link rel="shortcut icon" href="../img/icon.png" type="image/x-icon">
-    <title>Site Officiel - Elixir du temps - Organigramme</title>
+    <meta name="description" content="Découvrez l'organigramme d'Elixir du Temps - Notre équipe d'experts passionnés qui créent des montres de luxe d'exception.">
+    <meta name="keywords" content="organigramme, équipe, Elixir du Temps, montres de luxe, horlogerie">
+    <meta name="author" content="Elixir du Temps">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Organigramme - Elixir du Temps">
+    <meta property="og:description" content="Découvrez l'équipe d'Elixir du Temps, des experts passionnés au service de l'horlogerie de luxe.">
+    
+    <!-- Ressources -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="shortcut icon" href="../assets/img/layout/icon.png" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <title>Organigramme - Elixir du Temps | Notre équipe d'experts</title>
+    
+    <style>
+        /* Styles spécifiques à la page organigramme */
+        .org-section {
+            padding: 60px 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .org-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+        
+        .org-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #d4af37, #f5e7ba, #d4af37);
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .org-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .org-header h1 {
+            color: #1a1a1a;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-family: 'Playfair Display', serif;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .org-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: #d4af37;
+        }
+        
+        .org-header p {
+            max-width: 700px;
+            margin: 0 auto;
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .organigramme {
+            position: relative;
+            padding: 30px 0;
+        }
+        
+        .level {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .connector {
+            position: relative;
+            height: 30px;
+            margin-bottom: 10px;
+        }
+        
+        .connector::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            height: 100%;
+            width: 2px;
+            background: linear-gradient(to bottom, #d4af37, rgba(212, 175, 55, 0.3));
+            transform: translateX(-50%);
+        }
+        
+        .node {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(248, 248, 248, 0.9));
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 0 15px;
+            width: 280px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .node:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-color: rgba(212, 175, 55, 0.6);
+        }
+        
+        .node::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background: linear-gradient(90deg, #d4af37, #f5e7ba);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .node:hover::before {
+            opacity: 1;
+        }
+        
+        .node p:first-child {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .node p:first-child::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 1px;
+            background-color: rgba(212, 175, 55, 0.5);
+        }
+        
+        .node .name {
+            font-size: 0.95rem;
+            color: #666;
+            margin: 5px 0;
+        }
+        
+        .directeur {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(250, 250, 250, 0.95));
+            border-color: rgba(212, 175, 55, 0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+        
+        .directeur::before {
+            opacity: 1;
+            height: 4px;
+        }
+        
+        .sub-node {
+            width: 220px;
+            padding: 15px;
+        }
+        
+        .fichePoste {
+            color: #d4af37;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+        
+        .fichePoste::after {
+            content: '\f15c';
+            font-family: 'Font Awesome 5 Free';
+            margin-left: 5px;
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+        
+        .fichePoste:hover {
+            color: #b7941e;
+            text-decoration: underline;
+        }
+        
+        .org-legend {
+            background-color: rgba(212, 175, 55, 0.08);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-top: 40px;
+            text-align: center;
+            border-left: 4px solid #d4af37;
+        }
+        
+        .org-legend p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .org-legend strong {
+            color: #333;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .org-container {
+                max-width: 95%;
+                padding: 30px;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .level {
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            
+            .node {
+                margin-bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .org-container {
+                padding: 20px;
+            }
+            
+            .org-header h1 {
+                font-size: 2rem;
+            }
+            
+            .node {
+                width: 100%;
+                max-width: 280px;
+            }
+            
+            .sub-node {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+    </style>
 </head>
 <body>
-
+    <!-- Header Section -->
     <header class="header">
         <div class="logo-container">
-            <img src="../img/logo.png" alt="Logo" class="logo">
+            <a href="Accueil.html" aria-label="Accueil Elixir du Temps">
+                <img src="../assets/img/layout/logo.png" alt="Elixir du Temps Logo" class="logo" width="180" height="60">
+            </a>
         </div>
-        <ul class="menu-bar">
-            <li><a href="../html/Acceuil.html">Accueil</a></li>
-            <li><a href="../html/Collections.html">Collections</a></li>
-            <li><a href="../html/Montres.html">Montres</a></li>
-            <li><a href="../html/DescriptionProduits.html">Description produits</a></li>
-            <li><a href="../html/APropos.html">À propos</a></li>
-            <li><a href="../html/Organigramme.html">Organigramme</a></li>
-        </ul>
+        <nav>
+            <ul class="menu-bar">
+                <li><a href="Accueil.html">Accueil</a></li>
+                <li><a href="collections/Collections.html">Collections</a></li>
+                <li><a href="products/Montres.html">Montres</a></li>
+                <li><a href="products/DescriptionProduits.html">Description produits</a></li>
+                <li><a href="APropos.html">À propos</a></li>
+                <li><a href="Organigramme.html" class="active">Organigramme</a></li>
+            </ul>
+        </nav>
+        
+        <!-- User and Cart Icons intégrés dans le header -->
+        <div class="user-cart-container">
+            <a href="auth/login.html" class="user-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-user">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <div class="dropdown-menu">
+                    <a href="auth/mon-compte.html">Mon compte</a>
+                    <a href="auth/mes-commandes.html">Mes commandes</a>
+                    <a href="auth/mes-favoris.html">Mes favoris</a>
+                    <a href="auth/login.html" class="logout" id="logout-link">Connexion</a>
+                </div>
+            </a>
+            
+            <div class="cart-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span class="cart-badge">0</span>
+                
+                <div class="cart-dropdown">
+                    <div class="cart-dropdown-header">
+                        <h3>Mon Panier</h3>
+                    </div>
+                    <div class="cart-dropdown-items">
+                        <!-- Le panier sera rempli dynamiquement via JavaScript -->
+                    </div>
+                    <div class="cart-dropdown-empty">Votre panier est vide</div>
+                    <div class="cart-dropdown-total">
+                        <span>Total:</span>
+                        <span class="cart-dropdown-total-value">0,00 €</span>
+                    </div>
+                    <div class="cart-dropdown-buttons">
+                        <a href="products/panier.html" class="cart-dropdown-button secondary">Voir le panier</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <!-- Video background section -->
+    <!-- Video Background -->
     <div class="video-background">
-        <video autoplay loop muted playsinline class="video-bg">
-            <source src="../video/background.mp4" type="video/mp4">
-            Votre navigateur ne supporte pas la vidéo.
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="../assets/video/background.mp4" type="video/mp4">
+            <img src="../assets/img/layout/fallback-bg.jpg" alt="Arrière-plan" class="fallback-img">
         </video>
         <div class="video-overlay"></div>
     </div>
 
-    <div class="organigramme">
-        <!-- Directeur Général -->
-        <div class="level">
-            <div class="node directeur">
-                <p><a href="../Fiche Poste/fiche-de-poste-Directeur-General.pdf" target="_blank" class="fichePoste">Directeur Général</a></p>
-                <p class="name">Julien Pinot</p>
+    <!-- Organigramme Section -->
+    <section class="org-section">
+        <div class="org-container">
+            <div class="org-header">
+                <h1>Organigramme</h1>
+                <p>Découvrez l'équipe d'Elixir du Temps, des experts passionnés qui œuvrent chaque jour à la création de montres d'exception. Notre structure organisationnelle reflète notre engagement envers l'excellence et la tradition horlogère suisse.</p>
+            </div>
+
+            <div class="organigramme">
+                <!-- Directeur Général -->
+                <div class="level">
+                    <div class="node directeur">
+                        <p><a href="../assets/documents/fiches-postes/fiche-de-poste-Directeur-General.pdf" target="_blank" class="fichePoste">Directeur Général</a></p>
+                        <p class="name">Julien Pinot</p>
+                    </div>
+                </div>
+
+                <!-- Ligne de connexion -->
+                <div class="connector"></div>
+
+                <!-- Niveau 1 : Assistant Directeur et Administration -->
+                <div class="level">
+                    <div class="node">
+                        <p><a href="../assets/documents/fiches-postes/fiche-de-poste-Assistant-Directeur.pdf" target="_blank" class="fichePoste">Assistant Directeur</a></p>
+                        <p class="name">Erica Romaguera</p>
+                    </div>
+                    <div class="node">
+                        <p><a href="../assets/documents/fiches-postes/fiche-de-poste-Administratif.pdf" target="_blank" class="fichePoste">Administration</a></p>
+                        <p class="name">Russell Ross</p>
+                    </div>
+                </div>
+
+                <!-- Ligne de connexion -->
+                <div class="connector"></div>
+
+                <!-- Niveau 2 : Ventes, Marketing, Finances, Création, Production -->
+                <div class="level">
+                    <div class="node">
+                        <p>Ventes</p>
+                        <p class="name">Département commercial</p>
+                    </div>
+                    <div class="node">
+                        <p>Marketing</p>
+                        <p class="name">Département marketing</p>
+                    </div>
+                    <div class="node">
+                        <p>Finances</p>
+                        <p class="name">Département financier</p>
+                    </div>
+                    <div class="node">
+                        <p>Création</p>
+                        <p class="name">Département de design</p>
+                    </div>
+                    <div class="node">
+                        <p>Production</p>
+                        <p class="name">Département technique</p>
+                    </div>
+                </div>
+
+                <!-- Ligne de connexion -->
+                <div class="connector"></div>
+
+                <!-- Niveau 3 : Équipes -->
+                <div class="level">
+                    <!-- Équipe Ventes -->
+                    <div class="node sub-node">
+                        <p>Équipe des Ventes</p>
+                        <p class="name"><a href="../assets/documents/fiches-postes/fiche-de-poste-Equipe-des-ventes.pdf" target="_blank" class="fichePoste">Vendeur</a> : Léa Caron</p>
+                        <p class="name"><a href="../assets/documents/fiches-postes/fiche-de-poste-Responsable-Regional.pdf" target="_blank" class="fichePoste">Responsable Régional </a> : Paul Faure</p>
+                        <p class="name"><a href="../assets/documents/fiches-postes/fiche-de-poste-Representant-Commercial.pdf" target="_blank" class="fichePoste">Représentants Commerciaux</a> : Lucien Lefèvre</p>
+                    </div>
+
+                    <!-- Équipe Marketing -->
+                    <div class="node sub-node">
+                        <p>Équipe Marketing</p>
+                        <p class="name"><a href="../assets/documents/fiches-postes/fiche-de-poste-Membre-Equipe-Marketing.pdf" target="_blank" class="fichePoste">Membre</a> : Nina Dubois</p>
+                        <p class="name"><a href="../assets/documents/fiches-postes/fiche-de-poste-Responsable-Publicité.pdf" target="_blank" class="fichePoste">Responsable Publicité</a> : Alice Moreau</p>
+                        <p class="name"><a href="../assets/documents/fiches-postes/fiche-de-poste-Responsable Digital.pdf" target="_blank" class="fichePoste">Responsable Digital</a> : Isabelle Richard</p>
+                    </div>
+
+                    <!-- Équipe Finances -->
+                    <div class="node sub-node">
+                        <p>Équipe Comptable</p>
+                        <p class="name"><a href="../assets/documents/fiches-postes/fiche-de-poste-Membre-de-l-Equipe-Comptable.pdf" target="_blank" class="fichePoste">Membre</a> : Hugo Fontaine</p>
+                        <p class="name"><a href="../assets/documents/fiches-postes/fiche-de-poste-Comptable-Senior.pdf" target="_blank" class="fichePoste">Comptable Senior</a> : Léa Caron</p>
+                        <p class="name"><a href="../assets/documents/fiches-postes/fiche-de-poste-Comptable-Junior.pdf" target="_blank" class="fichePoste">Comptable Junior</a> : Paul Faure</p>
+                    </div>
+
+                    <!-- Équipe Création -->
+                    <div class="node sub-node">
+                        <p>Équipe Créative</p>
+                        <p class="name"><a href="../assets/documents/fiches-postes/fiche-de-poste-Directeur-Creatif.pdf" target="_blank" class="fichePoste">Directeur Créatif</a> : Julie Marchand</p>
+                        <p class="name"><a href="../assets/documents/fiches-postes/fiche-de-poste-Responsable-Design.pdf" target="_blank" class="fichePoste">Responsable Design</a> : Alice Moreau</p>
+                        <p class="name"><a href="../assets/documents/fiches-postes/fiche-de-poste-Responsable-Produit.pdf" target="_blank" class="fichePoste">Responsable Produit</a> : Isabelle Richard</p>
+                    </div>
+
+                    <!-- Équipe Production -->
+                    <div class="node sub-node">
+                        <p>Équipe de Production</p>
+                        <p class="name"><a href="../assets/documents/fiches-postes/fiche-de-poste-Membre-de-l-Equipe-de-Production.pdf" target="_blank" class="fichePoste">Membre</a> : Lucien Lefèvre</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="org-legend">
+                <p><strong>Note :</strong> Cliquez sur les intitulés de poste pour consulter les fiches de poste détaillées.</p>
+                <p>Dernière mise à jour de l'organigramme : avril 2025</p>
             </div>
         </div>
+    </section>
 
-        <!-- Ligne de connexion -->
-        <div class="connector"></div>
-
-        <!-- Niveau 1 : Assistant Directeur et Administration -->
-        <div class="level">
-            <div class="node">
-                <p><a href="../Fiche Poste/fiche-de-poste-Assistant-Directeur.pdf" target="_blank" class="fichePoste">Assistant Directeur</a></p>
-                <p class="name">Erica Romaguera</p>
-            </div>
-            <div class="node">
-                <p><a href="../Fiche Poste/fiche-de-poste-Administratif.pdf" target="_blank" class="fichePoste">Administration</a></p>
-                <p class="name">Russell Ross</p>
-            </div>
-        </div>
-
-        <!-- Ligne de connexion -->
-        <div class="connector"></div>
-
-        <!-- Niveau 2 : Ventes, Marketing, Finances, Création, Production -->
-        <div class="level">
-            <div class="node">
-                <p>Ventes</p>
-            </div>
-            <div class="node">
-                <p>Marketing</p>
-            </div>
-            <div class="node">
-                <p>Finances</p>
-            </div>
-            <div class="node">
-                <p>Création</p>
-            </div>
-            <div class="node">
-                <p>Production</p>
-            </div>
-        </div>
-
-        <!-- Ligne de connexion -->
-        <div class="connector"></div>
-
-        <!-- Niveau 3 : Équipes -->
-        <div class="level">
-            <!-- Équipe Ventes -->
-            <div class="node sub-node">
-                <p>Équipe des Ventes</p>
-                <p class="name"><a href="../Fiche Poste/fiche-de-poste-Equipe-des-ventes.pdf" target="_blank" class="fichePoste">Vendeur</a> : Léa Caron</p>
-                <p class="name"><a href="../Fiche Poste/fiche-de-poste-Responsable-Regional.pdf" target="_blank" class="fichePoste">Responsable Régional </a> : Paul Faure</p>
-                <p class="name"><a href="../Fiche Poste/fiche-de-poste-Representant-Commercial.pdf" target="_blank" class="fichePoste">Représentants Commerciaux</a> : Lucien Lefèvre</p>
-            </div>
-
-            <!-- Équipe Marketing -->
-            <div class="node sub-node">
-                <p>Équipe Marketing</p>
-                <p class="name"><a href="../Fiche Poste/fiche-de-poste-Membre-Equipe-Marketing.pdf" target="_blank" class="fichePoste">Membre</a> : Nina Dubois</p>
-                <p class="name"><a href="../Fiche Poste/fiche-de-poste-Responsable-Publicité.pdf" target="_blank" class="fichePoste">Responsable Publicité</a> : Alice Moreau</p>
-                <p class="name"><a href="../Fiche Poste/fiche-de-poste-Responsable Digital.pdf" target="_blank" class="fichePoste">Responsable Digital</a> : Isabelle Richard</p>
-            </div>
-
-            <!-- Équipe Finances -->
-            <div class="node sub-node">
-                <p>Équipe Comptable</p>
-                <p class="name"><a href="../Fiche Poste/fiche-de-poste-Membre-de-l-Equipe-Comptable.pdf" target="_blank" class="fichePoste">Membre</a> : Hugo Fontaine</p>
-                <p class="name"><a href="../Fiche Poste/fiche-de-poste-Comptable-Senior.pdf" target="_blank" class="fichePoste">Comptable Senior</a> : Léa Caron</p>
-                <p class="name"><a href="../Fiche Poste/fiche-de-poste-Comptable-Junior.pdf" target="_blank" class="fichePoste">Comptable Junior</a> : Paul Faure</p>
-            </div>
-
-            <!-- Équipe Création -->
-            <div class="node sub-node">
-                <p>Équipe Créative</p>
-                <p class="name"><a href="../Fiche Poste/fiche-de-poste-Directeur-Creatif.pdf" target="_blank" class="fichePoste">Directeur Créatif</a> : Julie Marchand</p>
-                <p class="name"><a href="../Fiche Poste/fiche-de-poste-Responsable-Design.pdf" target="_blank" class="fichePoste">Responsable Design</a> : Alice Moreau</p>
-                <p class="name"><a href="../Fiche Poste/fiche-de-poste-Responsable-Produit.pdf" target="_blank" class="fichePoste">Responsable Produit</a> : Isabelle Richard</p>
-            </div>
-
-            <!-- Équipe Production -->
-            <div class="node sub-node">
-                <p>Équipe de Production</p>
-                <p class="name"><a href="../Fiche Poste/fiche-de-poste-Membre-de-l-Equipe-de-Production.pdf" target="_blank" class="fichePoste">Membre</a> : Lucien Lefèvre</p>
-            </div>
-        </div>
-    </div>
-
-     <!-- Footer Section -->
-     <footer class="footer">
+    <!-- Footer Section -->
+    <footer class="footer">
         <div class="footer-content">
-            <p>© 2025 Elixir du temps. Tous droits réservés.</p>
-            <ul class="footer-links">
-                <li><a href="mailto:contact@elixirdutemps.com" class="mon-email">Contact</a></li>
-                <li><a href="../html/PrivacyPolicy.html">Politique de confidentialité</a></li>
-            </ul>
+            <div class="footer-columns">
+                <div class="footer-column">
+                    <h3>Elixir du Temps</h3>
+                    <p>L'excellence horlogère depuis 1985</p>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Collections</h3>
+                    <ul>
+                        <li><a href="collections/Collection-Classic.html">Collection Classic</a></li>
+                        <li><a href="collections/Collection-Sport.html">Collection Sport</a></li>
+                        <li><a href="collections/Collection-Prestige.html">Collection Prestige</a></li>
+                        <li><a href="collections/Collection-Limited-Edition.html">Éditions Limitées</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Informations</h3>
+                    <ul>
+                        <li><a href="APropos.html">À propos</a></li>
+                        <li><a href="legal/PrivacyPolicy.html">Politique de confidentialité</a></li>
+                        <li><a href="legal/CGV.html">Conditions générales</a></li>
+                        <li><a href="legal/MentionsLegales.html">Mentions légales</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact</h3>
+                    <address>
+                        <p>15 rue de la Paix<br>75002 Paris, France</p>
+                        <p>Tél: <a href="tel:+33145887766">+33 (0)1 45 88 77 66</a></p>
+                        <p>Email: <a href="mailto:contact@elixirdutemps.com">contact@elixirdutemps.com</a></p>
+                    </address>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Elixir du Temps. Tous droits réservés.</p>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                    </a>
+                    <a href="#" aria-label="Instagram">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </a>
+                </div>
+            </div>
         </div>
     </footer>
-
+    
+    <!-- Scripts -->
+    <script src="../assets/js/main.js" defer></script>
+    <script src="../assets/js/cart.js" defer></script>
+    <script src="../assets/js/auth.js" defer></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Chercher la vidéo de fond
+        const video = document.querySelector('.video-bg');
+        
+        // Si la vidéo existe
+        if (video) {
+          // Fonction pour marquer le chargement
+          const markAsLoaded = () => {
+            document.body.classList.add('video-loaded');
+          };
+          
+          // Event listeners pour différents cas
+          video.addEventListener('loadeddata', markAsLoaded);
+          video.addEventListener('canplay', markAsLoaded);
+          
+          // Backup: si la vidéo prend trop de temps, afficher quand même la page après 1.5s
+          setTimeout(markAsLoaded, 1500);
+        } else {
+          // Pas de vidéo trouvée, afficher la page quand même
+          document.body.classList.add('video-loaded');
+        }
+      });
+    </script>
 </body>
 </html>

@@ -282,6 +282,37 @@ CREATE TABLE admin_logs (
     INDEX idx_date (date_action)
 ) ENGINE=InnoDB;
 
+CREATE TABLE `system_logs` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `level` enum('debug','info','notice','warning','error','critical','alert','emergency') NOT NULL DEFAULT 'info',
+  `user_id` int(11) DEFAULT NULL,
+  `user_type` enum('admin','customer','system','guest') NOT NULL DEFAULT 'system',
+  `category` varchar(50) NOT NULL,
+  `action` varchar(50) NOT NULL,
+  `entity_type` varchar(50) DEFAULT NULL,
+  `entity_id` varchar(50) DEFAULT NULL,
+  `details` text DEFAULT NULL,
+  `before_state` json DEFAULT NULL,
+  `after_state` json DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `context` json DEFAULT NULL,
+  `http_method` varchar(10) DEFAULT NULL,
+  `request_url` varchar(255) DEFAULT NULL,
+  `session_id` varchar(100) DEFAULT NULL,
+  `execution_time` float DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_level` (`level`),
+  KEY `idx_category` (`category`),
+  KEY `idx_action` (`action`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_user_type` (`user_type`),
+  KEY `idx_entity` (`entity_type`, `entity_id`),
+  KEY `idx_created_at` (`created_at`),
+  KEY `idx_ip_address` (`ip_address`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 -- Insertion des catégories de produits (à placer AVANT les insertions de produits)
 INSERT INTO categories (id, nom, slug, description, image, position) VALUES

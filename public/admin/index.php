@@ -412,7 +412,7 @@ try {
                     <li><a href="promotions.php"><i class="fas fa-percent"></i> Promotions</a></li>
                     <li><a href="pages.php"><i class="fas fa-file-alt"></i> Pages</a></li>
                     <li><a href="export.php"><i class="fas fa-file-export"></i> Exportation</a></li>
-                    <li><a href="logs.php"><i class="fas fa-history"></i> Historique</a></li>
+                    <li><a href="system-logs.php"><i class="fas fa-history"></i> Historique</a></li>
                     <li><a href="settings.php"><i class="fas fa-cog"></i> Paramètres</a></li>
                 </ul>
             </nav>

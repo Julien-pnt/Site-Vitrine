@@ -237,22 +237,33 @@ CREATE TABLE password_resets (
     INDEX idx_expiration (expires_at)
 ) ENGINE=InnoDB;
 
--- --------------------------------------------------------
--- DONNÉES INITIALES
--- --------------------------------------------------------
+-- Table des promotions avec les noms de colonnes correspondant au code
+CREATE TABLE IF NOT EXISTS promotions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    description TEXT,
+    type VARCHAR(20) NOT NULL,
+    value DECIMAL(10,2) NOT NULL,
+    min_purchase DECIMAL(10,2) DEFAULT 0,
+    start_date DATETIME NULL,
+    end_date DATETIME NULL,
+    usage_limit INT DEFAULT NULL,
+    used_count INT DEFAULT 0,
+    products VARCHAR(255) NULL,
+    collections VARCHAR(255) NULL,
+    active TINYINT(1) DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Création d'un compte administrateur par défaut (mot de passe: Admin123!)
-INSERT INTO utilisateurs (nom, email, mot_de_passe, role) VALUES 
-('Admin', 'admin@elixirdutemps.com', '$2y$10$lYyWKfIXIlxuSTkznIX7sOyGUDq7zQ1PMIL8zRpK2O5eijvwwZ.wm', 'admin');
-
--- Création de quelques catégories de base
-INSERT INTO categories (nom, slug, description) VALUES 
-('Montres classiques', 'montres-classiques', 'Montres élégantes et intemporelles'),
-('Montres sport', 'montres-sport', 'Montres robustes pour les activités sportives'),
-('Montres connectées', 'montres-connectees', 'Montres intelligentes avec fonctionnalités numériques'),
-('Montres de luxe', 'montres-luxe', 'Montres haut de gamme pour les connaisseurs');
-
--- Création d'une collection de base
-INSERT INTO collections (nom, slug, description, active) VALUES
-('Édition limitée 2024', 'edition-limitee-2024', 'Notre collection exclusive en édition limitée pour l\'année 2024', TRUE),
-('Collection Vintage', 'collection-vintage', 'Retrouvez le charme des montres d\'antan avec notre collection vintage', TRUE);
+-- Table de liaison pour les promotions applicables à certains produits
+CREATE TABLE IF NOT EXISTS promotion_produits (
+    promotion_id INT NOT NULL,
+    produit_id INT NOT NULL,
+    date_ajout DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (promotion_id, produit_id),
+    CONSTRAINT fk_promotion_produit_promotion FOREIGN KEY (promotion_id) REFERENCES promotions (id) 
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_promotion_produit_produit FOREIGN KEY (produit_id) REFERENCES produits (id) 
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

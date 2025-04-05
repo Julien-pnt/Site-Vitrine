@@ -11,32 +11,128 @@ if (!isLoggedIn() || !isAdmin()) {
     exit;
 }
 
-// Récupérer le prénom de l'administrateur pour personnalisation
+// Journalisation des accès au dashboard
+$logActivity = function($userId, $action) use ($pdo) {
+    try {
+        $stmt = $pdo->prepare("INSERT INTO admin_logs (utilisateur_id, action, ip_address, date_action) VALUES (?, ?, ?, NOW())");
+        $stmt->execute([$userId, $action, $_SERVER['REMOTE_ADDR']]);
+    } catch (PDOException $e) {
+        // Silencieux en cas d'erreur de log - ne pas bloquer l'expérience utilisateur
+    }
+};
+
+// Enregistrer l'accès au dashboard
 $userId = $_SESSION['user_id'];
-$stmt = $pdo->prepare("SELECT prenom, nom FROM utilisateurs WHERE id = ? AND role = 'admin'");
-$stmt->execute([$userId]);
-$admin = $stmt->fetch(PDO::FETCH_ASSOC);
+$logActivity($userId, 'accès_dashboard');
 
-// Récupérer les statistiques clés pour le tableau de bord
-// Nombre total de produits
-$stmt = $pdo->query("SELECT COUNT(*) as total FROM produits");
-$totalProducts = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+// Récupérer le prénom de l'administrateur pour personnalisation
+try {
+    $stmt = $pdo->prepare("SELECT prenom, nom, derniere_connexion FROM utilisateurs WHERE id = ? AND role = 'admin'");
+    $stmt->execute([$userId]);
+    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Nombre de produits en rupture de stock
-$stmt = $pdo->query("SELECT COUNT(*) as total FROM produits WHERE stock <= stock_alerte");
-$lowStockProducts = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+    // Mettre à jour la dernière connexion
+    $updateStmt = $pdo->prepare("UPDATE utilisateurs SET derniere_connexion = NOW() WHERE id = ?");
+    $updateStmt->execute([$userId]);
+} catch (PDOException $e) {
+    $admin = ['prenom' => 'Admin', 'nom' => ''];
+    // Log l'erreur dans un fichier
+    error_log("Erreur SQL (dashboard): " . $e->getMessage());
+}
 
-// Nombre de commandes en attente de traitement
-$stmt = $pdo->query("SELECT COUNT(*) as total FROM commandes WHERE statut IN ('en_attente', 'payee')");
-$pendingOrders = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+// Statistiques du tableau de bord avec gestion d'erreurs
+$stats = [
+    'totalProducts' => 0,
+    'lowStockProducts' => 0,
+    'pendingOrders' => 0,
+    'totalUsers' => 0,
+    'monthlyRevenue' => 0,
+    'orderCompletionRate' => 0,
+    'averageOrderValue' => 0
+];
 
-// Nombre total d'utilisateurs
-$stmt = $pdo->query("SELECT COUNT(*) as total FROM utilisateurs");
-$totalUsers = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+try {
+    // Nombre total de produits
+    $stmt = $pdo->query("SELECT COUNT(*) as total FROM produits");
+    $stats['totalProducts'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
 
-// Chiffre d'affaires total du mois en cours
-$stmt = $pdo->query("SELECT SUM(total) as ca FROM commandes WHERE MONTH(date_commande) = MONTH(CURRENT_DATE()) AND YEAR(date_commande) = YEAR(CURRENT_DATE()) AND statut IN ('payee', 'en_preparation', 'expediee', 'livree')");
-$monthlyRevenue = $stmt->fetch(PDO::FETCH_ASSOC)['ca'] ?? 0;
+    // Nombre de produits en rupture de stock
+    $stmt = $pdo->query("SELECT COUNT(*) as total FROM produits WHERE stock <= stock_alerte");
+    $stats['lowStockProducts'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+
+    // Nombre de commandes en attente de traitement
+    $stmt = $pdo->query("SELECT COUNT(*) as total FROM commandes WHERE statut IN ('en_attente', 'payee')");
+    $stats['pendingOrders'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+
+    // Nombre total d'utilisateurs
+    $stmt = $pdo->query("SELECT COUNT(*) as total FROM utilisateurs");
+    $stats['totalUsers'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+
+    // Chiffre d'affaires total du mois en cours
+    $stmt = $pdo->query("SELECT SUM(total) as ca FROM commandes 
+                         WHERE MONTH(date_commande) = MONTH(CURRENT_DATE()) 
+                         AND YEAR(date_commande) = YEAR(CURRENT_DATE()) 
+                         AND statut IN ('payee', 'en_preparation', 'expediee', 'livree')");
+    $stats['monthlyRevenue'] = $stmt->fetch(PDO::FETCH_ASSOC)['ca'] ?? 0;
+    
+    // Taux de conversion des commandes (commandes complétées / commandes totales)
+    $stmt = $pdo->query("SELECT 
+                         (SELECT COUNT(*) FROM commandes WHERE statut IN ('livree', 'expediee')) as completed,
+                         (SELECT COUNT(*) FROM commandes) as total");
+    $conversionData = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stats['orderCompletionRate'] = $conversionData['total'] > 0 
+        ? round(($conversionData['completed'] / $conversionData['total']) * 100, 1) 
+        : 0;
+        
+    // Valeur moyenne des commandes
+    $stmt = $pdo->query("SELECT AVG(total) as avg_value FROM commandes 
+                         WHERE statut IN ('payee', 'en_preparation', 'expediee', 'livree')");
+    $stats['averageOrderValue'] = $stmt->fetch(PDO::FETCH_ASSOC)['avg_value'] ?? 0;
+    
+    // Calculer les alertes et notifications
+    $notifications = [];
+    
+    // Alerte pour rupture de stock critique (stock à 0)
+    $stmt = $pdo->query("SELECT COUNT(*) as count FROM produits WHERE stock = 0");
+    $stockoutCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
+    if ($stockoutCount > 0) {
+        $notifications[] = [
+            'type' => 'danger',
+            'icon' => 'exclamation-triangle',
+            'message' => "$stockoutCount produit(s) en rupture totale de stock",
+            'link' => 'products.php?filter=stockout'
+        ];
+    }
+    
+    // Alerte pour commandes non traitées depuis plus de 48h
+    $stmt = $pdo->query("SELECT COUNT(*) as count FROM commandes 
+                         WHERE statut = 'payee' AND date_commande < DATE_SUB(NOW(), INTERVAL 2 DAY)");
+    $oldOrdersCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
+    if ($oldOrdersCount > 0) {
+        $notifications[] = [
+            'type' => 'warning',
+            'icon' => 'clock',
+            'message' => "$oldOrdersCount commande(s) payée(s) en attente depuis plus de 48h",
+            'link' => 'orders.php?filter=delayed'
+        ];
+    }
+    
+    // Alerte pour nouveaux avis clients à modérer
+    $stmt = $pdo->query("SELECT COUNT(*) as count FROM avis WHERE modere = 0");
+    $pendingReviewsCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
+    if ($pendingReviewsCount > 0) {
+        $notifications[] = [
+            'type' => 'info',
+            'icon' => 'star',
+            'message' => "$pendingReviewsCount nouvel(aux) avis client(s) à modérer",
+            'link' => 'reviews.php?filter=pending'
+        ];
+    }
+    
+} catch (PDOException $e) {
+    // Log l'erreur dans un fichier
+    error_log("Erreur SQL (stats dashboard): " . $e->getMessage());
+}
 ?>
 
 <!DOCTYPE html>
@@ -51,6 +147,250 @@ $monthlyRevenue = $stmt->fetch(PDO::FETCH_ASSOC)['ca'] ?? 0;
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Chart.js pour les graphiques -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Styles pour les notifications */
+        .notifications-container {
+            margin-bottom: 25px;
+        }
+        .notification {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            animation: fadeIn 0.5s;
+        }
+        .notification-icon {
+            margin-right: 15px;
+            font-size: 18px;
+        }
+        .notification-content {
+            flex-grow: 1;
+        }
+        .notification-link {
+            text-decoration: underline;
+            font-weight: 500;
+            color: inherit;
+        }
+        .notification-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            border-left: 4px solid #dc3545;
+            color: #dc3545;
+        }
+        .notification-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
+        .notification-info {
+            background-color: rgba(23, 162, 184, 0.1);
+            border-left: 4px solid #17a2b8;
+            color: #17a2b8;
+        }
+        .notification-success {
+            background-color: rgba(40, 167, 69, 0.1);
+            border-left: 4px solid #28a745;
+            color: #28a745;
+        }
+        
+        /* Styles pour les quick actions */
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .quick-action-btn {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-color: #d4af37;
+        }
+        .quick-action-btn i {
+            margin-right: 8px;
+            color: #d4af37;
+        }
+        
+        /* Animation de fade in */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Amélioration générale des liens */
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s ease;
+        }
+        
+        /* Liens de la sidebar */
+        .sidebar-nav a {
+            color: #f8f9fa;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 6px;
+        }
+        
+        .sidebar-nav a:hover {
+            background-color: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+        }
+        
+        .sidebar-nav .active a {
+            background-color: rgba(212, 175, 55, 0.15);
+            color: #d4af37;
+        }
+        
+        /* Animation de l'indicateur pour les liens de la sidebar */
+        .sidebar-nav a::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 2px;
+            width: 0;
+            background-color: #d4af37;
+            transition: width 0.3s ease;
+        }
+        
+        .sidebar-nav a:hover::after {
+            width: 30%;
+        }
+        
+        .sidebar-nav .active a::after {
+            width: 50%;
+        }
+        
+        /* Liens dans le footer de la sidebar */
+        .sidebar-footer a {
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-footer a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-footer a i {
+            margin-right: 8px;
+        }
+        
+        /* Liens de notification */
+        .notification-link {
+            color: inherit;
+            font-weight: 600;
+            position: relative;
+            padding: 2px 5px;
+            margin-left: 6px;
+            border-radius: 4px;
+        }
+        
+        .notification-link::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: 0;
+            left: 0;
+            background-color: currentColor;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification-link:hover::after {
+            transform: scaleX(1);
+        }
+        
+        .notification-danger .notification-link:hover {
+            background-color: rgba(220, 53, 69, 0.2);
+        }
+        
+        .notification-warning .notification-link:hover {
+            background-color: rgba(255, 193, 7, 0.2);
+        }
+        
+        .notification-info .notification-link:hover {
+            background-color: rgba(23, 162, 184, 0.2);
+        }
+        
+        /* Liens d'action rapide */
+        .quick-action-btn {
+            text-decoration: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+        
+        /* Liens "Voir tout" */
+        .view-all {
+            font-size: 0.85rem;
+            color: #d4af37;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .view-all:hover {
+            background-color: rgba(212, 175, 55, 0.1);
+            color: #c4a030;
+        }
+        
+        /* Liens d'action dans les tableaux */
+        .action-btn {
+            display: inline-block;
+            padding: 6px 12px;
+            background-color: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            background-color: rgba(212, 175, 55, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        /* Lien vers les logs */
+        .view-logs {
+            color: #d4af37;
+            font-weight: 500;
+            padding: 3px 6px;
+            border-radius: 3px;
+            position: relative;
+            background-color: rgba(212, 175, 55, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .view-logs:hover {
+            background-color: rgba(212, 175, 55, 0.15);
+        }
+        
+        /* Animation de surbrillance pour les liens importants */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(212, 175, 55, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+        }
+        
+        .notification-link:hover {
+            animation: pulse 1.5s infinite;
+        }
+    </style>
 </head>
 <body>
     <div class="admin-container">
@@ -69,7 +409,10 @@ $monthlyRevenue = $stmt->fetch(PDO::FETCH_ASSOC)['ca'] ?? 0;
                     <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Commandes</a></li>
                     <li><a href="users.php"><i class="fas fa-users"></i> Utilisateurs</a></li>
                     <li><a href="reviews.php"><i class="fas fa-star"></i> Avis Clients</a></li>
+                    <li><a href="promotions.php"><i class="fas fa-percent"></i> Promotions</a></li>
                     <li><a href="pages.php"><i class="fas fa-file-alt"></i> Pages</a></li>
+                    <li><a href="export.php"><i class="fas fa-file-export"></i> Exportation</a></li>
+                    <li><a href="logs.php"><i class="fas fa-history"></i> Historique</a></li>
                     <li><a href="settings.php"><i class="fas fa-cog"></i> Paramètres</a></li>
                 </ul>
             </nav>
@@ -83,8 +426,10 @@ $monthlyRevenue = $stmt->fetch(PDO::FETCH_ASSOC)['ca'] ?? 0;
         <main class="main-content">
             <header class="main-header">
                 <div class="header-search">
-                    <input type="search" placeholder="Rechercher...">
-                    <button type="submit"><i class="fas fa-search"></i></button>
+                    <form action="search-results.php" method="GET">
+                        <input type="search" name="q" placeholder="Rechercher..." aria-label="Recherche globale">
+                        <button type="submit"><i class="fas fa-search"></i></button>
+                    </form>
                 </div>
                 <div class="header-user">
                     <span>Bienvenue, <?= htmlspecialchars($admin['prenom'] ?? $admin['nom'] ?? 'Admin') ?></span>
@@ -97,6 +442,39 @@ $monthlyRevenue = $stmt->fetch(PDO::FETCH_ASSOC)['ca'] ?? 0;
             <div class="dashboard">
                 <h1>Tableau de bord</h1>
                 
+                <!-- Notifications -->
+                <?php if (!empty($notifications)): ?>
+                <div class="notifications-container">
+                    <?php foreach ($notifications as $notification): ?>
+                    <div class="notification notification-<?= $notification['type'] ?>">
+                        <div class="notification-icon">
+                            <i class="fas fa-<?= $notification['icon'] ?>"></i>
+                        </div>
+                        <div class="notification-content">
+                            <?= htmlspecialchars($notification['message']) ?> 
+                            <a href="<?= $notification['link'] ?>" class="notification-link">Voir</a>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
+                
+                <!-- Actions rapides -->
+                <div class="quick-actions">
+                    <a href="add-product.php" class="quick-action-btn">
+                        <i class="fas fa-plus"></i> Ajouter un produit
+                    </a>
+                    <a href="orders.php?filter=newest" class="quick-action-btn">
+                        <i class="fas fa-shopping-cart"></i> Voir nouvelles commandes
+                    </a>
+                    <a href="export.php" class="quick-action-btn">
+                        <i class="fas fa-file-export"></i> Exporter données
+                    </a>
+                    <a href="#" class="quick-action-btn" id="clearCacheBtn">
+                        <i class="fas fa-broom"></i> Vider le cache
+                    </a>
+                </div>
+                
                 <!-- Cartes de statistiques -->
                 <div class="stats-cards">
                     <div class="stat-card">
@@ -104,7 +482,7 @@ $monthlyRevenue = $stmt->fetch(PDO::FETCH_ASSOC)['ca'] ?? 0;
                             <i class="fas fa-shopping-bag"></i>
                         </div>
                         <div class="stat-card-info">
-                            <h2><?= number_format($totalProducts) ?></h2>
+                            <h2><?= number_format($stats['totalProducts']) ?></h2>
                             <p>Produits</p>
                         </div>
                     </div>
@@ -113,7 +491,7 @@ $monthlyRevenue = $stmt->fetch(PDO::FETCH_ASSOC)['ca'] ?? 0;
                             <i class="fas fa-exclamation-triangle"></i>
                         </div>
                         <div class="stat-card-info">
-                            <h2><?= number_format($lowStockProducts) ?></h2>
+                            <h2><?= number_format($stats['lowStockProducts']) ?></h2>
                             <p>Ruptures de stock</p>
                         </div>
                     </div>
@@ -122,7 +500,7 @@ $monthlyRevenue = $stmt->fetch(PDO::FETCH_ASSOC)['ca'] ?? 0;
                             <i class="fas fa-shopping-cart"></i>
                         </div>
                         <div class="stat-card-info">
-                            <h2><?= number_format($pendingOrders) ?></h2>
+                            <h2><?= number_format($stats['pendingOrders']) ?></h2>
                             <p>Commandes en attente</p>
                         </div>
                     </div>
@@ -131,7 +509,7 @@ $monthlyRevenue = $stmt->fetch(PDO::FETCH_ASSOC)['ca'] ?? 0;
                             <i class="fas fa-users"></i>
                         </div>
                         <div class="stat-card-info">
-                            <h2><?= number_format($totalUsers) ?></h2>
+                            <h2><?= number_format($stats['totalUsers']) ?></h2>
                             <p>Utilisateurs</p>
                         </div>
                     </div>
@@ -142,6 +520,9 @@ $monthlyRevenue = $stmt->fetch(PDO::FETCH_ASSOC)['ca'] ?? 0;
                     <div class="chart-container">
                         <h3>Ventes des 30 derniers jours</h3>
                         <canvas id="salesChart"></canvas>
+                        <div id="chartError" style="display:none; text-align:center; padding:20px; color:#dc3545;">
+                            <i class="fas fa-exclamation-circle"></i> Impossible de charger les données du graphique
+                        </div>
                     </div>
                     
                     <!-- Revenus et performance -->
@@ -149,26 +530,27 @@ $monthlyRevenue = $stmt->fetch(PDO::FETCH_ASSOC)['ca'] ?? 0;
                         <h3>Performance</h3>
                         <div class="revenue">
                             <h4>CA mensuel</h4>
-                            <p class="amount"><?= number_format($monthlyRevenue, 2, ',', ' ') ?> €</p>
+                            <p class="amount"><?= number_format($stats['monthlyRevenue'], 2, ',', ' ') ?> €</p>
                         </div>
                         <div class="performance-stats">
                             <div class="perf-item">
                                 <span>Taux de conversion</span>
-                                <span class="value">3.2%</span>
+                                <span class="value"><?= number_format($stats['orderCompletionRate'], 1) ?>%</span>
                             </div>
                             <div class="perf-item">
                                 <span>Panier moyen</span>
-                                <span class="value">450,00 €</span>
+                                <span class="value"><?= number_format($stats['averageOrderValue'], 2, ',', ' ') ?> €</span>
                             </div>
                             <div class="perf-item">
-                                <span>Trafic mensuel</span>
-                                <span class="value">1,243</span>
+                                <span>Activité admin</span>
+                                <a href="activity-logs.php" class="view-logs">Voir les logs</a>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Dernières activités -->
+                <!-- Reste du dashboard inchangé -->
+                <!-- Dernières commandes et ruptures de stock -->
                 <div class="dashboard-row">
                     <!-- Dernières commandes -->
                     <div class="latest-card">
@@ -275,13 +657,28 @@ $monthlyRevenue = $stmt->fetch(PDO::FETCH_ASSOC)['ca'] ?? 0;
     </div>
 
     <!-- Scripts -->
-    <script src="js/admin.js"></script>
     <script>
-    // Graphique des ventes des 30 derniers jours
+    // Graphique des ventes des 30 derniers jours avec gestion d'erreur
     document.addEventListener('DOMContentLoaded', function() {
+        // Fonction pour afficher une erreur de chargement du graphique
+        function showChartError() {
+            document.getElementById('chartError').style.display = 'block';
+            document.getElementById('salesChart').style.display = 'none';
+        }
+        
+        // Charger les données du graphique avec gestion d'erreur
         fetch('api/get-sales-chart-data.php')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur réseau');
+                }
+                return response.json();
+            })
             .then(data => {
+                if (!data || !data.labels || !data.sales) {
+                    throw new Error('Format de données invalide');
+                }
+                
                 const ctx = document.getElementById('salesChart').getContext('2d');
                 new Chart(ctx, {
                     type: 'line',
@@ -325,7 +722,52 @@ $monthlyRevenue = $stmt->fetch(PDO::FETCH_ASSOC)['ca'] ?? 0;
                     }
                 });
             })
-            .catch(error => console.error('Erreur de chargement des données:', error));
+            .catch(error => {
+                console.error('Erreur de chargement des données:', error);
+                showChartError();
+            });
+
+        // Gestionnaire pour le bouton de nettoyage du cache
+        document.getElementById('clearCacheBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            fetch('api/clear-cache.php')
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        // Créer une notification temporaire
+                        const notification = document.createElement('div');
+                        notification.className = 'notification notification-success';
+                        notification.innerHTML = `
+                            <div class="notification-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                Le cache a été vidé avec succès.
+                            </div>
+                        `;
+                        
+                        // Ajouter la notification en haut du dashboard
+                        const notificationsContainer = document.querySelector('.notifications-container') || 
+                            document.querySelector('.dashboard').insertBefore(
+                                document.createElement('div'),
+                                document.querySelector('.dashboard').firstChild
+                            );
+                        
+                        notificationsContainer.className = 'notifications-container';
+                        notificationsContainer.prepend(notification);
+                        
+                        // Supprimer la notification après 3 secondes
+                        setTimeout(() => {
+                            notification.style.opacity = '0';
+                            setTimeout(() => notification.remove(), 300);
+                        }, 3000);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors du nettoyage du cache:', error);
+                });
+        });
     });
     </script>
 </body>

@@ -7,6 +7,7 @@
     <meta name="description" content="Consultez votre panier et procédez au paiement de vos montres de luxe Elixir du Temps.">
     <link rel="icon" href="../../assets/img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         /* Styles spécifiques à la page panier */
         .cart-page {
@@ -288,6 +289,86 @@
             color: #d4af37; /* Élément actif en doré */
             border-bottom: 2px solid #d4af37; /* Soulignement doré */
         }
+
+        /* Styles pour les indicateurs de stock */
+        .stock-indicator {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+        }
+
+        .in-stock {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .stock-low {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ff9800;
+        }
+
+        .stock-warning {
+            background-color: rgba(255, 152, 0, 0.1);
+            color: #ff9800;
+        }
+
+        .out-of-stock {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        /* Style pour les boutons désactivés */
+        .qty-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #e0e0e0;
+        }
+
+        /* Style pour les notifications */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            opacity: 1;
+            transition: opacity 0.5s;
+        }
+
+        .notification.warning {
+            background-color: #ff9800;
+        }
+
+        .notification.error {
+            background-color: #f44336;
+        }
+
+        /* Style pour les prix barrés (anciens prix) */
+        .price-old {
+            text-decoration: line-through;
+            color: #888;
+            font-size: 0.85em;
+            margin-right: 10px;
+        }
+
+        /* Style pour les prix en promotion */
+        .price-promo {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        /* Affichage de la référence produit */
+        .cart-product-ref {
+            font-size: 0.8em;
+            color: #666;
+            margin: 3px 0;
+        }
     </style>
 </head>
 <body>
@@ -456,10 +537,107 @@
             });
 
             checkoutBtn.addEventListener('click', function() {
-                // Rediriger vers la page de paiement
-                // À implémenter: window.location.href = 'checkout.html';
-                alert('Fonctionnalité de paiement à venir prochainement');
+                // Vérifier les stocks avant de procéder au paiement
+                verifyAllStockBeforeCheckout()
+                    .then(result => {
+                        if (result.allValid) {
+                            // Rediriger vers la page de paiement
+                            // À implémenter: window.location.href = 'checkout.html';
+                            alert('Fonctionnalité de paiement à venir prochainement');
+                        } else {
+                            showNotification(`Attention: ${result.message}`, 'warning');
+                            loadCart(); // Recharger pour refléter les ajustements
+                        }
+                    })
+                    .catch(error => {
+                        showNotification("Erreur lors de la vérification du stock. Veuillez réessayer.", 'error');
+                        console.error("Erreur:", error);
+                    });
             });
+
+            /**
+             * Vérifie le stock disponible d'un produit via l'API
+             * Adaptée pour utiliser la nouvelle structure de la table produits
+             */
+            function checkProductStock(productId) {
+                return fetch(`/public/php/api/products/check-stock.php?id=${productId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur réseau lors de la vérification du stock');
+                        }
+                        return response.json();
+                    });
+            }
+
+            /**
+             * Vérifie le stock de tous les produits du panier avant le paiement
+             * Prend en compte la visibilité des produits et les seuils d'alerte personnalisés
+             */
+            async function verifyAllStockBeforeCheckout() {
+                const cart = getCart();
+                let allValid = true;
+                let message = "";
+                let updatedCart = [...cart];
+
+                for (let i = 0; i < cart.length; i++) {
+                    try {
+                        const stockInfo = await checkProductStock(cart[i].id);
+                        
+                        // Vérifier si le produit est visible/disponible
+                        if (stockInfo.error || stockInfo.visible === false) {
+                            allValid = false;
+                            message += `"${cart[i].name}" n'est plus disponible et a été retiré de votre panier. `;
+                            updatedCart = updatedCart.filter(item => item.id !== cart[i].id);
+                            continue;
+                        }
+                        
+                        // Si le stock est insuffisant
+                        if (stockInfo.stock < cart[i].quantity) {
+                            allValid = false;
+                            
+                            if (stockInfo.stock <= 0) {
+                                // Produit supprimé du panier (rupture)
+                                message += `"${cart[i].name}" a été supprimé (rupture de stock). `;
+                                updatedCart = updatedCart.filter(item => item.id !== cart[i].id);
+                            } else {
+                                // Quantité ajustée
+                                message += `La quantité de "${cart[i].name}" a été ajustée à ${stockInfo.stock}. `;
+                                const idx = updatedCart.findIndex(item => item.id === cart[i].id);
+                                if (idx !== -1) {
+                                    updatedCart[idx].quantity = stockInfo.stock;
+                                }
+                            }
+                        }
+                        
+                        // Mettre à jour les informations du produit dans le panier
+                        const idx = updatedCart.findIndex(item => item.id === cart[i].id);
+                        if (idx !== -1) {
+                            updatedCart[idx].availableStock = stockInfo.stock;
+                            updatedCart[idx].stockAlerte = stockInfo.stock_alerte || 5;
+                            
+                            // Mettre à jour le prix si un prix promo est disponible
+                            if (stockInfo.prix_promo && parseFloat(stockInfo.prix_promo) < parseFloat(stockInfo.prix)) {
+                                updatedCart[idx].regularPrice = parseFloat(stockInfo.prix);
+                                updatedCart[idx].price = parseFloat(stockInfo.prix_promo);
+                                updatedCart[idx].hasPromo = true;
+                            } else {
+                                updatedCart[idx].price = parseFloat(stockInfo.prix);
+                                updatedCart[idx].hasPromo = false;
+                            }
+                        }
+                    } catch (error) {
+                        console.error(`Erreur pour le produit ${cart[i].id}:`, error);
+                    }
+                }
+
+                // Si des modifications ont été faites, mettre à jour le panier
+                if (!allValid) {
+                    saveCart(updatedCart);
+                    updateCartUI(updatedCart);
+                }
+
+                return { allValid, message };
+            }
 
             /**
              * Charge et affiche le contenu du panier
@@ -485,51 +663,129 @@
                 // Remplir avec les articles du panier
                 let subtotal = 0;
                 
-                cart.forEach(item => {
-                    const itemTotal = item.price * item.quantity;
-                    subtotal += itemTotal;
+                // Vérifier le stock pour chaque produit
+                Promise.all(cart.map(item => 
+                    checkProductStock(item.id)
+                        .then(stockInfo => {
+                            return {
+                                ...item,
+                                currentStock: stockInfo.stock,
+                                stockAlerte: stockInfo.stock_alerte || 5,
+                                visible: stockInfo.visible !== false,
+                                regularPrice: parseFloat(stockInfo.prix),
+                                promoPrice: stockInfo.prix_promo ? parseFloat(stockInfo.prix_promo) : null
+                            };
+                        })
+                        .catch(error => {
+                            console.error(`Erreur pour le produit ${item.id}:`, error);
+                            return {
+                                ...item,
+                                currentStock: 0,
+                                visible: false
+                            };
+                        })
+                ))
+                .then(productsWithStock => {
+                    // Filtrer les produits qui ne sont plus disponibles
+                    const availableProducts = productsWithStock.filter(item => item.visible);
                     
-                    const tr = document.createElement('tr');
-                    tr.className = 'cart-item-row';
-                    tr.innerHTML = `
-                        <td class="cart-item-cell" data-label="Produit">
-                            <div class="cart-product">
-                                <div class="cart-product-image">
-                                    <img src="${item.image}" alt="${item.name}">
-                                </div>
-                                <div class="cart-product-info">
-                                    <h3 class="cart-product-name">${item.name}</h3>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="cart-item-cell" data-label="Prix">${formatPrice(item.price)} €</td>
-                        <td class="cart-item-cell" data-label="Quantité">
-                            <div class="cart-quantity">
-                                <button type="button" class="qty-btn decrease" data-id="${item.id}">-</button>
-                                <input type="text" value="${item.quantity}" class="qty-input" readonly>
-                                <button type="button" class="qty-btn increase" data-id="${item.id}">+</button>
-                            </div>
-                        </td>
-                        <td class="cart-item-cell" data-label="Total">${formatPrice(itemTotal)} €</td>
-                        <td class="cart-item-cell">
-                            <button type="button" class="cart-remove" data-id="${item.id}">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                </svg>
-                            </button>
-                        </td>
-                    `;
+                    if (availableProducts.length === 0) {
+                        cartEmptyMessage.style.display = 'block';
+                        cartContainer.style.display = 'none';
+                        saveCart([]);
+                        updateCartUI([]);
+                        return;
+                    }
                     
-                    cartItemsContainer.appendChild(tr);
+                    availableProducts.forEach(item => {
+                        // Utiliser le prix promotionnel si disponible
+                        const displayPrice = item.promoPrice !== null && item.promoPrice < item.regularPrice ? 
+                            item.promoPrice : item.regularPrice;
+                        
+                        const itemTotal = displayPrice * item.quantity;
+                        subtotal += itemTotal;
+                        
+                        // Déterminer les classes et messages pour l'indicateur de stock
+                        let stockClass = 'in-stock';
+                        let stockMessage = '<i class="fas fa-check-circle"></i> En stock';
+                        let disableIncrease = false;
+                        
+                        if (item.currentStock <= 0) {
+                            stockClass = 'out-of-stock';
+                            stockMessage = '<i class="fas fa-times-circle"></i> Rupture de stock';
+                            disableIncrease = true;
+                        } else if (item.quantity >= item.currentStock) {
+                            stockClass = 'stock-warning';
+                            stockMessage = `<i class="fas fa-exclamation-circle"></i> Maximum disponible`;
+                            disableIncrease = true;
+                        } else if (item.currentStock <= item.stockAlerte) {
+                            stockClass = 'stock-low';
+                            stockMessage = `<i class="fas fa-exclamation-circle"></i> Plus que ${item.currentStock} en stock`;
+                        }
+                        
+                        const tr = document.createElement('tr');
+                        tr.className = 'cart-item-row';
+                        
+                        // Préparer l'affichage du prix (normal ou promotion)
+                        let priceDisplay = `${formatPrice(displayPrice)} €`;
+                        if (item.promoPrice !== null && item.promoPrice < item.regularPrice) {
+                            priceDisplay = `
+                                <span class="price-old">${formatPrice(item.regularPrice)} €</span>
+                                <span class="price-promo">${formatPrice(item.promoPrice)} €</span>
+                            `;
+                        }
+                        
+                        tr.innerHTML = `
+                            <td class="cart-item-cell" data-label="Produit">
+                                <div class="cart-product">
+                                    <div class="cart-product-image">
+                                        <img src="${item.image}" alt="${item.name}">
+                                    </div>
+                                    <div class="cart-product-info">
+                                        <h3 class="cart-product-name">${item.name}</h3>
+                                        <p class="cart-product-ref">Réf: ${item.reference || `ELX-${item.id}`}</p>
+                                        <div class="stock-indicator ${stockClass}">${stockMessage}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="cart-item-cell" data-label="Prix">${priceDisplay}</td>
+                            <td class="cart-item-cell" data-label="Quantité">
+                                <div class="cart-quantity">
+                                    <button type="button" class="qty-btn decrease" data-id="${item.id}">-</button>
+                                    <input type="text" value="${item.quantity}" class="qty-input" readonly 
+                                           data-stock="${item.currentStock}" data-id="${item.id}">
+                                    <button type="button" class="qty-btn increase ${disableIncrease ? 'disabled' : ''}" 
+                                            data-id="${item.id}" ${disableIncrease ? 'disabled' : ''}>+</button>
+                                </div>
+                            </td>
+                            <td class="cart-item-cell" data-label="Total">${formatPrice(itemTotal)} €</td>
+                            <td class="cart-item-cell">
+                                <button type="button" class="cart-remove" data-id="${item.id}">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </td>
+                        `;
+                        
+                        cartItemsContainer.appendChild(tr);
+                    });
+                    
+                    // Mettre à jour les totaux
+                    subtotalElement.textContent = `${formatPrice(subtotal)} €`;
+                    totalElement.textContent = `${formatPrice(subtotal)} €`; // Pas de frais de livraison
+                    
+                    // Ajouter les écouteurs d'événements aux boutons
+                    attachQuantityEvents();
+                    
+                    // Si le panier a été modifié (produits non visibles supprimés)
+                    if (availableProducts.length < cart.length) {
+                        saveCart(availableProducts);
+                        updateCartUI(availableProducts);
+                        showNotification("Certains produits ne sont plus disponibles et ont été retirés du panier.", 'warning');
+                    }
                 });
-                
-                // Mettre à jour les totaux
-                subtotalElement.textContent = `${formatPrice(subtotal)} €`;
-                totalElement.textContent = `${formatPrice(subtotal)} €`; // Pas de frais de livraison
-                
-                // Ajouter les écouteurs d'événements aux boutons
-                attachQuantityEvents();
             }
 
             /**
@@ -547,10 +803,22 @@
                 
                 // Boutons d'augmentation
                 document.querySelectorAll('.qty-btn.increase').forEach(button => {
+                    if (button.classList.contains('disabled')) {
+                        return; // Ne pas attacher d'événement aux boutons désactivés
+                    }
+                    
                     button.addEventListener('click', function() {
                         const productId = this.getAttribute('data-id');
-                        increaseCartQuantity(productId);
-                        loadCart(); // Recharger l'affichage
+                        const input = document.querySelector(`.qty-input[data-id="${productId}"]`);
+                        const currentStock = parseInt(input.getAttribute('data-stock'), 10);
+                        const currentQuantity = parseInt(input.value, 10);
+                        
+                        if (currentQuantity < currentStock) {
+                            increaseCartQuantity(productId);
+                            loadCart(); // Recharger l'affichage
+                        } else {
+                            showNotification('Quantité maximum atteinte pour ce produit', 'warning');
+                        }
                     });
                 });
                 
@@ -590,9 +858,44 @@
                 const productIndex = cart.findIndex(item => item.id === productId);
                 
                 if (productIndex > -1) {
-                    cart[productIndex].quantity++;
-                    saveCart(cart);
-                    updateCartUI(cart);
+                    // Vérifier le stock avant d'augmenter
+                    checkProductStock(productId)
+                        .then(stockInfo => {
+                            if (stockInfo.visible === false) {
+                                showNotification(`Ce produit n'est plus disponible`, 'error');
+                                removeFromCart(productId);
+                                loadCart();
+                                return;
+                            }
+                            
+                            if (stockInfo.stock > cart[productIndex].quantity) {
+                                cart[productIndex].quantity++;
+                                
+                                // Mettre à jour les informations du produit
+                                cart[productIndex].availableStock = stockInfo.stock;
+                                cart[productIndex].stockAlerte = stockInfo.stock_alerte || 5;
+                                
+                                // Mettre à jour le prix si nécessaire
+                                if (stockInfo.prix_promo && parseFloat(stockInfo.prix_promo) < parseFloat(stockInfo.prix)) {
+                                    cart[productIndex].price = parseFloat(stockInfo.prix_promo);
+                                    cart[productIndex].regularPrice = parseFloat(stockInfo.prix);
+                                    cart[productIndex].hasPromo = true;
+                                } else {
+                                    cart[productIndex].price = parseFloat(stockInfo.prix);
+                                    cart[productIndex].hasPromo = false;
+                                }
+                                
+                                saveCart(cart);
+                                updateCartUI(cart);
+                                loadCart(); // Recharger l'affichage
+                            } else {
+                                showNotification(`Stock maximum atteint pour ce produit (${stockInfo.stock})`, 'warning');
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Erreur lors de la vérification du stock:", error);
+                            showNotification("Impossible de vérifier le stock disponible", 'error');
+                        });
                 }
             }
 
@@ -609,10 +912,37 @@
             }
 
             /**
+             * Affiche une notification à l'utilisateur
+             */
+            function showNotification(message, type = 'success') {
+                let notification = document.getElementById('notification');
+                
+                if (!notification) {
+                    notification = document.createElement('div');
+                    notification.id = 'notification';
+                    document.body.appendChild(notification);
+                }
+                
+                // Définir la classe en fonction du type
+                notification.className = 'notification ' + type;
+                notification.innerHTML = message;
+                notification.style.display = 'block';
+                
+                // Faire disparaître après 3 secondes
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    setTimeout(() => {
+                        notification.style.display = 'none';
+                        notification.style.opacity = '1';
+                    }, 500);
+                }, 3000);
+            }
+
+            /**
              * Formate un prix
              */
             function formatPrice(price) {
-                return price.toFixed(2).replace('.', ',');
+                return Number(price).toFixed(2).replace('.', ',');
             }
         });
 

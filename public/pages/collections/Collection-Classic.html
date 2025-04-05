@@ -78,6 +78,48 @@
             clip: rect(0, 0, 0, 0);
             border: 0;
         }
+        
+        /* Indicateurs de stock */
+        .stock-indicator {
+            margin: 10px 0;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .stock-indicator i {
+            margin-right: 6px;
+        }
+        
+        .in-stock {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .low-stock {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+        
+        .out-of-stock {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+        
+        .add-to-cart-btn.disabled,
+        #modal-add-to-cart.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: #6c757d;
+        }
+
+        .stock-warning {
+            color: #ffc107;
+            font-style: italic;
+            font-size: 0.8rem;
+        }
     </style>
     
     <!-- Ressources -->
@@ -87,6 +129,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     
     <title>Collection Classic - Elixir du Temps</title>
 </head>
@@ -229,7 +272,7 @@
                     </div>
                     <div class="product-info">
                         <h3 class="product-title">Élégance Éternelle</h3>
-                        <p class="product-price">15 000 €</p>
+                        <p class="product-price">8 950 €</p>
                         <div class="product-actions">
                             <button class="add-to-cart-btn" data-product-id="101">Ajouter au panier</button>
                             <button class="add-to-wishlist-btn" data-product-id="101" aria-label="Ajouter aux favoris">
@@ -241,8 +284,47 @@
                     </div>
                 </div>
                 
-                <!-- Ajouter d'autres produits de la même façon -->
-                <!-- ... -->
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/elegance-eternal.jpg" alt="Montre Élégance Éternelle" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="101">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Tradition Classique</h3>
+                        <p class="product-price">4 750 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="101">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="101" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/elegance-eternal.jpg" alt="Montre Élégance Éternelle" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="101">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Raffinement Or</h3>
+                        <p class="product-price">12 800 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="101">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="101" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Section pour Femme products -->
@@ -525,6 +607,155 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 3000);
         }
     });
+</script>
+<script>
+// Modal d'aperçu rapide
+const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+const modal = document.getElementById('quick-view-modal');
+const closeModalButton = document.querySelector('.close-modal');
+
+if (quickViewButtons.length && modal) {
+    quickViewButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            const productCard = this.closest('.product-card');
+            const title = productCard.querySelector('.product-title').textContent;
+            const price = productCard.querySelector('.product-price').textContent;
+            const imageSrc = productCard.querySelector('.product-image').getAttribute('src');
+            
+            document.getElementById('modal-product-title').textContent = title;
+            document.getElementById('modal-product-price').textContent = price;
+            document.getElementById('modal-product-image').setAttribute('src', imageSrc);
+            document.getElementById('modal-product-image').setAttribute('alt', title);
+            
+            // Supprimer l'ancien indicateur de stock s'il existe
+            const existingStockIndicator = document.querySelector('.modal-product-details .stock-indicator');
+            if (existingStockIndicator) {
+                existingStockIndicator.remove();
+            }
+            
+            // Réinitialiser le bouton d'ajout au panier
+            const addToCartBtn = document.getElementById('modal-add-to-cart');
+            addToCartBtn.disabled = false;
+            addToCartBtn.classList.remove('disabled');
+            
+            // Attribuer l'ID du produit au bouton d'ajout au panier
+            addToCartBtn.setAttribute('data-product-id', productId);
+            
+            // Vérifier et afficher le stock
+            fetch(`/public/php/api/products/check-stock.php?id=${productId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const stockInfo = document.createElement('div');
+                    stockInfo.className = 'stock-indicator';
+                    
+                    // Utiliser le seuil d'alerte défini dans la base de données
+                    const stockAlerte = data.stock_alerte || 5; // Valeur par défaut si non définie
+                    
+                    if (data.stock > stockAlerte) {
+                        stockInfo.classList.add('in-stock');
+                        stockInfo.innerHTML = '<i class="fas fa-check-circle"></i> En stock';
+                    } else if (data.stock > 0) {
+                        stockInfo.classList.add('low-stock');
+                        stockInfo.innerHTML = `<i class="fas fa-exclamation-circle"></i> Plus que ${data.stock} en stock`;
+                    } else {
+                        stockInfo.classList.add('out-of-stock');
+                        stockInfo.innerHTML = '<i class="fas fa-times-circle"></i> Rupture de stock';
+                        addToCartBtn.disabled = true;
+                        addToCartBtn.classList.add('disabled');
+                    }
+                    
+                    // Afficher le prix promotionnel si disponible
+                    if (data.prix_promo && parseFloat(data.prix_promo) < parseFloat(data.prix)) {
+                        const priceElement = document.getElementById('modal-product-price');
+                        priceElement.innerHTML = `<span class="price-old">${parseFloat(data.prix).toFixed(2).replace('.', ',')} €</span> ${parseFloat(data.prix_promo).toFixed(2).replace('.', ',')} €`;
+                    }
+                    
+                    // Insérer l'indicateur de stock après le prix
+                    const priceElement = document.getElementById('modal-product-price');
+                    priceElement.parentNode.insertBefore(stockInfo, priceElement.nextSibling);
+                })
+                .catch(error => {
+                    console.error("Erreur lors de la récupération du stock:", error);
+                });
+            
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        });
+    });
+    
+    closeModalButton.addEventListener('click', function() {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    });
+    
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    });
+}
+</script>
+<script>
+// Gestion des boutons d'ajout au panier
+document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const productId = this.getAttribute('data-product-id');
+        const productCard = this.closest('.product-card');
+        const productName = productCard.querySelector('.product-title').textContent;
+        const productPriceText = productCard.querySelector('.product-price').textContent;
+        // Gérer à la fois le prix normal et le prix promotionnel
+        const priceOldElement = productCard.querySelector('.price-old');
+        const productPrice = priceOldElement ? 
+            parseFloat(productPriceText.replace(/[^0-9,.-]+/g, '').replace(',', '.')) : 
+            parseFloat(productPriceText.replace(/[^0-9,.-]+/g, '').replace(',', '.'));
+        const productImage = productCard.querySelector('.product-image').getAttribute('src');
+        
+        // Vérifier le stock avant d'ajouter au panier
+        fetch(`/public/php/api/products/check-stock.php?id=${productId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showNotification(data.error, 'error');
+                    return;
+                }
+                
+                // Utiliser le prix promotionnel si disponible
+                let finalPrice = parseFloat(data.prix);
+                if (data.prix_promo && parseFloat(data.prix_promo) < parseFloat(data.prix)) {
+                    finalPrice = parseFloat(data.prix_promo);
+                }
+                
+                if (data.stock > 0) {
+                    // Ajouter au panier avec information de stock
+                    const cart = getCart();
+                    const existingProductIndex = cart.findIndex(item => item.id === productId);
+                    
+                    if (existingProductIndex > -1 && cart[existingProductIndex].quantity >= data.stock) {
+                        showNotification(`Stock maximum atteint pour "${productName}"`, 'error');
+                        return;
+                    }
+                    
+                    addToCart({
+                        id: productId,
+                        name: productName,
+                        price: finalPrice,
+                        image: productImage,
+                        quantity: 1,
+                        availableStock: data.stock,
+                        stockAlerte: data.stock_alerte || 5
+                    });
+                } else {
+                    showNotification(`"${productName}" est en rupture de stock`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error("Erreur lors de la vérification du stock:", error);
+                showNotification("Impossible de vérifier le stock. Veuillez réessayer.", 'error');
+            });
+    });
+});
 </script>
 </body>
 </html>

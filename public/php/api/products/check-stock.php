@@ -1,17 +1,47 @@
 <?php
 // filepath: c:\xampp\htdocs\Site-Vitrine\public\php\api\products\check-stock.php
 
-// Définir les headers pour éviter les problèmes CORS et le type de contenu
+// Définir les headers
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
-// Connexion à la base de données - vérifier que le chemin est correct
-try {
-    require_once '../../../../php/config/database.php';
-} catch (Exception $e) {
+// Activer l'affichage des erreurs pour le débogage
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Essayer plusieurs chemins possibles pour trouver database.php
+$found = false;
+$possiblePaths = [
+    // Chemin relatif
+    __DIR__ . '/../../../config/database.php',
+    // Chemin via document root
+    $_SERVER['DOCUMENT_ROOT'] . '/php/config/database.php',
+    // Autre chemin possible
+    dirname(dirname(dirname(dirname(__DIR__)))) . '/php/config/database.php'
+];
+
+foreach ($possiblePaths as $path) {
+    if (file_exists($path)) {
+        require_once $path;
+        $found = true;
+        break;
+    }
+}
+
+if (!$found) {
     echo json_encode([
-        'error' => 'Erreur de configuration: Impossible de charger la connexion à la base de données',
-        'details' => $e->getMessage(),
+        'error' => 'Fichier de configuration introuvable',
+        'paths_tested' => $possiblePaths,
+        'stock' => 0
+    ]);
+    exit;
+}
+
+// Vérifier si $pdo existe
+if (!isset($pdo)) {
+    echo json_encode([
+        'error' => 'Connexion à la base de données non établie',
         'stock' => 0
     ]);
     exit;
@@ -87,12 +117,20 @@ try {
         ]);
     }
 } catch (PDOException $e) {
-    // Log l'erreur pour l'administrateur mais ne pas exposer les détails techniques à l'utilisateur
-    error_log('Erreur dans check-stock.php: ' . $e->getMessage());
-    
+    // Version debug - affiche les détails de l'erreur
     echo json_encode([
         'error' => 'Impossible de vérifier le stock. Veuillez réessayer.',
+        'debug' => [
+            'message' => $e->getMessage(),
+            'code' => $e->getCode(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString()
+        ],
         'stock' => 0
     ]);
+    
+    // Enregistrer aussi l'erreur dans les logs
+    error_log('Erreur PDO dans check-stock.php: ' . $e->getMessage());
 }
 ?>

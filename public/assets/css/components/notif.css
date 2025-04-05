@@ -1,0 +1,38 @@
+/* Styles pour les notifications */
+.notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    color: white;
+    font-family: 'Raleway', sans-serif;
+    transform: translateX(120%);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 9999;
+}
+
+.notification.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.notification.success {
+    background-color: #28a745;
+}
+
+.notification.error {
+    background-color: #dc3545;
+}
+
+.notification.warning {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.notification.info {
+    background-color: #17a2b8;
+}

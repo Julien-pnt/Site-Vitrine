@@ -1,3 +1,52 @@
+<?php
+// filepath: c:\xampp\htdocs\Site-Vitrine\public\pages\products\panier.php
+// Connexion à la base de données
+require_once '../../../php/config/database.php';
+
+// Démarrage de la session
+session_start();
+
+// Vérification de l'état de connexion de l'utilisateur
+$isLoggedIn = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+$accountLink = $isLoggedIn ? '../account/dashboard.php' : '../account/login.php';
+$accountText = $isLoggedIn ? 'Mon espace' : 'Connexion';
+
+// Si l'utilisateur est connecté, charger ses informations
+$userInfo = null;
+if ($isLoggedIn) {
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE id = ?");
+        $stmt->execute([$_SESSION['user_id']]);
+        $userInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        // Gérer l'erreur silencieusement
+    }
+}
+
+// Pour les notifications côté serveur
+$notification = [
+    'show' => false,
+    'message' => '',
+    'type' => 'info' // info, success, error, warning
+];
+
+// Traitement des actions du panier (si un utilisateur est connecté)
+if ($isLoggedIn && isset($_POST['action'])) {
+    $action = $_POST['action'];
+    
+    // Actions possibles : add, update, remove, clear
+    switch ($action) {
+        case 'sync':
+            // Synchroniser le panier du localStorage avec la session PHP
+            if (isset($_POST['cart']) && is_array($_POST['cart'])) {
+                $_SESSION['cart'] = $_POST['cart'];
+                echo json_encode(['success' => true]);
+                exit;
+            }
+            break;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -369,9 +418,132 @@
             color: #666;
             margin: 3px 0;
         }
+        
+        /* Navigation controls - pour accéder au compte client */
+        .navigation-controls {
+            max-width: 1400px;
+            margin: 1rem auto 0;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-button, .account-access {
+            display: flex;
+            align-items: center;
+            padding: 0.65rem 1.2rem;
+            text-decoration: none;
+            color: #333;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 500;
+            border-radius: 4px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background-color: white;
+            border: 1px solid #eaeaea;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .back-button:hover, .account-access:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .back-button i, .account-access i {
+            margin-right: 0.6rem;
+            font-size: 16px;
+            transition: transform 0.2s ease;
+        }
+
+        /* Préchargeur pour éviter le fondu blanc */
+        body {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        body.loaded {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loader {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loader-logo {
+            position: absolute;
+            z-index: 2;
+        }
+
+        .circular {
+            animation: rotate 2s linear infinite;
+            height: 80px;
+            width: 80px;
+            position: absolute;
+        }
+
+        .path {
+            stroke: #d4af37;
+            stroke-dasharray: 90, 150;
+            stroke-dashoffset: 0;
+            stroke-linecap: round;
+            animation: dash 1.5s ease-in-out infinite;
+        }
+
+        @keyframes rotate {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes dash {
+            0% {
+                stroke-dasharray: 1, 150;
+                stroke-dashoffset: 0;
+            }
+            50% {
+                stroke-dasharray: 90, 150;
+                stroke-dashoffset: -35;
+            }
+            100% {
+                stroke-dasharray: 90, 150;
+                stroke-dashoffset: -124;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Préchargeur pour éviter le flash blanc -->
+    <div class="preloader">
+        <div class="loader">
+            <svg class="circular" viewBox="25 25 50 50">
+                <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10"/>
+            </svg>
+            <div class="loader-logo">
+                <img src="../../assets/img/layout/logo-small.png" alt="Elixir du Temps" width="50">
+            </div>
+        </div>
+    </div>
+
     <!-- Header Section -->
     <header class="header">
         <div class="logo-container">
@@ -391,19 +563,30 @@
         
         <!-- User and Cart Icons -->
         <div class="user-cart-container">
-            <a href="../auth/login.html" class="user-icon">
+            <?php if ($isLoggedIn): ?>
+            <a href="../account/dashboard.php" class="user-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-user">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                 </svg>
                 <div class="dropdown-menu">
-                    <a href="../auth/login.html" id="login-link">Se connecter</a>
-                    <a href="../../php/api/auth/register.php" id="register-link">S'inscrire</a>
-                    <a href="../user/MonCompte.html" id="account-link" style="display: none;">Mon compte</a>
-                    <a href="../user/MesCommandes.html" id="orders-link" style="display: none;">Mes commandes</a>
-                    <a href="../../php/api/auth/logout.php" id="logout-link" class="logout" style="display: none;">Déconnexion</a>
+                    <a href="../account/dashboard.php" id="account-link">Mon compte</a>
+                    <a href="../account/orders.php" id="orders-link">Mes commandes</a>
+                    <a href="../../php/api/auth/logout.php" id="logout-link" class="logout">Déconnexion</a>
                 </div>
             </a>
+            <?php else: ?>
+            <a href="../auth/login.php" class="user-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-user">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <div class="dropdown-menu">
+                    <a href="../auth/login.php" id="login-link">Se connecter</a>
+                    <a href="../auth/register.php" id="register-link">S'inscrire</a>
+                </div>
+            </a>
+            <?php endif; ?>
             
             <div class="cart-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -415,7 +598,7 @@
             </div>
         </div>
     </header>
-
+    
     <!-- Main Cart Content -->
     <main class="cart-page">
         <div class="cart-page-header">
@@ -515,8 +698,22 @@
         </div>
     </footer>
 
+    <!-- Affiche la notification si nécessaire -->
+    <?php if ($notification['show']): ?>
+    <div id="server-notification" class="notification <?php echo $notification['type']; ?>">
+        <?php echo $notification['message']; ?>
+    </div>
+    <script>
+        setTimeout(() => {
+            document.getElementById('server-notification').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('server-notification').style.display = 'none';
+            }, 500);
+        }, 5000);
+    </script>
+    <?php endif; ?>
+
     <!-- Script de gestion du panier -->
-    <script src="../../assets/js/cart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Récupérer les éléments du DOM
@@ -527,40 +724,66 @@
             const totalElement = document.getElementById('cart-total');
             const checkoutBtn = document.getElementById('checkout-btn');
             const continueShoppingBtn = document.getElementById('continue-shopping');
+            const cartBadge = document.querySelector('.cart-badge');
 
-            // Charger le contenu du panier
-            loadCart();
+            /**
+             * Fonction pour récupérer le panier depuis localStorage
+             */
+            function getCart() {
+                return JSON.parse(localStorage.getItem('cart')) || [];
+            }
 
-            // Ajouter les écouteurs d'événements
-            continueShoppingBtn.addEventListener('click', function() {
-                window.location.href = 'Montres.html';
-            });
+            /**
+             * Fonction pour sauvegarder le panier dans localStorage
+             */
+            function saveCart(cart) {
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartUI(cart);
 
-            checkoutBtn.addEventListener('click', function() {
-                // Vérifier les stocks avant de procéder au paiement
-                verifyAllStockBeforeCheckout()
-                    .then(result => {
-                        if (result.allValid) {
-                            // Rediriger vers la page de paiement
-                            // À implémenter: window.location.href = 'checkout.html';
-                            alert('Fonctionnalité de paiement à venir prochainement');
-                        } else {
-                            showNotification(`Attention: ${result.message}`, 'warning');
-                            loadCart(); // Recharger pour refléter les ajustements
-                        }
-                    })
-                    .catch(error => {
-                        showNotification("Erreur lors de la vérification du stock. Veuillez réessayer.", 'error');
-                        console.error("Erreur:", error);
-                    });
-            });
+                // Synchroniser avec le serveur si l'utilisateur est connecté
+                <?php if ($isLoggedIn): ?>
+                syncCartWithServer(cart);
+                <?php endif; ?>
+            }
+
+            /**
+             * Fonction pour synchroniser le panier avec le serveur
+             */
+            function syncCartWithServer(cart) {
+                fetch('panier.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=sync&cart=${encodeURIComponent(JSON.stringify(cart))}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        console.error('Erreur de synchronisation du panier');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                });
+            }
+
+            /**
+             * Mettre à jour l'interface utilisateur du panier (badge, etc.)
+             */
+            function updateCartUI(cart) {
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                if (cartBadge) {
+                    cartBadge.textContent = totalItems;
+                    cartBadge.style.display = totalItems > 0 ? 'flex' : 'none';
+                }
+            }
 
             /**
              * Vérifie le stock disponible d'un produit via l'API
-             * Adaptée pour utiliser la nouvelle structure de la table produits
              */
             function checkProductStock(productId) {
-                return fetch(`/public/php/api/products/check-stock.php?id=${productId}`)
+                return fetch(`../../php/api/products/check-stock.php?id=${productId}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Erreur réseau lors de la vérification du stock');
@@ -570,8 +793,117 @@
             }
 
             /**
+             * Formate un prix
+             */
+            function formatPrice(price) {
+                return Number(price).toFixed(2).replace('.', ',');
+            }
+
+            /**
+             * Affiche une notification à l'utilisateur
+             */
+            function showNotification(message, type = 'success') {
+                let notification = document.getElementById('notification');
+                
+                if (!notification) {
+                    notification = document.createElement('div');
+                    notification.id = 'notification';
+                    document.body.appendChild(notification);
+                }
+                
+                // Définir la classe en fonction du type
+                notification.className = 'notification ' + type;
+                notification.innerHTML = message;
+                notification.style.display = 'block';
+                notification.style.opacity = '1';
+                
+                // Faire disparaître après 3 secondes
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    setTimeout(() => {
+                        notification.style.display = 'none';
+                    }, 500);
+                }, 3000);
+            }
+
+            /**
+             * Supprime un article du panier
+             */
+            function removeFromCart(productId) {
+                let cart = getCart();
+                cart = cart.filter(item => item.id !== productId);
+                
+                saveCart(cart);
+                loadCart(); // Recharger l'affichage complet
+            }
+
+            /**
+             * Diminue la quantité d'un article dans le panier
+             */
+            function decreaseCartQuantity(productId) {
+                const cart = getCart();
+                const productIndex = cart.findIndex(item => item.id === productId);
+                
+                if (productIndex > -1) {
+                    if (cart[productIndex].quantity > 1) {
+                        cart[productIndex].quantity--;
+                        saveCart(cart);
+                    } else {
+                        removeFromCart(productId);
+                    }
+                }
+            }
+
+            /**
+             * Augmente la quantité d'un article dans le panier
+             */
+            function increaseCartQuantity(productId) {
+                const cart = getCart();
+                const productIndex = cart.findIndex(item => item.id === productId);
+                
+                if (productIndex > -1) {
+                    // Vérifier le stock avant d'augmenter
+                    checkProductStock(productId)
+                        .then(stockInfo => {
+                            if (stockInfo.visible === false) {
+                                showNotification(`Ce produit n'est plus disponible`, 'error');
+                                removeFromCart(productId);
+                                loadCart();
+                                return;
+                            }
+                            
+                            if (stockInfo.stock > cart[productIndex].quantity) {
+                                cart[productIndex].quantity++;
+                                
+                                // Mettre à jour les informations du produit
+                                cart[productIndex].availableStock = stockInfo.stock;
+                                cart[productIndex].stockAlerte = stockInfo.stock_alerte || 5;
+                                
+                                // Mettre à jour le prix si nécessaire
+                                if (stockInfo.prix_promo && parseFloat(stockInfo.prix_promo) < parseFloat(stockInfo.prix)) {
+                                    cart[productIndex].price = parseFloat(stockInfo.prix_promo);
+                                    cart[productIndex].regularPrice = parseFloat(stockInfo.prix);
+                                    cart[productIndex].hasPromo = true;
+                                } else {
+                                    cart[productIndex].price = parseFloat(stockInfo.prix);
+                                    cart[productIndex].hasPromo = false;
+                                }
+                                
+                                saveCart(cart);
+                                loadCart(); // Recharger l'affichage
+                            } else {
+                                showNotification(`Stock maximum atteint pour ce produit (${stockInfo.stock})`, 'warning');
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Erreur lors de la vérification du stock:", error);
+                            showNotification("Impossible de vérifier le stock disponible", 'error');
+                        });
+                }
+            }
+
+            /**
              * Vérifie le stock de tous les produits du panier avant le paiement
-             * Prend en compte la visibilité des produits et les seuils d'alerte personnalisés
              */
             async function verifyAllStockBeforeCheckout() {
                 const cart = getCart();
@@ -633,10 +965,50 @@
                 // Si des modifications ont été faites, mettre à jour le panier
                 if (!allValid) {
                     saveCart(updatedCart);
-                    updateCartUI(updatedCart);
                 }
 
                 return { allValid, message };
+            }
+
+            /**
+             * Ajoute les écouteurs d'événements aux boutons de quantité
+             */
+            function attachQuantityEvents() {
+                // Boutons de diminution
+                document.querySelectorAll('.qty-btn.decrease').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const productId = this.getAttribute('data-id');
+                        decreaseCartQuantity(productId);
+                    });
+                });
+                
+                // Boutons d'augmentation
+                document.querySelectorAll('.qty-btn.increase').forEach(button => {
+                    if (button.classList.contains('disabled')) {
+                        return; // Ne pas attacher d'événement aux boutons désactivés
+                    }
+                    
+                    button.addEventListener('click', function() {
+                        const productId = this.getAttribute('data-id');
+                        const input = document.querySelector(`.qty-input[data-id="${productId}"]`);
+                        const currentStock = parseInt(input.getAttribute('data-stock'), 10);
+                        const currentQuantity = parseInt(input.value, 10);
+                        
+                        if (currentQuantity < currentStock) {
+                            increaseCartQuantity(productId);
+                        } else {
+                            showNotification('Quantité maximum atteinte pour ce produit', 'warning');
+                        }
+                    });
+                });
+                
+                // Boutons de suppression
+                document.querySelectorAll('.cart-remove').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const productId = this.getAttribute('data-id');
+                        removeFromCart(productId);
+                    });
+                });
             }
 
             /**
@@ -659,9 +1031,6 @@
                 
                 // Vider le conteneur existant
                 cartItemsContainer.innerHTML = '';
-                
-                // Remplir avec les articles du panier
-                let subtotal = 0;
                 
                 // Vérifier le stock pour chaque produit
                 Promise.all(cart.map(item => 
@@ -693,9 +1062,10 @@
                         cartEmptyMessage.style.display = 'block';
                         cartContainer.style.display = 'none';
                         saveCart([]);
-                        updateCartUI([]);
                         return;
                     }
+                    
+                    let subtotal = 0;
                     
                     availableProducts.forEach(item => {
                         // Utiliser le prix promotionnel si disponible
@@ -782,209 +1152,57 @@
                     // Si le panier a été modifié (produits non visibles supprimés)
                     if (availableProducts.length < cart.length) {
                         saveCart(availableProducts);
-                        updateCartUI(availableProducts);
                         showNotification("Certains produits ne sont plus disponibles et ont été retirés du panier.", 'warning');
                     }
                 });
             }
 
-            /**
-             * Ajoute les écouteurs d'événements aux boutons de quantité
-             */
-            function attachQuantityEvents() {
-                // Boutons de diminution
-                document.querySelectorAll('.qty-btn.decrease').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const productId = this.getAttribute('data-id');
-                        decreaseCartQuantity(productId);
-                        loadCart(); // Recharger l'affichage
-                    });
-                });
-                
-                // Boutons d'augmentation
-                document.querySelectorAll('.qty-btn.increase').forEach(button => {
-                    if (button.classList.contains('disabled')) {
-                        return; // Ne pas attacher d'événement aux boutons désactivés
-                    }
-                    
-                    button.addEventListener('click', function() {
-                        const productId = this.getAttribute('data-id');
-                        const input = document.querySelector(`.qty-input[data-id="${productId}"]`);
-                        const currentStock = parseInt(input.getAttribute('data-stock'), 10);
-                        const currentQuantity = parseInt(input.value, 10);
-                        
-                        if (currentQuantity < currentStock) {
-                            increaseCartQuantity(productId);
-                            loadCart(); // Recharger l'affichage
+            // Charger le panier au chargement de la page
+            loadCart();
+
+            // Ajouter les écouteurs d'événements aux boutons
+            continueShoppingBtn.addEventListener('click', function() {
+                window.location.href = 'Montres.html';
+            });
+
+            checkoutBtn.addEventListener('click', function() {
+                <?php if ($isLoggedIn): ?>
+                // Si l'utilisateur est connecté, vérifier les stocks avant de procéder au paiement
+                verifyAllStockBeforeCheckout()
+                    .then(result => {
+                        if (result.allValid) {
+                            // Rediriger vers la page de paiement
+                            window.location.href = 'checkout.php';
                         } else {
-                            showNotification('Quantité maximum atteinte pour ce produit', 'warning');
+                            showNotification(`Attention: ${result.message}`, 'warning');
+                            loadCart(); // Recharger pour refléter les ajustements
                         }
+                    })
+                    .catch(error => {
+                        showNotification("Erreur lors de la vérification du stock. Veuillez réessayer.", 'error');
+                        console.error("Erreur:", error);
                     });
-                });
-                
-                // Boutons de suppression
-                document.querySelectorAll('.cart-remove').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const productId = this.getAttribute('data-id');
-                        removeFromCart(productId);
-                        loadCart(); // Recharger l'affichage
-                    });
-                });
-            }
-
-            /**
-             * Diminue la quantité d'un article dans le panier
-             */
-            function decreaseCartQuantity(productId) {
-                const cart = getCart();
-                const productIndex = cart.findIndex(item => item.id === productId);
-                
-                if (productIndex > -1) {
-                    if (cart[productIndex].quantity > 1) {
-                        cart[productIndex].quantity--;
-                        saveCart(cart);
-                        updateCartUI(cart);
-                    } else {
-                        removeFromCart(productId);
-                    }
-                }
-            }
-
-            /**
-             * Augmente la quantité d'un article dans le panier
-             */
-            function increaseCartQuantity(productId) {
-                const cart = getCart();
-                const productIndex = cart.findIndex(item => item.id === productId);
-                
-                if (productIndex > -1) {
-                    // Vérifier le stock avant d'augmenter
-                    checkProductStock(productId)
-                        .then(stockInfo => {
-                            if (stockInfo.visible === false) {
-                                showNotification(`Ce produit n'est plus disponible`, 'error');
-                                removeFromCart(productId);
-                                loadCart();
-                                return;
-                            }
-                            
-                            if (stockInfo.stock > cart[productIndex].quantity) {
-                                cart[productIndex].quantity++;
-                                
-                                // Mettre à jour les informations du produit
-                                cart[productIndex].availableStock = stockInfo.stock;
-                                cart[productIndex].stockAlerte = stockInfo.stock_alerte || 5;
-                                
-                                // Mettre à jour le prix si nécessaire
-                                if (stockInfo.prix_promo && parseFloat(stockInfo.prix_promo) < parseFloat(stockInfo.prix)) {
-                                    cart[productIndex].price = parseFloat(stockInfo.prix_promo);
-                                    cart[productIndex].regularPrice = parseFloat(stockInfo.prix);
-                                    cart[productIndex].hasPromo = true;
-                                } else {
-                                    cart[productIndex].price = parseFloat(stockInfo.prix);
-                                    cart[productIndex].hasPromo = false;
-                                }
-                                
-                                saveCart(cart);
-                                updateCartUI(cart);
-                                loadCart(); // Recharger l'affichage
-                            } else {
-                                showNotification(`Stock maximum atteint pour ce produit (${stockInfo.stock})`, 'warning');
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Erreur lors de la vérification du stock:", error);
-                            showNotification("Impossible de vérifier le stock disponible", 'error');
-                        });
-                }
-            }
-
-            /**
-             * Supprime un article du panier
-             */
-            function removeFromCart(productId) {
-                let cart = getCart();
-                cart = cart.filter(item => item.id !== productId);
-                
-                saveCart(cart);
-                updateCartUI(cart);
-                loadCart(); // Recharger l'affichage complet
-            }
-
-            /**
-             * Affiche une notification à l'utilisateur
-             */
-            function showNotification(message, type = 'success') {
-                let notification = document.getElementById('notification');
-                
-                if (!notification) {
-                    notification = document.createElement('div');
-                    notification.id = 'notification';
-                    document.body.appendChild(notification);
-                }
-                
-                // Définir la classe en fonction du type
-                notification.className = 'notification ' + type;
-                notification.innerHTML = message;
-                notification.style.display = 'block';
-                
-                // Faire disparaître après 3 secondes
-                setTimeout(() => {
-                    notification.style.opacity = '0';
-                    setTimeout(() => {
-                        notification.style.display = 'none';
-                        notification.style.opacity = '1';
-                    }, 500);
-                }, 3000);
-            }
-
-            /**
-             * Formate un prix
-             */
-            function formatPrice(price) {
-                return Number(price).toFixed(2).replace('.', ',');
-            }
+                <?php else: ?>
+                // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
+                window.location.href = '../auth/login.php?redirect=products/panier.php';
+                <?php endif; ?>
+            });
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Chercher la vidéo de fond
-            const video = document.querySelector('.video-bg');
-            const videoBackground = document.querySelector('.video-background');
-            const videoOverlay = document.querySelector('.video-overlay');
-            
-            // Si la vidéo existe
-            if (video) {
-                // Fonction pour marquer le chargement de manière progressive
-                const markAsLoaded = () => {
-                    // Ajouter la classe qui indique que la vidéo est chargée
-                    document.body.classList.add('video-loading');
-                    
-                    // Appliquer l'overlay avec opacité pour garantir la lisibilité du texte
-                    if (videoOverlay) {
-                        videoOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
-                    }
-                    
-                    // Transition en douceur vers l'état complètement chargé
-                    setTimeout(() => {
-                        document.body.classList.add('video-loaded');
-                        document.body.classList.remove('video-loading');
+        // Gestion du préchargeur pour éviter le flash blanc
+        window.addEventListener('load', function() {
+            // Masquer le préchargeur après le chargement complet de la page
+            setTimeout(function() {
+                const preloader = document.querySelector('.preloader');
+                document.body.classList.add('loaded');
+                
+                if (preloader) {
+                    preloader.style.opacity = '0';
+                    setTimeout(function() {
+                        preloader.style.display = 'none';
                     }, 300);
-                };
-                
-                // Event listeners pour différents cas
-                video.addEventListener('loadeddata', markAsLoaded);
-                video.addEventListener('canplay', markAsLoaded);
-                
-                // Backup: si la vidéo prend trop de temps, afficher quand même la page après 1.2s
-                setTimeout(markAsLoaded, 1200);
-            } else {
-                // Pas de vidéo trouvée, afficher la page quand même
-                // Utiliser un fond de repli sombre pour garantir la lisibilité
-                if (videoBackground) {
-                    videoBackground.style.backgroundColor = '#1a1a1a';
                 }
-                document.body.classList.add('video-loaded');
-            }
+            }, 500); // Délai pour assurer l'affichage correct
         });
     </script>
 </body>

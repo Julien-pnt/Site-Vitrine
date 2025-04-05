@@ -120,6 +120,128 @@
             font-style: italic;
             font-size: 0.8rem;
         }
+
+        /* Styles pour le dropdown du panier */
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #d4af37;
+            color: white;
+            font-size: 12px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .cart-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 320px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            padding: 1rem;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .cart-dropdown.show {
+            display: block;
+        }
+        
+        .cart-dropdown-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .cart-item-image {
+            width: 50px;
+            height: 50px;
+            overflow: hidden;
+            border-radius: 4px;
+            margin-right: 0.75rem;
+        }
+        
+        .cart-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .cart-item-info {
+            flex-grow: 1;
+        }
+        
+        .cart-item-info h4 {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        .cart-item-price {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .cart-item-remove {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #999;
+            padding: 0.25rem;
+        }
+        
+        .cart-item-remove:hover {
+            color: #d4af37;
+        }
+        
+        .cart-dropdown-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+        
+        .cart-dropdown-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .cart-dropdown-button {
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 4px;
+            flex-grow: 1;
+            font-size: 0.9rem;
+        }
+        
+        .cart-dropdown-button.primary {
+            background: linear-gradient(to bottom, #d4af37, #c0992a);
+            color: white;
+        }
+        
+        .cart-dropdown-button.secondary {
+            background-color: #f5f5f5;
+            color: #333;
+        }
     </style>
     
     <!-- Ressources -->
@@ -195,8 +317,8 @@
                         <span class="cart-dropdown-total-value">0,00 €</span>
                     </div>
                     <div class="cart-dropdown-buttons">
-                        <a href="products/panier.html" class="cart-dropdown-button secondary">Voir le panier</a>
-                        <a href="products/Montres.html" class="cart-dropdown-button primary">Découvrir nos montres</a>
+                        <a href="../products/panier.php" class="cart-dropdown-button secondary">Voir le panier</a>
+                        <a href="../Montres.html" class="cart-dropdown-button primary">Découvrir nos montres</a>
                     </div>
                 </div>
             </div>
@@ -449,6 +571,8 @@
         </div>
     </footer>
 
+    <script src="../../assets/js/cart.js"></script>
+
     <script>
         // Code pour la fonctionnalité d'aperçu rapide
         document.addEventListener('DOMContentLoaded', function() {
@@ -554,6 +678,9 @@
             // Vous pourriez implémenter ici l'ajout réel aux favoris
         });
     });
+    
+    // Mettre à jour l'affichage du panier
+    updateCartDisplay();
 });
 </script>
 <script>
@@ -674,62 +801,80 @@ if (quickViewButtons.length && modal) {
 }
 </script>
 <script>
-// Gestion des boutons d'ajout au panier
-document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-    button.addEventListener('click', function() {
-        const productId = this.getAttribute('data-product-id');
-        const productCard = this.closest('.product-card');
-        const productName = productCard.querySelector('.product-title').textContent;
-        const productPriceText = productCard.querySelector('.product-price').textContent;
-        // Gérer à la fois le prix normal et le prix promotionnel
-        const priceOldElement = productCard.querySelector('.price-old');
-        const productPrice = priceOldElement ? 
-            parseFloat(productPriceText.replace(/[^0-9,.-]+/g, '').replace(',', '.')) : 
-            parseFloat(productPriceText.replace(/[^0-9,.-]+/g, '').replace(',', '.'));
-        const productImage = productCard.querySelector('.product-image').getAttribute('src');
+// Déléguer la gestion du dropdown du panier au script cart.js
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialiser l'affichage du panier
+    if (typeof updateCartDisplay === 'function') {
+        updateCartDisplay();
+    }
+    
+    // Configuration du dropdown du panier
+    const cartIcon = document.querySelector('.cart-icon');
+    if (cartIcon) {
+        // Supprimer les anciens écouteurs d'événements potentiels
+        const newCartIcon = cartIcon.cloneNode(true);
+        cartIcon.parentNode.replaceChild(newCartIcon, cartIcon);
         
-        // Vérifier le stock avant d'ajouter au panier
-        fetch(`/public/php/api/products/check-stock.php?id=${productId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    showNotification(data.error, 'error');
-                    return;
-                }
-                
-                // Utiliser le prix promotionnel si disponible
-                let finalPrice = parseFloat(data.prix);
-                if (data.prix_promo && parseFloat(data.prix_promo) < parseFloat(data.prix)) {
-                    finalPrice = parseFloat(data.prix_promo);
-                }
-                
-                if (data.stock > 0) {
-                    // Ajouter au panier avec information de stock
-                    const cart = getCart();
-                    const existingProductIndex = cart.findIndex(item => item.id === productId);
-                    
-                    if (existingProductIndex > -1 && cart[existingProductIndex].quantity >= data.stock) {
-                        showNotification(`Stock maximum atteint pour "${productName}"`, 'error');
-                        return;
-                    }
-                    
-                    addToCart({
-                        id: productId,
-                        name: productName,
-                        price: finalPrice,
-                        image: productImage,
-                        quantity: 1,
-                        availableStock: data.stock,
-                        stockAlerte: data.stock_alerte || 5
-                    });
-                } else {
-                    showNotification(`"${productName}" est en rupture de stock`, 'error');
-                }
-            })
-            .catch(error => {
-                console.error("Erreur lors de la vérification du stock:", error);
-                showNotification("Impossible de vérifier le stock. Veuillez réessayer.", 'error');
-            });
+        // Ajouter le nouvel écouteur d'événement
+        newCartIcon.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = this.querySelector('.cart-dropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        });
+    }
+    
+    // Fermer le dropdown quand on clique ailleurs
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.cart-dropdown') && !e.target.closest('.cart-icon')) {
+            const dropdown = document.querySelector('.cart-dropdown.show');
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+        }
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion des boutons d'ajout au panier
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            const productCard = this.closest('.product-card');
+            const productName = productCard.querySelector('.product-title').textContent;
+            const productPriceText = productCard.querySelector('.product-price').textContent;
+            const productPrice = parseFloat(productPriceText.replace(/[^0-9,.-]+/g, '').replace(',', '.'));
+            const productImage = productCard.querySelector('.product-image').getAttribute('src');
+            
+            // Utiliser la fonction du fichier cart.js
+            if (typeof checkProductStock === 'function') {
+                checkProductStock(productId, productName, productPrice, productImage);
+            }
+        });
+    });
+    
+    // Configuration du panier dropdown
+    const cartIcon = document.querySelector('.cart-icon');
+    if (cartIcon) {
+        cartIcon.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = this.querySelector('.cart-dropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        });
+    }
+    
+    // Fermer le dropdown quand on clique ailleurs
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.cart-dropdown') && !e.target.closest('.cart-icon')) {
+            const dropdown = document.querySelector('.cart-dropdown.show');
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+        }
     });
 });
 </script>

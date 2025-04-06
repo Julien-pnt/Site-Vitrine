@@ -33,6 +33,11 @@ CREATE TABLE utilisateurs (
     INDEX idx_email (email)
 ) ENGINE=InnoDB;
 
+-- Ajouter les colonnes manquantes à la table utilisateurs
+ALTER TABLE utilisateurs 
+ADD COLUMN photo VARCHAR(255) NULL AFTER actif,
+ADD COLUMN derniere_connexion DATETIME NULL AFTER date_modification;
+
 -- Table pour les jetons d'authentification "Se souvenir de moi"
 CREATE TABLE auth_tokens (
     id INT AUTO_INCREMENT PRIMARY KEY,

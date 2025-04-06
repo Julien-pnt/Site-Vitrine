@@ -16,11 +16,13 @@ class User {
      * @return array|false Données de l'utilisateur ou false si non trouvé
      */
     public function getUserById($id) {
-        $stmt = $this->pdo->prepare("SELECT * FROM utilisateurs WHERE id = :id");
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        // Modifié pour n'inclure que les colonnes existantes
+        $query = "SELECT id, nom, prenom, email, telephone, role, actif AS statut, 
+                     date_creation
+              FROM utilisateurs WHERE id = :id";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch();
     }
     
     /**

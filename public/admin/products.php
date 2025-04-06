@@ -91,23 +91,31 @@ $categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="admin-container">
         <!-- Sidebar de navigation (même code que dans index.php) -->
         <aside class="sidebar">
-            <div class="sidebar-header">
-                <img src="../assets/img/layout/logo.png" alt="Elixir du Temps" class="logo">
-                <h2>Administration</h2>
+            <div class="sidebar-brand">
+                <a href="index.php">
+                    <!-- Utilisez la classe sidebar-logo pour contraindre la taille -->
+                    <img src="../assets/img/layout/logo.png" alt="Elixir du Temps" class="sidebar-logo">
+                    <span>Administration</span>
+                </a>
             </div>
+            
             <nav class="sidebar-nav">
-                <ul>
-                    <li><a href="index.php"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
-                    <li class="active"><a href="products.php"><i class="fas fa-watch"></i> Produits</a></li>
-                    <li><a href="categories.php"><i class="fas fa-tags"></i> Catégories</a></li>
-                    <li><a href="collections.php"><i class="fas fa-layer-group"></i> Collections</a></li>
-                    <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Commandes</a></li>
-                    <li><a href="users.php"><i class="fas fa-users"></i> Utilisateurs</a></li>
-                    <li><a href="reviews.php"><i class="fas fa-star"></i> Avis Clients</a></li>
-                    <li><a href="pages.php"><i class="fas fa-file-alt"></i> Pages</a></li>
-                    <li><a href="settings.php"><i class="fas fa-cog"></i> Paramètres</a></li>
-                </ul>
+                <div class="nav-section">
+                    <h3 class="nav-heading">Navigation</h3>
+                    <ul>
+                        <li><a href="index.php"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                        <li class="active"><a href="products.php"><i class="fas fa-watch"></i> Produits</a></li>
+                        <li><a href="categories.php"><i class="fas fa-tags"></i> Catégories</a></li>
+                        <li><a href="collections.php"><i class="fas fa-layer-group"></i> Collections</a></li>
+                        <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Commandes</a></li>
+                        <li><a href="users/index.php"><i class="fas fa-users"></i> Utilisateurs</a></li>
+                        <li><a href="reviews.php"><i class="fas fa-star"></i> Avis Clients</a></li>
+                        <li><a href="pages.php"><i class="fas fa-file-alt"></i> Pages</a></li>
+                        <li><a href="settings.php"><i class="fas fa-cog"></i> Paramètres</a></li>
+                    </ul>
+                </div>
             </nav>
+            
             <div class="sidebar-footer">
                 <a href="../pages/Accueil.html" target="_blank"><i class="fas fa-external-link-alt"></i> Voir le site</a>
                 <a href="../../php/api/auth/logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>

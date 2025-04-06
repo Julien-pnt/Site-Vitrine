@@ -395,27 +395,32 @@ try {
 </head>
 <body>
     <div class="admin-container">
-        <!-- Sidebar de navigation -->
         <aside class="sidebar">
-            <div class="sidebar-header">
-                <img src="../assets/img/layout/logo.png" alt="Elixir du Temps" class="logo">
-                <h2>Administration</h2>
+            <div class="sidebar-brand">
+                <a href="index.php">
+                    <!-- Ajouter une classe spécifique avec contrainte de taille -->
+                    <img src="../assets/img/layout/logo.png" alt="Logo" class="sidebar-logo">
+                    <span>Elixir du Temps</span>
+                </a>
             </div>
+            
             <nav class="sidebar-nav">
-                <ul>
-                    <li class="active"><a href="index.php"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
-                    <li><a href="products.php"><i class="fas fa-watch"></i> Produits</a></li>
-                    <li><a href="categories.php"><i class="fas fa-tags"></i> Catégories</a></li>
-                    <li><a href="collections.php"><i class="fas fa-layer-group"></i> Collections</a></li>
-                    <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Commandes</a></li>
-                    <li><a href="users/index.php"><i class="fas fa-users"></i> Utilisateurs</a></li>
-                    <li><a href="reviews.php"><i class="fas fa-star"></i> Avis Clients</a></li>
-                    <li><a href="promotions.php"><i class="fas fa-percent"></i> Promotions</a></li>
-                    <li><a href="pages.php"><i class="fas fa-file-alt"></i> Pages</a></li>
-                    <li><a href="export.php"><i class="fas fa-file-export"></i> Exportation</a></li>
-                    <li><a href="system-logs.php"><i class="fas fa-history"></i> Historique</a></li>
-                    <li><a href="settings.php"><i class="fas fa-cog"></i> Paramètres</a></li>
-                </ul>
+                <div class="nav-section">
+                    <h3 class="nav-heading">Navigation</h3>
+                    <ul>
+                        <li class="active"><a href="index.php"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                        <li><a href="products.php"><i class="fas fa-watch"></i> Produits</a></li>
+                        <li><a href="categories.php"><i class="fas fa-tags"></i> Catégories</a></li>
+                        <li><a href="collections.php"><i class="fas fa-layer-group"></i> Collections</a></li>
+                        <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Commandes</a></li>
+                        <li><a href="users/index.php"><i class="fas fa-users"></i> Utilisateurs</a></li>
+                        <li><a href="reviews.php"><i class="fas fa-star"></i> Avis Clients</a></li>
+                        <li><a href="promotions.php"><i class="fas fa-percent"></i> Promotions</a></li>
+                        <li><a href="pages.php"><i class="fas fa-file-alt"></i> Pages</a></li>
+                        <li><a href="export.php"><i class="fas fa-file-export"></i> Exportation</a></li>
+                        <li><a href="system-logs.php"><i class="fas fa-history"></i> Historique</a></li>
+                    </ul>
+                </div>
             </nav>
             <div class="sidebar-footer">
                 <a href="../pages/Accueil.html" target="_blank"><i class="fas fa-external-link-alt"></i> Voir le site</a>
@@ -423,7 +428,6 @@ try {
             </div>
         </aside>
 
-        <!-- Contenu principal -->
         <main class="main-content">
             <header class="main-header">
                 <div class="header-search">

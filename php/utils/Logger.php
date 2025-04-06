@@ -187,4 +187,25 @@ class Logger {
             return $_SERVER['REMOTE_ADDR'] ?? null;
         }
     }
+
+    /**
+     * Récupère les logs d'activité d'un utilisateur spécifique
+     * @param int $userId ID de l'utilisateur
+     * @param int $limit Nombre maximum de logs à récupérer
+     * @return array Liste des logs d'activité
+     */
+    public function getUserActivity($userId, $limit = 10) {
+        $query = "SELECT id, level, category AS type, action, details, created_at AS date_creation, ip_address 
+                  FROM system_logs 
+                  WHERE user_id = :user_id 
+                  ORDER BY created_at DESC 
+                  LIMIT :limit";
+                  
+        $stmt = $this->pdo->prepare($query);
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll();
+    }
 }

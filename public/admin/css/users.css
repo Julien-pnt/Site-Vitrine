@@ -501,3 +501,372 @@ a.btn-primary {
 a.btn-secondary {
     color: var(--gray-800) !important;
 }
+
+/* Styles pour le formulaire utilisateur */
+.user-form {
+    max-width: 800px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.form-group .required {
+    color: var(--danger-color);
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    font-size: 0.95rem;
+    background-color: #fff;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+}
+
+.text-muted {
+    color: var(--gray-600);
+    font-size: 0.875rem;
+    display: block;
+    margin-top: 0.25rem;
+}
+
+.password-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--gray-500);
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+.toggle-password:hover {
+    color: var(--gray-700);
+}
+
+.current-photo {
+    margin-top: 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.current-photo img {
+    border-radius: var(--border-radius);
+    object-fit: cover;
+}
+
+.photo-actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.form-control-file {
+    padding: 0.5rem 0;
+}
+
+/* Styles pour la visualisation des détails utilisateur */
+.user-details-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    gap: 1.5rem;
+}
+
+.user-profile-card {
+    grid-column: 1 / -1;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.user-avatar-large {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.user-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--gray-200);
+    color: var(--gray-700);
+    font-size: 3rem;
+}
+
+.user-info-large {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.user-info-large h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    color: var(--gray-900);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.25rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.info-label {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+.info-value {
+    font-size: 1rem;
+    color: var(--gray-900);
+}
+
+.info-value a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.info-value a:hover {
+    text-decoration: underline;
+}
+
+.not-defined {
+    color: var(--gray-500);
+    font-style: italic;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-badge::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.status-active {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: var(--success);
+}
+
+.status-active::before {
+    background-color: var(--success);
+}
+
+.status-inactive {
+    background-color: rgba(108, 117, 125, 0.1);
+    color: var(--gray-700);
+}
+
+.status-inactive::before {
+    background-color: var(--gray-700);
+}
+
+.role-admin {
+    background-color: rgba(212, 175, 55, 0.15);
+    color: var(--primary-dark);
+}
+
+.role-manager {
+    background-color: rgba(23, 162, 184, 0.15);
+    color: var(--info-color);
+}
+
+.role-client {
+    background-color: rgba(108, 117, 125, 0.15);
+    color: var(--gray-700);
+}
+
+@media (max-width: 768px) {
+    .user-details-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .user-profile {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Styles pour la timeline d'activités */
+.activity-timeline {
+    padding: 0.5rem 0;
+}
+
+.activity-item {
+    display: flex;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.bg-primary {
+    background-color: var(--primary-color);
+}
+
+.bg-success {
+    background-color: var(--success-color);
+}
+
+.bg-danger {
+    background-color: var(--danger-color);
+}
+
+.bg-warning {
+    background-color: var(--warning-color);
+}
+
+.bg-info {
+    background-color: var(--info-color);
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.activity-title {
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+.activity-time {
+    font-size: 0.825rem;
+    color: var(--gray-600);
+}
+
+.activity-description {
+    color: var(--gray-700);
+    font-size: 0.925rem;
+    margin-bottom: 0.5rem;
+}
+
+.activity-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.825rem;
+    color: var(--gray-500);
+}
+
+.activity-meta i {
+    margin-right: 0.25rem;
+}
+
+.text-muted {
+    color: var(--gray-600);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mt-3 {
+    margin-top: 1rem;
+}
+
+.btn-outline-secondary {
+    background-color: transparent;
+    border: 1px solid var(--gray-400);
+    color: var(--gray-700);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--gray-200);
+}
+
+.btn-sm {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+}

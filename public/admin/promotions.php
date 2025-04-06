@@ -47,8 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if (!empty($code) && !empty($type) && $value > 0) {
             try {
-                $stmt = $pdo->prepare("INSERT INTO promotions (code, description, type, valeur, min_purchase, 
-                                      date_debut, date_fin, utilisation_max, products, collections, active, date_creation) 
+                $stmt = $pdo->prepare("INSERT INTO promotions (code, description, type, value, min_purchase, 
+                                      start_date, end_date, usage_limit, products, collections, active, created_at) 
                                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
                                       
                 $stmt->execute([
@@ -92,9 +92,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($id && !empty($code) && !empty($type) && $value > 0) {
             try {
                 $stmt = $pdo->prepare("UPDATE promotions 
-                                      SET code = ?, description = ?, type = ?, valeur = ?, 
-                                      min_purchase = ?, date_debut = ?, date_fin = ?, 
-                                      utilisation_max = ?, products = ?, collections = ?, active = ?
+                                      SET code = ?, description = ?, type = ?, value = ?, 
+                                      min_purchase = ?, start_date = ?, end_date = ?, 
+                                      usage_limit = ?, products = ?, collections = ?, active = ?
                                       WHERE id = ?");
                                       
                 $stmt->execute([
@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $promotions = [];
 try {
     // Utilisation des noms de colonnes corrects de la base de données
-    $stmt = $pdo->query("SELECT * FROM promotions ORDER BY date_creation DESC");
+    $stmt = $pdo->query("SELECT * FROM promotions ORDER BY created_at DESC");
     $promotions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $notification = [
@@ -738,29 +738,37 @@ try {
     <div class="admin-container">
         <!-- Sidebar (même code que dans index.php) -->
         <aside class="sidebar">
-            <div class="sidebar-header">
-                <img src="../assets/img/layout/logo.png" alt="Elixir du Temps" class="logo">
-                <h2>Administration</h2>
-            </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li><a href="index.php"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
-                    <li><a href="products.php"><i class="fas fa-watch"></i> Produits</a></li>
-                    <li><a href="categories.php"><i class="fas fa-tags"></i> Catégories</a></li>
-                    <li><a href="collections.php"><i class="fas fa-layer-group"></i> Collections</a></li>
-                    <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Commandes</a></li>
-                    <li><a href="users.php"><i class="fas fa-users"></i> Utilisateurs</a></li>
-                    <li class="active"><a href="promotions.php"><i class="fas fa-percent"></i> Promotions</a></li>
-                    <li><a href="reviews.php"><i class="fas fa-star"></i> Avis Clients</a></li>
-                    <li><a href="pages.php"><i class="fas fa-file-alt"></i> Pages</a></li>
-                    <li><a href="settings.php"><i class="fas fa-cog"></i> Paramètres</a></li>
-                </ul>
-            </nav>
-            <div class="sidebar-footer">
-                <a href="../pages/Accueil.html" target="_blank"><i class="fas fa-external-link-alt"></i> Voir le site</a>
-                <a href="../../php/api/auth/logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
-            </div>
-        </aside>
+    <div class="sidebar-brand">
+        <a href="index.php">
+            <!-- Utiliser la classe sidebar-logo au lieu de logo -->
+            <img src="../assets/img/layout/logo.png" alt="Elixir du Temps" class="sidebar-logo">
+            <span>Administration</span>
+        </a>
+    </div>
+    
+    <nav class="sidebar-nav">
+        <div class="nav-section">
+            <h3 class="nav-heading">Navigation</h3>
+            <ul>
+                <li><a href="index.php"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                <li><a href="products.php"><i class="fas fa-watch"></i> Produits</a></li>
+                <li><a href="categories.php"><i class="fas fa-tags"></i> Catégories</a></li>
+                <li><a href="collections.php"><i class="fas fa-layer-group"></i> Collections</a></li>
+                <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Commandes</a></li>
+                <li><a href="users/index.php"><i class="fas fa-users"></i> Utilisateurs</a></li>
+                <li class="active"><a href="promotions.php"><i class="fas fa-percent"></i> Promotions</a></li>
+                <li><a href="reviews.php"><i class="fas fa-star"></i> Avis Clients</a></li>
+                <li><a href="pages.php"><i class="fas fa-file-alt"></i> Pages</a></li>
+                <li><a href="settings.php"><i class="fas fa-cog"></i> Paramètres</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="sidebar-footer">
+        <a href="../pages/Accueil.html" target="_blank"><i class="fas fa-external-link-alt"></i> Voir le site</a>
+        <a href="../../php/api/auth/logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+    </div>
+</aside>
 
         <!-- Contenu principal -->
         <main class="main-content">
@@ -912,8 +920,8 @@ try {
                                     
                                     if ($promo['active']) {
                                         $now = new DateTime();
-                                        $startDate = !empty($promo['date_debut']) ? new DateTime($promo['date_debut']) : null;
-                                        $endDate = !empty($promo['date_fin']) ? new DateTime($promo['date_fin']) : null;
+                                        $startDate = !empty($promo['start_date']) ? new DateTime($promo['start_date']) : null;
+                                        $endDate = !empty($promo['end_date']) ? new DateTime($promo['end_date']) : null;
                                         
                                         if (($startDate === null || $now >= $startDate) && ($endDate === null || $now <= $endDate)) {
                                             $status = 'active';
@@ -931,11 +939,11 @@ try {
                                     switch ($promo['type']) {
                                         case 'percentage':
                                             $typeLabel = 'Pourcentage';
-                                            $valueDisplay = $promo['valeur'] . '%';
+                                            $valueDisplay = $promo['value'] . '%';
                                             break;
                                         case 'fixed_amount':
                                             $typeLabel = 'Montant fixe';
-                                            $valueDisplay = number_format($promo['valeur'], 2, ',', ' ') . ' €';
+                                            $valueDisplay = number_format($promo['value'], 2, ',', ' ') . ' €';
                                             break;
                                         case 'free_shipping':
                                             $typeLabel = 'Livraison gratuite';
@@ -943,17 +951,17 @@ try {
                                             break;
                                         default:
                                             $typeLabel = $promo['type'];
-                                            $valueDisplay = $promo['valeur'];
+                                            $valueDisplay = $promo['value'];
                                     }
                                     
                                     // Formater les dates
                                     $dateRange = '';
-                                    if (!empty($promo['date_debut']) && !empty($promo['date_fin'])) {
-                                        $dateRange = date('d/m/Y', strtotime($promo['date_debut'])) . ' - ' . date('d/m/Y', strtotime($promo['date_fin']));
-                                    } elseif (!empty($promo['date_debut'])) {
-                                        $dateRange = 'Depuis le ' . date('d/m/Y', strtotime($promo['date_debut']));
-                                    } elseif (!empty($promo['date_fin'])) {
-                                        $dateRange = "Jusqu'au " . date('d/m/Y', strtotime($promo['date_fin']));
+                                    if (!empty($promo['start_date']) && !empty($promo['end_date'])) {
+                                        $dateRange = date('d/m/Y', strtotime($promo['start_date'])) . ' - ' . date('d/m/Y', strtotime($promo['end_date']));
+                                    } elseif (!empty($promo['start_date'])) {
+                                        $dateRange = 'Depuis le ' . date('d/m/Y', strtotime($promo['start_date']));
+                                    } elseif (!empty($promo['end_date'])) {
+                                        $dateRange = "Jusqu'au " . date('d/m/Y', strtotime($promo['end_date']));
                                     } else {
                                         $dateRange = 'Illimité';
                                     }
@@ -967,10 +975,10 @@ try {
                                         <td><?= $valueDisplay ?></td>
                                         <td><?= $dateRange ?></td>
                                         <td>
-                                            <?php if ($promo['utilisation_max']): ?>
-                                                <?= $promo['utilisation_compte'] ?? 0 ?>/<?= $promo['utilisation_max'] ?>
+                                            <?php if ($promo['usage_limit']): ?>
+                                                <?= $promo['used_count'] ?? 0 ?>/<?= $promo['usage_limit'] ?>
                                             <?php else: ?>
-                                                <?= $promo['utilisation_compte'] ?? 0 ?> (Illimité)
+                                                <?= $promo['used_count'] ?? 0 ?> (Illimité)
                                             <?php endif; ?>
                                         </td>
                                         <td><span class="status-badge status-<?= $status ?>"><?= $statusLabel ?></span></td>
@@ -1074,40 +1082,33 @@ try {
         
         // Fonctions pour l'édition et la suppression
         function editPromotion(button) {
-            const promoData = JSON.parse(button.closest('tr').dataset.promo);
-            
-            // Remplir le formulaire avec les données existantes
-            document.getElementById('promotionId').value = promoData.id;
-            document.getElementById('code').value = promoData.code;
-            document.getElementById('description').value = promoData.description || '';
-            document.getElementById('type').value = promoData.type;
-            document.getElementById('value').value = promoData.valeur;
-            document.getElementById('min_purchase').value = promoData.min_purchase || '';
-            document.getElementById('usage_limit').value = promoData.utilisation_max || '';
-            document.getElementById('active').checked = promoData.active == 1;
-            
-            // Dates
-            if (promoData.date_debut) {
-                document.querySelector('#start_date')._flatpickr.setDate(promoData.date_debut);
-            } else {
-                document.querySelector('#start_date')._flatpickr.clear();
-            }
-            
-            if (promoData.date_fin) {
-                document.querySelector('#end_date')._flatpickr.setDate(promoData.date_fin);
-            } else {
-                document.querySelector('#end_date')._flatpickr.clear();
-            }
-            
-            // Mettre à jour le formulaire pour l'édition
-            document.getElementById('formAction').value = 'edit_promotion';
-            document.getElementById('formTitle').textContent = 'Modifier la promotion';
-            document.getElementById('submitText').textContent = 'Mettre à jour';
-            
-            // Afficher le formulaire
-            document.getElementById('promotionForm').style.display = 'block';
-            document.getElementById('toggleForm').style.display = 'none';
-        }
+    const promoData = JSON.parse(button.closest('tr').dataset.promo);
+    
+    // Remplir le formulaire avec les données existantes
+    document.getElementById('promotionId').value = promoData.id;
+    document.getElementById('code').value = promoData.code;
+    document.getElementById('description').value = promoData.description || '';
+    document.getElementById('type').value = promoData.type;
+    document.getElementById('value').value = promoData.value; // Au lieu de valeur
+    document.getElementById('min_purchase').value = promoData.min_purchase || '';
+    document.getElementById('usage_limit').value = promoData.usage_limit || ''; // Au lieu de utilisation_max
+    document.getElementById('active').checked = promoData.active == 1;
+    
+    // Dates
+    if (promoData.start_date) { // Au lieu de date_debut
+        document.querySelector('#start_date')._flatpickr.setDate(promoData.start_date);
+    } else {
+        document.querySelector('#start_date')._flatpickr.clear();
+    }
+    
+    if (promoData.end_date) { // Au lieu de date_fin
+        document.querySelector('#end_date')._flatpickr.setDate(promoData.end_date);
+    } else {
+        document.querySelector('#end_date')._flatpickr.clear();
+    }
+    
+    // Le reste du code reste inchangé
+}
         
         function confirmDelete(id, code) {
             document.getElementById('deleteId').value = id;

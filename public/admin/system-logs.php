@@ -1193,7 +1193,7 @@ try {
                                 <img src="../uploads/users/<?= htmlspecialchars($userInfo['photo']) ?>" alt="<?= htmlspecialchars($userInfo['prenom']) ?>" class="avatar">
                             <?php else: ?>
                                 <!-- Image par défaut basée sur le rôle -->
-                                <?php $defaultImage = ($userInfo && $userInfo['role'] == 'admin') ? 'admin-default.jpg' : 'user-default.png'; ?>
+                                <?php $defaultImage = ($userInfo && $userInfo['role'] == 'admin') ? 'user-default.png' : 'user-default.png'; ?>
                                 <img src="../assets/img/avatars/<?= $defaultImage ?>" alt="Avatar" class="avatar">
                             <?php endif; ?>
                             <span class="username"><?= $userInfo ? htmlspecialchars($userInfo['prenom']) : 'Utilisateur' ?></span>

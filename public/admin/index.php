@@ -141,12 +141,13 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - Elixir du Temps</title>
-    <link rel="icon" href="../assets/img/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../assets/img/layout/jb3.jpg" type="image/x-icon">
     <link rel="stylesheet" href="css/admin.css">
     <!-- FontAwesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Chart.js pour les graphiques -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
         /* Styles pour les notifications */
         .notifications-container {
@@ -407,7 +408,7 @@ try {
                     <li><a href="categories.php"><i class="fas fa-tags"></i> Catégories</a></li>
                     <li><a href="collections.php"><i class="fas fa-layer-group"></i> Collections</a></li>
                     <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Commandes</a></li>
-                    <li><a href="users.php"><i class="fas fa-users"></i> Utilisateurs</a></li>
+                    <li><a href="users/index.php"><i class="fas fa-users"></i> Utilisateurs</a></li>
                     <li><a href="reviews.php"><i class="fas fa-star"></i> Avis Clients</a></li>
                     <li><a href="promotions.php"><i class="fas fa-percent"></i> Promotions</a></li>
                     <li><a href="pages.php"><i class="fas fa-file-alt"></i> Pages</a></li>

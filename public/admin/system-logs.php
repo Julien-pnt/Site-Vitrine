@@ -152,13 +152,21 @@ try {
         }
 
         .admin-container {
-            display: grid;
-            grid-template-columns: 260px 1fr;
+            display: flex; /* Changer grid pour flex */
             min-height: 100vh;
+            width: 100%;
         }
 
         .main-content {
-            padding: 2rem;
+            margin-left: 250px; /* Même valeur que la largeur du sidebar */
+            flex: 1;
+            padding: 0; /* Enlever le padding général */
+            background-color: #f5f5f7;
+            min-height: 100vh;
+        }
+
+        .dashboard {
+            padding: 1.5rem; /* Ajouter du padding ici à la place */
         }
 
         .dashboard h1 {
@@ -186,11 +194,14 @@ try {
         .sidebar {
             background-color: var(--bg-dark);
             color: white;
-            padding: 2rem 0;
-            position: sticky;
+            padding: 1.5rem 0; /* Réduire légèrement le padding */
+            position: fixed; /* Fixed au lieu de sticky */
             top: 0;
+            left: 0;
+            width: 250px; /* Largeur fixe */
             height: 100vh;
             overflow-y: auto;
+            z-index: 1000;
         }
 
         .sidebar-logo {
@@ -786,6 +797,10 @@ try {
                 width: 70px;
             }
             
+            .main-content {
+                margin-left: 70px;
+            }
+            
             .sidebar-logo h2,
             .sidebar-heading,
             .sidebar-nav a span {
@@ -809,7 +824,7 @@ try {
 
         @media (max-width: 768px) {
             .main-content {
-                padding: 1rem;
+                margin-left: 0;
             }
             
             .filter-row {
@@ -844,7 +859,7 @@ try {
         /* Header styles */
         .main-header {
             background-color: white;
-            padding: 1rem 1.5rem;
+            padding: 0.75rem 1.5rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             position: sticky;
             top: 0;

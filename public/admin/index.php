@@ -40,6 +40,37 @@ try {
     error_log("Erreur SQL (dashboard): " . $e->getMessage());
 }
 
+// Récupérer les informations complètes de l'utilisateur connecté
+$userId = $_SESSION['user_id'] ?? 0;
+$userInfo = null;
+
+if ($userId > 0) {
+    try {
+        $userStmt = $pdo->prepare("SELECT id, nom, prenom, email, photo, role FROM utilisateurs WHERE id = ?");
+        $userStmt->execute([$userId]);
+        $userInfo = $userStmt->fetch();
+        
+        // Créer le répertoire pour les avatars par défaut s'il n'existe pas
+        $avatarsDir = $_SERVER['DOCUMENT_ROOT'] . '/Site-Vitrine/public/assets/img/avatars/';
+        if (!is_dir($avatarsDir)) {
+            mkdir($avatarsDir, 0755, true);
+        }
+        
+        // Copier l'image par défaut si elle n'existe pas déjà
+        $defaultUserImage = $avatarsDir . 'user-default.png';
+        if (!file_exists($defaultUserImage)) {
+            // Utiliser une image existante comme modèle
+            $sourceImage = $_SERVER['DOCUMENT_ROOT'] . '/Site-Vitrine/public/assets/img/layout/jb3.jpg';
+            if (file_exists($sourceImage)) {
+                copy($sourceImage, $defaultUserImage);
+            }
+        }
+    } catch (PDOException $e) {
+        // Gérer silencieusement l'erreur
+        error_log("Erreur lors de la récupération des informations utilisateur: " . $e->getMessage());
+    }
+}
+
 // Statistiques du tableau de bord avec gestion d'erreurs
 $stats = [
     'totalProducts' => 0,
@@ -393,6 +424,93 @@ try {
         .notification-link:hover {
             animation: pulse 1.5s infinite;
         }
+
+        /* Ajoutez ces styles dans votre fichier admin.css ou dans la section <style> de index.php */
+        .header-search {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-search input {
+            padding-right: 40px; /* Espace pour l'icône */
+            width: 100%;
+            border-radius: 20px;
+            border: 1px solid #e0e0e0;
+            padding: 8px 15px;
+            height: 38px; /* Hauteur fixe pour uniformité */
+        }
+
+        .header-search button {
+            position: absolute;
+            top: 50%; /* Centre verticalement */
+            right: 15%; /* Décalage plus important vers la droite */
+            transform: translateY(-50%); /* Assure un centrage parfait */
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-search button:hover {
+            color: #d4af37;
+        }
+
+        /* Remplacer ou ajouter ces styles */
+        .user-dropdown {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius);
+        }
+
+        .dropdown-arrow {
+            transition: transform 0.2s ease;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            width: 200px;
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 0.5rem;
+            z-index: 1000;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 5px;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .user-dropdown {
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .user-dropdown:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
     </style>
 </head>
 <body>
@@ -411,7 +529,7 @@ try {
                     <h3 class="nav-heading">Navigation</h3>
                     <ul>
                         <li class="active"><a href="index.php"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
-                        <li><a href="products.php"><i class="fas fa-watch"></i> Produits</a></li>
+                        <li><a href="products.php"><i class="fas fa-box"></i> Produits</a></li>
                         <li><a href="categories.php"><i class="fas fa-tags"></i> Catégories</a></li>
                         <li><a href="collections.php"><i class="fas fa-layer-group"></i> Collections</a></li>
                         <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Commandes</a></li>
@@ -438,10 +556,21 @@ try {
                         <button type="submit"><i class="fas fa-search"></i></button>
                     </form>
                 </div>
-                <div class="header-user">
-                    <span>Bienvenue, <?= htmlspecialchars($admin['prenom'] ?? $admin['nom'] ?? 'Admin') ?></span>
-                    <div class="user-avatar">
-                        <i class="fas fa-user-circle"></i>
+                <div class="user-dropdown" id="userProfileDropdown">
+                    <?php if ($userInfo && !empty($userInfo['photo'])): ?>
+                        <!-- Utiliser la photo de la base de données si elle existe -->
+                        <img src="../uploads/users/<?= htmlspecialchars($userInfo['photo']) ?>" alt="<?= htmlspecialchars($userInfo['prenom']) ?>" class="avatar">
+                    <?php else: ?>
+                        <!-- Image par défaut basée sur le rôle -->
+                        <?php $defaultImage = ($userInfo && $userInfo['role'] == 'admin') ? 'user-default.png' : 'user-default.png'; ?>
+                        <img src="../assets/img/avatars/<?= $defaultImage ?>" alt="Avatar" class="avatar">
+                    <?php endif; ?>
+                    <span class="username"><?= $userInfo ? htmlspecialchars($userInfo['prenom']) : 'Admin' ?></span>
+                    <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    <div class="dropdown-menu" id="userDropdownMenu">
+                        <a href="profile.php"><i class="fas fa-user"></i> Profil</a>
+                        <a href="settings.php"><i class="fas fa-cog"></i> Paramètres</a>
+                        <a href="../../php/api/auth/logout.php" class="logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
                     </div>
                 </div>
             </header>
@@ -775,6 +904,67 @@ try {
                     console.error('Erreur lors du nettoyage du cache:', error);
                 });
         });
+    });
+    
+    // Placer ce code dans votre balise <script> existante
+    document.addEventListener('DOMContentLoaded', function() {
+        // Menu déroulant utilisateur amélioré
+        const userDropdown = document.getElementById('userProfileDropdown');
+        const dropdownMenu = document.getElementById('userDropdownMenu');
+        const dropdownArrow = document.querySelector('.dropdown-arrow');
+        
+        if (userDropdown && dropdownMenu) {
+            // Fermer le menu au chargement
+            dropdownMenu.style.display = 'none';
+            dropdownMenu.style.opacity = '0';
+            dropdownMenu.style.transform = 'translateY(-10px)';
+            
+            // Toggle le menu au clic
+            userDropdown.addEventListener('click', function(e) {
+                e.stopPropagation(); // Empêche la propagation au document
+                
+                const isOpen = dropdownMenu.style.display === 'block';
+                
+                if (isOpen) {
+                    // Fermer le menu
+                    dropdownArrow.style.transform = 'rotate(0deg)';
+                    dropdownMenu.style.opacity = '0';
+                    dropdownMenu.style.transform = 'translateY(-10px)';
+                    
+                    setTimeout(() => {
+                        dropdownMenu.style.display = 'none';
+                    }, 200); // Délai correspondant à la transition
+                } else {
+                    // Ouvrir le menu
+                    dropdownMenu.style.display = 'block';
+                    dropdownArrow.style.transform = 'rotate(180deg)';
+                    
+                    // Force reflow pour permettre la transition
+                    void dropdownMenu.offsetWidth;
+                    
+                    dropdownMenu.style.opacity = '1';
+                    dropdownMenu.style.transform = 'translateY(0)';
+                }
+            });
+            
+            // Fermer le menu quand on clique ailleurs
+            document.addEventListener('click', function(e) {
+                if (dropdownMenu.style.display === 'block') {
+                    dropdownArrow.style.transform = 'rotate(0deg)';
+                    dropdownMenu.style.opacity = '0';
+                    dropdownMenu.style.transform = 'translateY(-10px)';
+                    
+                    setTimeout(() => {
+                        dropdownMenu.style.display = 'none';
+                    }, 200);
+                }
+            });
+            
+            // Empêcher la fermeture lorsqu'on clique sur les éléments du menu
+            dropdownMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
     });
     </script>
 </body>

@@ -2,6 +2,29 @@
 require_once '../../php/config/database.php';
 require_once '../../php/utils/auth.php';
 
+// Créer le répertoire pour les avatars par défaut s'il n'existe pas
+$avatarsDir = $_SERVER['DOCUMENT_ROOT'] . '/Site-Vitrine/public/assets/img/avatars/';
+if (!is_dir($avatarsDir)) {
+    mkdir($avatarsDir, 0755, true);
+}
+
+// Copier l'image existante comme image par défaut si elle n'existe pas déjà
+$defaultAdminImage = $avatarsDir . 'admin-default.jpg';
+$defaultUserImage = $avatarsDir . 'user-default.jpg';
+
+// Image source (l'image que vous utilisez actuellement)
+$sourceImage = $_SERVER['DOCUMENT_ROOT'] . '/Site-Vitrine/public/assets/img/layout/jb3.jpg';
+
+// Copier l'image si elle existe et n'est pas déjà copiée
+if (file_exists($sourceImage)) {
+    if (!file_exists($defaultAdminImage)) {
+        copy($sourceImage, $defaultAdminImage);
+    }
+    if (!file_exists($defaultUserImage)) {
+        copy($sourceImage, $defaultUserImage);
+    }
+}
+
 // Vérification de l'authentification
 if (!isLoggedIn() || !isAdmin()) {
     header('Location: /Site-Vitrine/public/pages/auth/login.php?redirect=admin');
@@ -204,7 +227,7 @@ try {
             z-index: 1000;
         }
 
-        .sidebar-logo {
+        .sidebar-brand {
             display: flex;
             align-items: center;
             gap: 0.75rem;
@@ -212,13 +235,13 @@ try {
             margin-bottom: 2rem;
         }
 
-        .sidebar-logo img {
+        .sidebar-brand img {
             width: 40px;
             height: 40px;
             object-fit: contain;
         }
 
-        .sidebar-logo h2 {
+        .sidebar-brand h2 {
             font-size: 1.25rem;
             font-weight: 600;
             color: white;
@@ -271,7 +294,7 @@ try {
         /* Filters section */
         .filter-form {
             background-color: white;
-            border-radius: var(--radius);
+            border-radius: var (--radius);
             padding: 1.5rem;
             margin-bottom: 1.5rem;
             box-shadow: var(--shadow);
@@ -348,7 +371,7 @@ try {
         .reset-filters {
             background-color: transparent;
             border: 1px solid #ddd;
-            color: var(--text-light);
+            color: var (--text-light);
             padding: 0.6rem 1rem;
             border-radius: var(--radius);
             cursor: pointer;
@@ -1016,14 +1039,69 @@ try {
                 display: none;
             }
         }
+
+        /* Ajouter ou modifier ces styles dans la section CSS */
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            margin-bottom: 5%;
+        }
+
+        /* Ajoutez ces styles au bas de votre section CSS */
+        .dropdown-menu {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            width: 200px;
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 0.5rem;
+            z-index: 1000;
+            transition: all 0.2s ease-in-out;
+            transform: translateY(-10px);
+        }
+
+        .user-dropdown:hover .dropdown-menu {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Ajoutez cette classe pour créer une zone de survol étendue qui empêche le menu de disparaître */
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-dropdown::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            height: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="admin-container">
         <!-- Sidebar avec navigation moderne -->
         <aside class="sidebar">
-            <div class="sidebar-logo">
-                <img src="../../assets/img/layout/icon.png" alt="Elixir du Temps">
+            <div class="sidebar-brand">
+                <img src="../assets/img/layout/Aubry-ladmin.png" alt="Elixir du Temps" class="logo-img">
                 <h2>Administration</h2>
             </div>
             
@@ -1094,9 +1172,31 @@ try {
                             <i class="fas fa-envelope"></i>
                             <span class="badge">5</span>
                         </a>
+                        <?php
+                        // Récupérer les informations de l'utilisateur connecté
+                        $userId = $_SESSION['user_id'] ?? 0;
+                        $userInfo = null;
+
+                        if ($userId > 0) {
+                            try {
+                                $userStmt = $pdo->prepare("SELECT nom, prenom, email, photo, role FROM utilisateurs WHERE id = ?");
+                                $userStmt->execute([$userId]);
+                                $userInfo = $userStmt->fetch();
+                            } catch (PDOException $e) {
+                                // Gérer silencieusement l'erreur
+                            }
+                        }
+                        ?>
                         <div class="user-dropdown">
-                            <img src="../../assets/img/admin/profile.jpg" alt="Admin" class="avatar">
-                            <span class="username">Admin</span>
+                            <?php if ($userInfo && !empty($userInfo['photo'])): ?>
+                                <!-- Utiliser la photo de la base de données si elle existe -->
+                                <img src="../uploads/users/<?= htmlspecialchars($userInfo['photo']) ?>" alt="<?= htmlspecialchars($userInfo['prenom']) ?>" class="avatar">
+                            <?php else: ?>
+                                <!-- Image par défaut basée sur le rôle -->
+                                <?php $defaultImage = ($userInfo && $userInfo['role'] == 'admin') ? 'admin-default.jpg' : 'user-default.jpg'; ?>
+                                <img src="../assets/img/avatars/<?= $defaultImage ?>" alt="Avatar" class="avatar">
+                            <?php endif; ?>
+                            <span class="username"><?= $userInfo ? htmlspecialchars($userInfo['prenom']) : 'Utilisateur' ?></span>
                             <i class="fas fa-chevron-down"></i>
                             <div class="dropdown-menu">
                                 <a href="profile.php"><i class="fas fa-user"></i> Profil</a>
@@ -1652,6 +1752,40 @@ try {
                     };
                     
                     return `<span style="color:${colors[cls]};">${match}</span>`;
+                });
+            }
+        });
+
+        // Ajouter ce code avant la fin du script existant
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion du menu déroulant de profil utilisateur
+            const userDropdown = document.querySelector('.user-dropdown');
+            const dropdownMenu = userDropdown.querySelector('.dropdown-menu');
+            
+            if (userDropdown && dropdownMenu) {
+                userDropdown.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+                    
+                    // Animation
+                    if (dropdownMenu.style.display === 'block') {
+                        setTimeout(() => {
+                            dropdownMenu.style.opacity = '1';
+                            dropdownMenu.style.transform = 'translateY(0)';
+                        }, 10);
+                    } else {
+                        dropdownMenu.style.opacity = '0';
+                        dropdownMenu.style.transform = 'translateY(-10px)';
+                    }
+                });
+                
+                // Fermer le menu quand on clique ailleurs
+                document.addEventListener('click', function(e) {
+                    if (!userDropdown.contains(e.target)) {
+                        dropdownMenu.style.display = 'none';
+                        dropdownMenu.style.opacity = '0';
+                        dropdownMenu.style.transform = 'translateY(-10px)';
+                    }
                 });
             }
         });

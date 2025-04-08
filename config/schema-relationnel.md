@@ -17,8 +17,10 @@
 | pays              | VARCHAR(100)                   | DEFAULT 'France'                 |
 | date_creation     | DATETIME                       | DEFAULT CURRENT_TIMESTAMP        |
 | date_modification | DATETIME                       | ON UPDATE CURRENT_TIMESTAMP      |
+| derniere_connexion| DATETIME                       | NULL                             |
 | role              | ENUM('client','admin','manager')| DEFAULT 'client'                |
 | actif             | BOOLEAN                        | DEFAULT TRUE                     |
+| photo             | VARCHAR(255)                   | NULL                             |
 
 ### Table `auth_tokens`
 | Colonne      | Type          | Contraintes                      |
@@ -28,6 +30,15 @@
 | token        | VARCHAR(255)  | NOT NULL                         |
 | created_at   | TIMESTAMP     | DEFAULT CURRENT_TIMESTAMP        |
 | expires_at   | DATETIME      | NOT NULL                         |
+
+### Table `password_resets`
+| Colonne      | Type          | Contraintes                      |
+|--------------|---------------|----------------------------------|
+| id           | INT           | AUTO_INCREMENT, PRIMARY KEY      |
+| user_id      | INT           | NOT NULL, FOREIGN KEY            |
+| token        | VARCHAR(255)  | NOT NULL                         |
+| expires_at   | DATETIME      | NOT NULL                         |
+| created_at   | TIMESTAMP     | DEFAULT CURRENT_TIMESTAMP        |
 
 ### Table `connexions_log`
 | Colonne         | Type                                    | Contraintes                  |
@@ -102,6 +113,32 @@
 | attribut_id  | INT           | NOT NULL, FOREIGN KEY            |
 | valeur       | TEXT          | NOT NULL                         |
 
+### Table `promotions`
+| Colonne         | Type           | Contraintes                      |
+|-----------------|----------------|----------------------------------|
+| id              | INT            | AUTO_INCREMENT, PRIMARY KEY      |
+| code            | VARCHAR(50)    | NOT NULL, UNIQUE                 |
+| description     | TEXT           |                                  |
+| type            | VARCHAR(20)    | NOT NULL                         |
+| value           | DECIMAL(10, 2) | NOT NULL                         |
+| min_purchase    | DECIMAL(10, 2) | DEFAULT 0                        |
+| start_date      | DATETIME       | NULL                             |
+| end_date        | DATETIME       | NULL                             |
+| usage_limit     | INT            | DEFAULT NULL                     |
+| used_count      | INT            | DEFAULT 0                        |
+| products        | VARCHAR(255)   | NULL                             |
+| collections     | VARCHAR(255)   | NULL                             |
+| active          | TINYINT(1)     | DEFAULT 1                        |
+| created_at      | DATETIME       | DEFAULT CURRENT_TIMESTAMP        |
+| updated_at      | DATETIME       | NULL, ON UPDATE CURRENT_TIMESTAMP|
+
+### Table `promotion_produits`
+| Colonne        | Type          | Contraintes                      |
+|----------------|---------------|----------------------------------|
+| promotion_id   | INT           | NOT NULL, FOREIGN KEY            |
+| produit_id     | INT           | NOT NULL, FOREIGN KEY            |
+| date_ajout     | DATETIME      | DEFAULT CURRENT_TIMESTAMP        |
+
 ## Tables Commandes et Panier
 
 ### Table `commandes`
@@ -146,7 +183,7 @@
 | quantite        | INT           | NOT NULL DEFAULT 1               |
 | date_ajout      | DATETIME      | DEFAULT CURRENT_TIMESTAMP        |
 
-## Tables de Contenu
+## Tables de Contenu et Administration
 
 ### Table `avis`
 | Colonne         | Type                              | Contraintes                      |
@@ -171,14 +208,49 @@
 | date_modification | DATETIME      | ON UPDATE CURRENT_TIMESTAMP      |
 | publiee           | BOOLEAN       | DEFAULT TRUE                     |
 
+### Table `admin_logs`
+| Colonne         | Type          | Contraintes                      |
+|-----------------|---------------|----------------------------------|
+| id              | INT           | AUTO_INCREMENT, PRIMARY KEY      |
+| utilisateur_id  | INT           | NOT NULL, FOREIGN KEY            |
+| action          | VARCHAR(255)  | NOT NULL                         |
+| ip_address      | VARCHAR(45)   | NOT NULL                         |
+| date_action     | DATETIME      | DEFAULT CURRENT_TIMESTAMP        |
+| details         | TEXT          | NULL                             |
+
+### Table `system_logs`
+| Colonne         | Type                                    | Contraintes                      |
+|-----------------|----------------------------------------|----------------------------------|
+| id              | BIGINT                                 | AUTO_INCREMENT, PRIMARY KEY      |
+| level           | ENUM('debug','info','notice','warning','error','critical','alert','emergency') | DEFAULT 'info' |
+| user_id         | INT                                    | NULL                             |
+| user_type       | ENUM('admin','customer','system','guest') | DEFAULT 'system'               |
+| category        | VARCHAR(50)                            | NOT NULL                         |
+| action          | VARCHAR(50)                            | NOT NULL                         |
+| entity_type     | VARCHAR(50)                            | NULL                             |
+| entity_id       | VARCHAR(50)                            | NULL                             |
+| details         | TEXT                                   | NULL                             |
+| before_state    | JSON                                   | NULL                             |
+| after_state     | JSON                                   | NULL                             |
+| ip_address      | VARCHAR(45)                            | NULL                             |
+| user_agent      | VARCHAR(255)                           | NULL                             |
+| created_at      | TIMESTAMP                              | DEFAULT CURRENT_TIMESTAMP        |
+| context         | JSON                                   | NULL                             |
+| http_method     | VARCHAR(10)                            | NULL                             |
+| request_url     | VARCHAR(255)                           | NULL                             |
+| session_id      | VARCHAR(100)                           | NULL                             |
+| execution_time  | FLOAT                                  | NULL                             |
+
 ## Relations
 
 ### Relations Utilisateurs
 - Un `utilisateur` peut avoir plusieurs `auth_tokens` (relation 1:N)
+- Un `utilisateur` peut avoir plusieurs `password_resets` (relation 1:N)
 - Un `utilisateur` peut avoir plusieurs entrées dans `connexions_log` (relation 1:N)
 - Un `utilisateur` peut passer plusieurs `commandes` (relation 1:N)
 - Un `utilisateur` peut avoir plusieurs produits dans son `panier` (relation 1:N)
 - Un `utilisateur` peut laisser plusieurs `avis` (relation 1:N)
+- Un `utilisateur` peut avoir plusieurs entrées dans `admin_logs` (relation 1:N)
 
 ### Relations Catalogue
 - Une `categorie` peut avoir plusieurs sous-catégories (relation self-référentielle)
@@ -188,19 +260,26 @@
 - Un `produit` peut être dans plusieurs `articles_commande` (relation 1:N)
 - Un `produit` peut être dans plusieurs `paniers` (relation 1:N)
 - Un `produit` peut avoir plusieurs `avis` (relation 1:N)
+- Un `produit` peut être associé à plusieurs `promotions` via `promotion_produits` (relation N:M)
 
 ### Relations Commandes
 - Une `commande` contient plusieurs `articles_commande` (relation 1:N)
 
+### Relations Promotions
+- Une `promotion` peut être associée à plusieurs `produits` via `promotion_produits` (relation N:M)
+
 ## Clés Étrangères
 
 - `auth_tokens.user_id` référence `utilisateurs.id` (CASCADE)
+- `password_resets.user_id` référence `utilisateurs.id` (CASCADE)
 - `connexions_log.user_id` référence `utilisateurs.id` (CASCADE)
 - `categories.parent_id` référence `categories.id` (SET NULL)
 - `produits.categorie_id` référence `categories.id` (SET NULL)
 - `produits.collection_id` référence `collections.id` (SET NULL)
 - `produit_attributs.produit_id` référence `produits.id` (CASCADE)
 - `produit_attributs.attribut_id` référence `attributs.id` (CASCADE)
+- `promotion_produits.promotion_id` référence `promotions.id` (CASCADE)
+- `promotion_produits.produit_id` référence `produits.id` (CASCADE)
 - `commandes.utilisateur_id` référence `utilisateurs.id` (CASCADE)
 - `articles_commande.commande_id` référence `commandes.id` (CASCADE)
 - `articles_commande.produit_id` référence `produits.id` (NO ACTION)
@@ -208,3 +287,4 @@
 - `panier.produit_id` référence `produits.id` (CASCADE)
 - `avis.produit_id` référence `produits.id` (CASCADE)
 - `avis.utilisateur_id` référence `utilisateurs.id` (CASCADE)
+- `admin_logs.utilisateur_id` référence `utilisateurs.id` (CASCADE)

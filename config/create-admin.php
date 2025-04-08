@@ -23,10 +23,24 @@ if ($exists) {
         // Hasher le mot de passe
         $hashed_password = password_hash($admin_password, PASSWORD_DEFAULT);
         
-        // Insérer le nouvel administrateur
+        // Insérer le nouvel administrateur avec tous les champs de la table
         $stmt = $pdo->prepare("
-            INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, role, actif) 
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO utilisateurs (
+                nom, 
+                prenom, 
+                email, 
+                mot_de_passe, 
+                telephone, 
+                adresse, 
+                code_postal, 
+                ville, 
+                pays, 
+                role, 
+                actif,
+                photo,
+                derniere_connexion
+            ) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
         ");
         
         $stmt->execute([
@@ -34,8 +48,14 @@ if ($exists) {
             'Admin',          // prenom
             $admin_email,     // email
             $hashed_password, // mot_de_passe
+            NULL,             // telephone
+            NULL,             // adresse
+            NULL,             // code_postal
+            NULL,             // ville
+            'France',         // pays
             'admin',          // role
-            true              // actif
+            true,             // actif
+            NULL              // photo
         ]);
         
         echo '<div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 4px; margin: 20px;">

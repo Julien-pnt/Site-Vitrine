@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Découvrez notre Collection Édition Limitée - Des montres d'exception produites en quantités restreintes par Elixir du Temps.">
-    <meta name="keywords" content="montres de luxe, édition limitée, elixir du temps, horlogerie, montres rares, pièces d'exception">
+    <meta name="description" content="Découvrez notre Collection Classic - Des montres élégantes qui incarnent l'excellence horlogère d'Elixir du Temps.">
+    <meta name="keywords" content="montres de luxe, collection classic, elixir du temps, horlogerie, montres élégantes">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Collection Édition Limitée - Elixir du Temps">
-    <meta property="og:description" content="Découvrez notre Collection Édition Limitée - Des montres d'exception produites en quantités restreintes par Elixir du Temps.">
-    <meta property="og:image" content="../../assets/img/collections/limited-collection-social.jpg">
+    <meta property="og:title" content="Collection Classic - Elixir du Temps">
+    <meta property="og:description" content="Découvrez notre Collection Classic - Des montres élégantes qui incarnent l'excellence horlogère d'Elixir du Temps.">
+    <meta property="og:image" content="../../assets/img/collections/classic-collection-social.jpg">
     
     <!-- Script pour corriger le fondu blanc -->
     <script>
@@ -30,6 +30,10 @@
         html, body {
             opacity: 1;
             transition: opacity 0.3s ease;
+        }
+        
+        body.video-loaded {
+            opacity: 1;
         }
         
         .loader-container {
@@ -116,6 +120,128 @@
             font-style: italic;
             font-size: 0.8rem;
         }
+
+        /* Styles pour le dropdown du panier */
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #d4af37;
+            color: white;
+            font-size: 12px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .cart-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 320px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            padding: 1rem;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .cart-dropdown.show {
+            display: block;
+        }
+        
+        .cart-dropdown-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .cart-item-image {
+            width: 50px;
+            height: 50px;
+            overflow: hidden;
+            border-radius: 4px;
+            margin-right: 0.75rem;
+        }
+        
+        .cart-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .cart-item-info {
+            flex-grow: 1;
+        }
+        
+        .cart-item-info h4 {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        .cart-item-price {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .cart-item-remove {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #999;
+            padding: 0.25rem;
+        }
+        
+        .cart-item-remove:hover {
+            color: #d4af37;
+        }
+        
+        .cart-dropdown-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+        
+        .cart-dropdown-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .cart-dropdown-button {
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 4px;
+            flex-grow: 1;
+            font-size: 0.9rem;
+        }
+        
+        .cart-dropdown-button.primary {
+            background: linear-gradient(to bottom, #d4af37, #c0992a);
+            color: white;
+        }
+        
+        .cart-dropdown-button.secondary {
+            background-color: #f5f5f5;
+            color: #333;
+        }
     </style>
     
     <!-- Ressources -->
@@ -127,7 +253,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     
-    <title>Collection Édition Limitée - Elixir du Temps</title>
+    <title>Collection Limitée - Elixir du Temps</title>
 </head>
 <body class="video-loaded">
     <!-- Loader -->
@@ -136,12 +262,12 @@
             <span class="visually-hidden">Chargement en cours...</span>
         </div>
     </div>
-
+    
     <!-- Header section with logo and navigation menu -->
     <header class="header">
         <div class="logo-container">
             <a href="../Accueil.html" aria-label="Accueil Elixir du Temps">
-                <img src="../../assets/img/layout/logo.png" alt="Logo Elixir du Temps" class="logo" width="180" height="60">
+                <img src="../../assets/img/layout/logo.png" alt="Logo Elixir du Temps" class="logo" width="180" height="60" fetchpriority="high">
             </a>
         </div>
         <nav aria-label="Navigation principale">
@@ -191,27 +317,27 @@
                         <span class="cart-dropdown-total-value">0,00 €</span>
                     </div>
                     <div class="cart-dropdown-buttons">
-                        <a href="products/panier.html" class="cart-dropdown-button secondary">Voir le panier</a>
-                        <a href="products/Montres.html" class="cart-dropdown-button primary">Découvrir nos montres</a>
+                        <a href="../products/panier.php" class="cart-dropdown-button secondary">Voir le panier</a>
+                        <a href="../Montres.html" class="cart-dropdown-button primary">Découvrir nos montres</a>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Video background et introduction -->
+    <!-- Ajouter la vidéo d'arrière-plan manquante -->
     <div class="video-background">
         <video class="video-bg" autoplay muted loop playsinline preload="auto">
             <source src="../../assets/video/background.mp4" type="video/mp4">
             <!-- Fallback image si la vidéo ne se charge pas -->
-            <img src="../../assets/img/collections/limited-hero.jpg" alt="Collection Édition Limitée" class="fallback-img">
+            <img src="../../assets/img/collections/classic-hero.jpg" alt="Collection Classic" class="fallback-img">
         </video>
         <div class="video-overlay"></div>
         
         <!-- Hero content sur la vidéo -->
         <div class="collection-hero">
             <div class="collection-hero-content">
-                <h1 class="collection-title">Édition Limitée</h1>
+                <h1 class="collection-title">Collection Limitée</h1>
                 <p class="collection-description">Des créations exceptionnelles et rares, chacune numérotée et produite en série limitée. Découvrez l'exclusivité à son apogée avec notre collection la plus prestigieuse.</p>
             </div>
         </div>
@@ -256,222 +382,166 @@
 
     <!-- Section produits -->
     <section class="products-section">
-        <div class="container">
-            <!-- Section pour Homme products -->
-            <div id="homme-products" class="product-grid active">
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="../../assets/img/products/chronos-edition-limitee.jpg" alt="Chronos Édition Limitée" class="product-image" loading="lazy">
-                        <div class="product-overlay">
-                            <button class="quick-view-btn" data-product-id="301">Aperçu rapide</button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Chronos Édition Limitée</h3>
-                        <p class="product-price">22 000 €</p>
-                        <div class="product-actions">
-                            <button class="add-to-cart-btn" data-product-id="301">Ajouter au panier</button>
-                            <button class="add-to-wishlist-btn" data-product-id="301" aria-label="Ajouter aux favoris">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                </svg>
-                            </button>
-                        </div>
+    <div class="container">
+        <!-- Section pour Homme products -->
+        <div id="homme-products" class="product-grid active">
+            <!-- Premier produit - Chronos Édition Limitée -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="../../assets/img/products/elegance-eternal.jpg" alt="Montre Chronos Édition Limitée" class="product-image" loading="lazy">
+                    <div class="product-overlay">
+                        <button class="quick-view-btn" data-product-id="301">Aperçu rapide</button>
                     </div>
                 </div>
-                
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="../../assets/img/products/prestige-unique.jpg" alt="Prestige Unique" class="product-image" loading="lazy">
-                        <div class="product-overlay">
-                            <button class="quick-view-btn" data-product-id="302">Aperçu rapide</button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Prestige Unique</h3>
-                        <p class="product-price">24 500 €</p>
-                        <div class="product-actions">
-                            <button class="add-to-cart-btn" data-product-id="302">Ajouter au panier</button>
-                            <button class="add-to-wishlist-btn" data-product-id="302" aria-label="Ajouter aux favoris">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                </svg>
-                            </button>
-                        </div>
+                <div class="product-info">
+                    <h3 class="product-title">Chronos Édition Limitée</h3>
+                    <p class="product-price">8 950 €</p>
+                    <div class="product-actions">
+                        <button class="add-to-cart-btn" data-product-id="301">Ajouter au panier</button>
+                        <button class="add-to-wishlist-btn" data-product-id="301" aria-label="Ajouter aux favoris">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
                     </div>
                 </div>
-                
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="../../assets/img/products/heritage-exclusif.jpg" alt="Héritage Exclusif" class="product-image" loading="lazy">
-                        <div class="product-overlay">
-                            <button class="quick-view-btn" data-product-id="303">Aperçu rapide</button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Héritage Exclusif</h3>
-                        <p class="product-price">23 500 €</p>
-                        <div class="product-actions">
-                            <button class="add-to-cart-btn" data-product-id="303">Ajouter au panier</button>
-                            <button class="add-to-wishlist-btn" data-product-id="303" aria-label="Ajouter aux favoris">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                </svg>
-                            </button>
-                        </div>
+            </div>
+            
+            <!-- Deuxième produit - Prestige Unique -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="../../assets/img/products/tradition-classique.jpg" alt="Montre Prestige Unique" class="product-image" loading="lazy">
+                    <div class="product-overlay">
+                        <button class="quick-view-btn" data-product-id="302">Aperçu rapide</button>
                     </div>
                 </div>
-                
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="../../assets/img/products/souverainete-singuliere.jpg" alt="Souveraineté Singulière" class="product-image" loading="lazy">
-                        <div class="product-overlay">
-                            <button class="quick-view-btn" data-product-id="304">Aperçu rapide</button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Souveraineté Singulière</h3>
-                        <p class="product-price">21 000 €</p>
-                        <div class="product-actions">
-                            <button class="add-to-cart-btn" data-product-id="304">Ajouter au panier</button>
-                            <button class="add-to-wishlist-btn" data-product-id="304" aria-label="Ajouter aux favoris">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="../../assets/img/products/epopee-rare.jpg" alt="Épopée Rare" class="product-image" loading="lazy">
-                        <div class="product-overlay">
-                            <button class="quick-view-btn" data-product-id="305">Aperçu rapide</button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Épopée Rare</h3>
-                        <p class="product-price">25 000 €</p>
-                        <div class="product-actions">
-                            <button class="add-to-cart-btn" data-product-id="305">Ajouter au panier</button>
-                            <button class="add-to-wishlist-btn" data-product-id="305" aria-label="Ajouter aux favoris">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                </svg>
-                            </button>
-                        </div>
+                <div class="product-info">
+                    <h3 class="product-title">Prestige Unique</h3>
+                    <p class="product-price">4 750 €</p>
+                    <div class="product-actions">
+                        <button class="add-to-cart-btn" data-product-id="302">Ajouter au panier</button>
+                        <button class="add-to-wishlist-btn" data-product-id="302" aria-label="Ajouter aux favoris">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Section pour Femme products -->
-            <div id="femme-products" class="product-grid">
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="../../assets/img/products/grace-limitee.jpg" alt="Grâce Limitée" class="product-image" loading="lazy">
-                        <div class="product-overlay">
-                            <button class="quick-view-btn" data-product-id="401">Aperçu rapide</button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Grâce Limitée</h3>
-                        <p class="product-price">20 500 €</p>
-                        <div class="product-actions">
-                            <button class="add-to-cart-btn" data-product-id="401">Ajouter au panier</button>
-                            <button class="add-to-wishlist-btn" data-product-id="401" aria-label="Ajouter aux favoris">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                </svg>
-                            </button>
-                        </div>
+            <!-- Troisième produit - Héritage Exclusif -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="../../assets/img/products/raffinement-or.jpg" alt="Montre Héritage Exclusif" class="product-image" loading="lazy">
+                    <div class="product-overlay">
+                        <button class="quick-view-btn" data-product-id="303">Aperçu rapide</button>
                     </div>
                 </div>
-                
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="../../assets/img/products/splendeur-exclusif.jpg" alt="Splendeur Exclusif" class="product-image" loading="lazy">
-                        <div class="product-overlay">
-                            <button class="quick-view-btn" data-product-id="402">Aperçu rapide</button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Splendeur Exclusif</h3>
-                        <p class="product-price">22 000 €</p>
-                        <div class="product-actions">
-                            <button class="add-to-cart-btn" data-product-id="402">Ajouter au panier</button>
-                            <button class="add-to-wishlist-btn" data-product-id="402" aria-label="Ajouter aux favoris">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="../../assets/img/products/eclat-unique.jpg" alt="Éclat Unique" class="product-image" loading="lazy">
-                        <div class="product-overlay">
-                            <button class="quick-view-btn" data-product-id="403">Aperçu rapide</button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Éclat Unique</h3>
-                        <p class="product-price">23 500 €</p>
-                        <div class="product-actions">
-                            <button class="add-to-cart-btn" data-product-id="403">Ajouter au panier</button>
-                            <button class="add-to-wishlist-btn" data-product-id="403" aria-label="Ajouter aux favoris">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="../../assets/img/products/noblesse-singuliere.jpg" alt="Noblesse Singulière" class="product-image" loading="lazy">
-                        <div class="product-overlay">
-                            <button class="quick-view-btn" data-product-id="404">Aperçu rapide</button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Noblesse Singulière</h3>
-                        <p class="product-price">21 000 €</p>
-                        <div class="product-actions">
-                            <button class="add-to-cart-btn" data-product-id="404">Ajouter au panier</button>
-                            <button class="add-to-wishlist-btn" data-product-id="404" aria-label="Ajouter aux favoris">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="../../assets/img/products/elegance-rare.jpg" alt="Élégance Rare" class="product-image" loading="lazy">
-                        <div class="product-overlay">
-                            <button class="quick-view-btn" data-product-id="405">Aperçu rapide</button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Élégance Rare</h3>
-                        <p class="product-price">25 000 €</p>
-                        <div class="product-actions">
-                            <button class="add-to-cart-btn" data-product-id="405">Ajouter au panier</button>
-                            <button class="add-to-wishlist-btn" data-product-id="405" aria-label="Ajouter aux favoris">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                </svg>
-                            </button>
-                        </div>
+                <div class="product-info">
+                    <h3 class="product-title">Héritage Exclusif</h3>
+                    <p class="product-price">12 800 €</p>
+                    <div class="product-actions">
+                        <button class="add-to-cart-btn" data-product-id="303">Ajouter au panier</button>
+                        <button class="add-to-wishlist-btn" data-product-id="303" aria-label="Ajouter aux favoris">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
+            
+            <!-- Quatrième produit - Souveraineté Singulière -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="../../assets/img/products/heritage-prestige.jpg" alt="Montre Souveraineté Singulière" class="product-image" loading="lazy">
+                    <div class="product-overlay">
+                        <button class="quick-view-btn" data-product-id="304">Aperçu rapide</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Souveraineté Singulière</h3>
+                    <p class="product-price">7 500 €</p>
+                    <div class="product-actions">
+                        <button class="add-to-cart-btn" data-product-id="304">Ajouter au panier</button>
+                        <button class="add-to-wishlist-btn" data-product-id="304" aria-label="Ajouter aux favoris">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- Section pour Femme products -->
+            <div id="femme-products" class="product-grid">
+    <!-- Premier produit femme - Élégance Rose -->
+    <div class="product-card">
+        <div class="product-image-container">
+            <img src="../../assets/img/products/elegance-rose.jpg" alt="Montre Élégance Rose" class="product-image" loading="lazy">
+            <div class="product-overlay">
+                <button class="quick-view-btn" data-product-id="401">Aperçu rapide</button>
+            </div>
+        </div>
+        <div class="product-info">
+            <h3 class="product-title">Élégance Rose</h3>
+            <p class="product-price">13 500 €</p>
+            <div class="product-actions">
+                <button class="add-to-cart-btn" data-product-id="401">Ajouter au panier</button>
+                <button class="add-to-wishlist-btn" data-product-id="401" aria-label="Ajouter aux favoris">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Nouveau produit femme - Grâce Limitée -->
+    <div class="product-card">
+        <div class="product-image-container">
+            <img src="../../assets/img/products/elegance-rose.jpg" alt="Montre Grâce Limitée" class="product-image" loading="lazy">
+            <div class="product-overlay">
+                <button class="quick-view-btn" data-product-id="402">Aperçu rapide</button>
+            </div>
+        </div>
+        <div class="product-info">
+            <h3 class="product-title">Grâce Limitée</h3>
+            <p class="product-price">13 500 €</p>
+            <div class="product-actions">
+                <button class="add-to-cart-btn" data-product-id="402">Ajouter au panier</button>
+                <button class="add-to-wishlist-btn" data-product-id="402" aria-label="Ajouter aux favoris">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second produit femme - Éclat Unique -->
+    <div class="product-card">
+        <div class="product-image-container">
+            <img src="../../assets/img/products/elegance-rose.jpg" alt="Montre Éclat Unique" class="product-image" loading="lazy">
+            <div class="product-overlay">
+                <button class="quick-view-btn" data-product-id="403">Aperçu rapide</button>
+            </div>
+        </div>
+        <div class="product-info">
+            <h3 class="product-title">Éclat Unique</h3>
+            <p class="product-price">13 500 €</p>
+            <div class="product-actions">
+                <button class="add-to-cart-btn" data-product-id="403">Ajouter au panier</button>
+                <button class="add-to-wishlist-btn" data-product-id="403" aria-label="Ajouter aux favoris">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
         </div>
     </section>
 
@@ -482,28 +552,22 @@
             <div class="recommendations-carousel">
                 <!-- Produits recommandés -->
                 <div class="recommendation-item">
-                    <img src="../../assets/img/products/elegance-eternelle.jpg" alt="Élégance Éternelle" loading="lazy">
-                    <h3>Élégance Éternelle</h3>
-                    <p>15 000 €</p>
-                    <a href="../montres/elegance-eternelle.html" class="view-product">Découvrir</a>
-                </div>
-                <div class="recommendation-item">
                     <img src="../../assets/img/products/heritage-prestige.jpg" alt="Heritage Prestige" loading="lazy">
                     <h3>Heritage Prestige</h3>
                     <p>12 500 €</p>
                     <a href="../montres/heritage-prestige.html" class="view-product">Découvrir</a>
                 </div>
                 <div class="recommendation-item">
-                    <img src="../../assets/img/products/conquest-chrono.jpg" alt="Conquest Chrono" loading="lazy">
-                    <h3>Conquest Chrono</h3>
-                    <p>14 200 €</p>
-                    <a href="../montres/conquest-chrono.html" class="view-product">Découvrir</a>
+                    <img src="../../assets/img/products/heritage-prestige.jpg" alt="Héritage Impérial" loading="lazy">
+                    <h3>Héritage Impérial</h3>
+                    <p>12 500 €</p>
+                    <a href="../montres/heritage-prestige.html" class="view-product">Découvrir</a>
                 </div>
                 <div class="recommendation-item">
-                    <img src="../../assets/img/products/eternal-classic.jpg" alt="Eternal Classic" loading="lazy">
-                    <h3>Eternal Classic</h3>
-                    <p>11 800 €</p>
-                    <a href="../montres/eternal-classic.html" class="view-product">Découvrir</a>
+                    <img src="../../assets/img/products/elegance-eternelle.jpg" alt="Élégance Éternelle" loading="lazy">
+                    <h3>Élégance Éternelle</h3>
+                    <p>15 000 €</p>
+                    <a href="../montres/elegance-eternelle.html" class="view-product">Découvrir</a>
                 </div>
             </div>
         </div>
@@ -523,7 +587,7 @@
                     <ul>
                         <li><a href="Collection-Classic.html">Collection Classic</a></li>
                         <li><a href="Collection-Sport.html">Collection Sport</a></li>
-                        <li><a href="Collection-Limited-Edition.html">Édition Limitée</a></li>
+                        <li><a href="Collection-Vintage.html">Collection Vintage</a></li>
                     </ul>
                 </div>
                 
@@ -560,243 +624,153 @@
         </div>
     </footer>
 
-    <!-- Modal d'aperçu rapide -->
-    <div id="quick-view-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modal-product-title"></h2>
-                <button class="close-modal" aria-label="Fermer">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="modal-product-image">
-                    <img id="modal-product-image" src="" alt="">
-                </div>
-                <div class="modal-product-details">
-                    <p id="modal-product-price" class="modal-price"></p>
-                    <div class="modal-product-description">
-                        <p>Faisant partie de notre prestigieuse collection Édition Limitée, cette montre exceptionnelle est produite en quantité limitée. Chaque pièce est numérotée et accompagnée d'un certificat d'authenticité. Le boîtier est conçu à partir des matériaux les plus nobles, et le mouvement mécanique à remontage automatique est entièrement assemblé à la main par nos maîtres horlogers.</p>
-                    </div>
-                    <div class="modal-product-actions">
-                        <button id="modal-add-to-cart" class="btn-primary">Ajouter au panier</button>
-                        <a id="modal-view-details" class="btn-outline">Voir les détails</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <script src="../../assets/js/cart.js"></script>
 
-    <!-- Scripts chargés à la fin pour optimiser le chargement -->
+    <script>
+        // Code pour la fonctionnalité d'aperçu rapide
+        document.addEventListener('DOMContentLoaded', function() {
+            const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+
+            if (quickViewButtons.length) {
+                quickViewButtons.forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const productId = this.getAttribute('data-product-id');
+                        window.location.href = '../products/product-detail.php?id=' + productId;
+                    });
+                });
+            }
+        });
+    </script>
     <script src="../../assets/js/cart.js" defer></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Fix pour le problème de fondu blanc
-        document.body.classList.add('video-loaded');
+    // Fix pour le problème de fondu blanc
+    document.body.classList.add('video-loaded');
+    
+    // Filtrage par genre
+    const hommeButton = document.getElementById('homme-button');
+    const femmeButton = document.getElementById('femme-button');
+    const hommeProducts = document.getElementById('homme-products');
+    const femmeProducts = document.getElementById('femme-products');
+    
+    if (hommeButton && femmeButton) {
+        hommeButton.addEventListener('click', function() {
+            hommeButton.classList.add('active');
+            femmeButton.classList.remove('active');
+            hommeProducts.classList.add('active');
+            femmeProducts.classList.remove('active');
+            hommeButton.setAttribute('aria-pressed', 'true');
+            femmeButton.setAttribute('aria-pressed', 'false');
+        });
         
-        // Filtrage par genre
-        const hommeButton = document.getElementById('homme-button');
-        const femmeButton = document.getElementById('femme-button');
-        const hommeProducts = document.getElementById('homme-products');
-        const femmeProducts = document.getElementById('femme-products');
+        femmeButton.addEventListener('click', function() {
+            femmeButton.classList.add('active');
+            hommeButton.classList.remove('active');
+            femmeProducts.classList.add('active');
+            hommeProducts.classList.remove('active');
+            femmeButton.setAttribute('aria-pressed', 'true');
+            hommeButton.setAttribute('aria-pressed', 'false');
+        });
+    }
+    
+    // Recherche de produits
+    const searchBar = document.querySelector('.search-bar');
+    const sortSelect = document.getElementById('sort-by');
+    
+    if (searchBar) searchBar.addEventListener('input', filterProducts);
+    if (sortSelect) sortSelect.addEventListener('change', sortProducts);
+    
+    function filterProducts() {
+        const searchTerm = searchBar.value.toLowerCase();
+        const activeGrid = document.querySelector('.product-grid.active');
+        if (!activeGrid) return;
         
-        if (hommeButton && femmeButton) {
-            hommeButton.addEventListener('click', function() {
-                hommeButton.classList.add('active');
-                femmeButton.classList.remove('active');
-                hommeProducts.classList.add('active');
-                femmeProducts.classList.remove('active');
-                hommeButton.setAttribute('aria-pressed', 'true');
-                femmeButton.setAttribute('aria-pressed', 'false');
-            });
+        const products = activeGrid.querySelectorAll('.product-card');
+        
+        products.forEach(product => {
+            const title = product.querySelector('.product-title').textContent.toLowerCase();
+            if (title.includes(searchTerm)) {
+                product.style.display = 'block';
+            } else {
+                product.style.display = 'none';
+            }
+        });
+    }
+    
+    function sortProducts() {
+        const option = sortSelect.value;
+        const activeGrid = document.querySelector('.product-grid.active');
+        if (!activeGrid) return;
+        
+        const products = Array.from(activeGrid.querySelectorAll('.product-card'));
+        
+        products.sort((a, b) => {
+            const priceA = parseFloat(a.querySelector('.product-price').textContent.replace(/[^0-9.-]+/g,""));
+            const priceB = parseFloat(b.querySelector('.product-price').textContent.replace(/[^0-9.-]+/g,""));
             
-            femmeButton.addEventListener('click', function() {
-                femmeButton.classList.add('active');
-                hommeButton.classList.remove('active');
-                femmeProducts.classList.add('active');
-                hommeProducts.classList.remove('active');
-                femmeButton.setAttribute('aria-pressed', 'true');
-                hommeButton.setAttribute('aria-pressed', 'false');
-            });
-        }
+            if (option === 'price-asc') {
+                return priceA - priceB;
+            } else if (option === 'price-desc') {
+                return priceB - priceA;
+            }
+            return 0;
+        });
         
-        // Recherche de produits
-        const searchBar = document.querySelector('.search-bar');
-        const sortSelect = document.getElementById('sort-by');
-        
-        if (searchBar) searchBar.addEventListener('input', filterProducts);
-        if (sortSelect) sortSelect.addEventListener('change', sortProducts);
-        
-        function filterProducts() {
-            const searchTerm = searchBar.value.toLowerCase();
-            const activeGrid = document.querySelector('.product-grid.active');
-            if (!activeGrid) return;
-            
-            const products = activeGrid.querySelectorAll('.product-card');
-            
-            products.forEach(product => {
-                const title = product.querySelector('.product-title').textContent.toLowerCase();
-                if (title.includes(searchTerm)) {
-                    product.style.display = 'block';
-                } else {
-                    product.style.display = 'none';
-                }
-            });
-        }
-        
-        function sortProducts() {
-            const option = sortSelect.value;
-            const activeGrid = document.querySelector('.product-grid.active');
-            if (!activeGrid) return;
-            
-            const products = Array.from(activeGrid.querySelectorAll('.product-card'));
-            
-            products.sort((a, b) => {
-                const priceA = parseFloat(a.querySelector('.product-price').textContent.replace(/[^0-9.-]+/g,""));
-                const priceB = parseFloat(b.querySelector('.product-price').textContent.replace(/[^0-9.-]+/g,""));
-                
-                if (option === 'price-asc') {
-                    return priceA - priceB;
-                } else if (option === 'price-desc') {
-                    return priceB - priceA;
-                }
-                return 0;
-            });
-            
-            products.forEach(product => {
-                activeGrid.appendChild(product);
-            });
-        }
-        
-        // Modal d'aperçu rapide
-        const quickViewButtons = document.querySelectorAll('.quick-view-btn');
-        const modal = document.getElementById('quick-view-modal');
-        const closeModalButton = document.querySelector('.close-modal');
-        
-        if (quickViewButtons.length && modal) {
-            quickViewButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const productId = this.getAttribute('data-product-id');
-                    const productCard = this.closest('.product-card');
-                    const title = productCard.querySelector('.product-title').textContent;
-                    const price = productCard.querySelector('.product-price').textContent;
-                    const imageSrc = productCard.querySelector('.product-image').getAttribute('src');
-                    
-                    document.getElementById('modal-product-title').textContent = title;
-                    document.getElementById('modal-product-price').textContent = price;
-                    document.getElementById('modal-product-image').setAttribute('src', imageSrc);
-                    document.getElementById('modal-product-image').setAttribute('alt', title);
-                    
-                    // Supprimer l'ancien indicateur de stock s'il existe
-                    const existingStockIndicator = document.querySelector('.modal-product-details .stock-indicator');
-                    if (existingStockIndicator) {
-                        existingStockIndicator.remove();
-                    }
-                    
-                    // Réinitialiser le bouton d'ajout au panier
-                    const addToCartBtn = document.getElementById('modal-add-to-cart');
-                    addToCartBtn.disabled = false;
-                    addToCartBtn.classList.remove('disabled');
-                    
-                    // Attribuer l'ID du produit au bouton d'ajout au panier
-                    addToCartBtn.setAttribute('data-product-id', productId);
-                    
-                    // Vérifier et afficher le stock
-                    fetch(`/public/php/api/products/check-stock.php?id=${productId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const stockInfo = document.createElement('div');
-                            stockInfo.className = 'stock-indicator';
-                            
-                            // Utiliser le seuil d'alerte défini dans la base de données
-                            const stockAlerte = data.stock_alerte || 5; // Valeur par défaut si non définie
-                            
-                            if (data.stock > stockAlerte) {
-                                stockInfo.classList.add('in-stock');
-                                stockInfo.innerHTML = '<i class="fas fa-check-circle"></i> En stock';
-                            } else if (data.stock > 0) {
-                                stockInfo.classList.add('low-stock');
-                                stockInfo.innerHTML = `<i class="fas fa-exclamation-circle"></i> Plus que ${data.stock} en stock`;
-                            } else {
-                                stockInfo.classList.add('out-of-stock');
-                                stockInfo.innerHTML = '<i class="fas fa-times-circle"></i> Rupture de stock';
-                                addToCartBtn.disabled = true;
-                                addToCartBtn.classList.add('disabled');
-                            }
-                            
-                            // Afficher le prix promotionnel si disponible
-                            if (data.prix_promo && parseFloat(data.prix_promo) < parseFloat(data.prix)) {
-                                const priceElement = document.getElementById('modal-product-price');
-                                priceElement.innerHTML = `<span class="price-old">${parseFloat(data.prix).toFixed(2).replace('.', ',')} €</span> ${parseFloat(data.prix_promo).toFixed(2).replace('.', ',')} €`;
-                            }
-                            
-                            // Insérer l'indicateur de stock après le prix
-                            const priceElement = document.getElementById('modal-product-price');
-                            priceElement.parentNode.insertBefore(stockInfo, priceElement.nextSibling);
-                        })
-                        .catch(error => {
-                            console.error("Erreur lors de la récupération du stock:", error);
-                        });
-                    
-                    modal.style.display = 'flex';
-                    document.body.style.overflow = 'hidden';
-                });
-            });
-            
-            closeModalButton.addEventListener('click', function() {
-                modal.style.display = 'none';
-                document.body.style.overflow = '';
-            });
-            
-            window.addEventListener('click', function(event) {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                    document.body.style.overflow = '';
-                }
-            });
-        }
-        
-        // Gestion des boutons d'ajout aux favoris
-        const wishlistButtons = document.querySelectorAll('.add-to-wishlist-btn');
-        wishlistButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                this.classList.toggle('active');
-            });
+        products.forEach(product => {
+            activeGrid.appendChild(product);
+        });
+    }
+    
+    // Gestion des boutons d'ajout aux favoris
+    const wishlistButtons = document.querySelectorAll('.add-to-wishlist-btn');
+    wishlistButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            this.classList.toggle('active');
+            const productId = this.getAttribute('data-product-id');
+            // Vous pourriez implémenter ici l'ajout réel aux favoris
         });
     });
-
-    // Fonction pour vérifier et afficher le stock dans la modal
-    function updateModalWithStockInfo(productId) {
-        fetch(`/public/php/api/products/check-stock.php?id=${productId}`)
-            .then(response => response.json())
-            .then(data => {
-                const stockInfo = document.createElement('div');
-                stockInfo.className = 'stock-indicator';
-                
-                if (data.stock > 5) {
-                    stockInfo.classList.add('in-stock');
-                    stockInfo.innerHTML = '<i class="fas fa-check-circle"></i> En stock';
-                } else if (data.stock > 0) {
-                    stockInfo.classList.add('low-stock');
-                    stockInfo.innerHTML = `<i class="fas fa-exclamation-circle"></i> Plus que ${data.stock} en stock`;
-                } else {
-                    stockInfo.classList.add('out-of-stock');
-                    stockInfo.innerHTML = '<i class="fas fa-times-circle"></i> Rupture de stock';
-                    document.getElementById('modal-add-to-cart').disabled = true;
-                    document.getElementById('modal-add-to-cart').classList.add('disabled');
+    
+    // Mettre à jour l'affichage du panier
+    updateCartDisplay();
+});
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fix pour le fondu blanc
+        document.body.classList.add('video-loaded');
+        
+        // Gestion de la vidéo
+        const video = document.querySelector('.video-bg');
+        const fallbackImg = document.querySelector('.fallback-img');
+        
+        if (video) {
+            // En cas d'erreur de chargement de la vidéo, afficher l'image de secours
+            video.addEventListener('error', function() {
+                if (fallbackImg) {
+                    fallbackImg.style.display = 'block';
                 }
-                
-                // Ajouter l'ID du produit au bouton d'ajout au panier de la modal
-                document.getElementById('modal-add-to-cart').setAttribute('data-product-id', productId);
-                
-                // Insérer l'indicateur de stock après le prix
-                const priceElement = document.getElementById('modal-product-price');
-                priceElement.parentNode.insertBefore(stockInfo, priceElement.nextSibling);
-            })
-            .catch(error => {
-                console.error("Erreur lors de la récupération du stock:", error);
             });
-    }
+            
+            // Si la vidéo ne démarre pas après 3 secondes, afficher l'image de secours
+            setTimeout(function() {
+                if (video.paused || video.readyState < 2) {
+                    if (fallbackImg) {
+                        fallbackImg.style.display = 'block';
+                    }
+                }
+            }, 3000);
+        }
+    });
+</script>
+<script>
+// Modal d'aperçu rapide
+const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+const modal = document.getElementById('quick-view-modal');
+const closeModalButton = document.querySelector('.close-modal');
 
-    // Modifier la gestion des clics sur les boutons d'aperçu rapide
+if (quickViewButtons.length && modal) {
     quickViewButtons.forEach(button => {
         button.addEventListener('click', function() {
             const productId = this.getAttribute('data-product-id');
@@ -821,14 +795,99 @@
             addToCartBtn.disabled = false;
             addToCartBtn.classList.remove('disabled');
             
+            // Attribuer l'ID du produit au bouton d'ajout au panier
+            addToCartBtn.setAttribute('data-product-id', productId);
+            
             // Vérifier et afficher le stock
-            updateModalWithStockInfo(productId);
+            fetch(`/public/php/api/products/check-stock.php?id=${productId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const stockInfo = document.createElement('div');
+                    stockInfo.className = 'stock-indicator';
+                    
+                    // Utiliser le seuil d'alerte défini dans la base de données
+                    const stockAlerte = data.stock_alerte || 5; // Valeur par défaut si non définie
+                    
+                    if (data.stock > stockAlerte) {
+                        stockInfo.classList.add('in-stock');
+                        stockInfo.innerHTML = '<i class="fas fa-check-circle"></i> En stock';
+                    } else if (data.stock > 0) {
+                        stockInfo.classList.add('low-stock');
+                        stockInfo.innerHTML = `<i class="fas fa-exclamation-circle"></i> Plus que ${data.stock} en stock`;
+                    } else {
+                        stockInfo.classList.add('out-of-stock');
+                        stockInfo.innerHTML = '<i class="fas fa-times-circle"></i> Rupture de stock';
+                        addToCartBtn.disabled = true;
+                        addToCartBtn.classList.add('disabled');
+                    }
+                    
+                    // Afficher le prix promotionnel si disponible
+                    if (data.prix_promo && parseFloat(data.prix_promo) < parseFloat(data.prix)) {
+                        const priceElement = document.getElementById('modal-product-price');
+                        priceElement.innerHTML = `<span class="price-old">${parseFloat(data.prix).toFixed(2).replace('.', ',')} €</span> ${parseFloat(data.prix_promo).toFixed(2).replace('.', ',')} €`;
+                    }
+                    
+                    // Insérer l'indicateur de stock après le prix
+                    const priceElement = document.getElementById('modal-product-price');
+                    priceElement.parentNode.insertBefore(stockInfo, priceElement.nextSibling);
+                })
+                .catch(error => {
+                    console.error("Erreur lors de la récupération du stock:", error);
+                });
             
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
         });
     });
-
+    
+    closeModalButton.addEventListener('click', function() {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    });
+    
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    });
+}
+</script>
+<script>
+// Déléguer la gestion du dropdown du panier au script cart.js
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialiser l'affichage du panier
+    if (typeof updateCartDisplay === 'function') {
+        updateCartDisplay();
+    }
+    
+    // Configuration du dropdown du panier
+    const cartIcon = document.querySelector('.cart-icon');
+    if (cartIcon) {
+        // Supprimer les anciens écouteurs d'événements potentiels
+        const newCartIcon = cartIcon.cloneNode(true);
+        cartIcon.parentNode.replaceChild(newCartIcon, cartIcon);
+        
+        // Ajouter le nouvel écouteur d'événement
+        newCartIcon.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = this.querySelector('.cart-dropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        });
+    }
+    
+    // Fermer le dropdown quand on clique ailleurs
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.cart-dropdown') && !e.target.closest('.cart-icon')) {
+            const dropdown = document.querySelector('.cart-dropdown.show');
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+        }
+    });
+    
     // Gestion des boutons d'ajout au panier
     document.querySelectorAll('.add-to-cart-btn').forEach(button => {
         button.addEventListener('click', function() {
@@ -836,57 +895,15 @@
             const productCard = this.closest('.product-card');
             const productName = productCard.querySelector('.product-title').textContent;
             const productPriceText = productCard.querySelector('.product-price').textContent;
-            // Gérer à la fois le prix normal et le prix promotionnel
-            const priceOldElement = productCard.querySelector('.price-old');
-            const productPrice = priceOldElement ? 
-                parseFloat(productPriceText.replace(/[^0-9,.-]+/g, '').replace(',', '.')) : 
-                parseFloat(productPriceText.replace(/[^0-9,.-]+/g, '').replace(',', '.'));
+            const productPrice = parseFloat(productPriceText.replace(/[^0-9,.-]+/g, '').replace(',', '.'));
             const productImage = productCard.querySelector('.product-image').getAttribute('src');
             
-            // Vérifier le stock avant d'ajouter au panier
-            fetch(`/public/php/api/products/check-stock.php?id=${productId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        showNotification(data.error, 'error');
-                        return;
-                    }
-                    
-                    // Utiliser le prix promotionnel si disponible
-                    let finalPrice = parseFloat(data.prix);
-                    if (data.prix_promo && parseFloat(data.prix_promo) < parseFloat(data.prix)) {
-                        finalPrice = parseFloat(data.prix_promo);
-                    }
-                    
-                    if (data.stock > 0) {
-                        // Ajouter au panier avec information de stock
-                        const cart = getCart();
-                        const existingProductIndex = cart.findIndex(item => item.id === productId);
-                        
-                        if (existingProductIndex > -1 && cart[existingProductIndex].quantity >= data.stock) {
-                            showNotification(`Stock maximum atteint pour "${productName}"`, 'error');
-                            return;
-                        }
-                        
-                        addToCart({
-                            id: productId,
-                            name: productName,
-                            price: finalPrice,
-                            image: productImage,
-                            quantity: 1,
-                            availableStock: data.stock,
-                            stockAlerte: data.stock_alerte || 5
-                        });
-                    } else {
-                        showNotification(`"${productName}" est en rupture de stock`, 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error("Erreur lors de la vérification du stock:", error);
-                    showNotification("Impossible de vérifier le stock. Veuillez réessayer.", 'error');
-                });
+            if (typeof checkProductStock === 'function') {
+                checkProductStock(productId, productName, productPrice, productImage);
+            }
         });
     });
-    </script>
+});
+</script>
 </body>
 </html>

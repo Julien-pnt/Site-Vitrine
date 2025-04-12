@@ -125,6 +125,11 @@
         .cart-icon {
             position: relative;
             cursor: pointer;
+            padding: 10px;
+            margin: -10px;  /* Pour compenser le padding et garder l'alignement */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .cart-badge {
@@ -242,6 +247,115 @@
             background-color: #f5f5f5;
             color: #333;
         }
+
+        /* Ajouter ce style dans la section <style> existante */
+        .cart-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #d4af37;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Styles pour le modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-container {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #777;
+        }
+
+        .modal-content {
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .modal-product-image {
+            flex: 1;
+            min-width: 300px;
+            padding-right: 20px;
+        }
+
+        .modal-product-image img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .modal-product-details {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Style pour les prix en promotion */
+        .price-old {
+            text-decoration: line-through;
+            color: #777;
+            margin-right: 8px;
+        }
     </style>
     
     <!-- Ressources -->
@@ -303,6 +417,7 @@
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                 </svg>
                 <span class="cart-badge">0</span>
+                <a href="../products/panier.php" class="cart-direct-link" style="position:absolute; height:100%; width:100%; top:0; left:0; z-index:5; opacity:0;"></a>
                 
                 <div class="cart-dropdown">
                     <div class="cart-dropdown-header">
@@ -388,7 +503,7 @@
             <!-- Premier produit - Chronos Édition Limitée -->
             <div class="product-card">
                 <div class="product-image-container">
-                    <img src="../../assets/img/products/elegance-eternal.jpg" alt="Montre Chronos Édition Limitée" class="product-image" loading="lazy">
+                    <img src="../../assets/img/products/Chronos-edition-limited.png" alt="Montre Chronos Édition Limitée" class="product-image" loading="lazy">
                     <div class="product-overlay">
                         <button class="quick-view-btn" data-product-id="301">Aperçu rapide</button>
                     </div>
@@ -573,6 +688,34 @@
         </div>
     </section>
 
+    <!-- Modal pour aperçu rapide -->
+    <div id="quick-view-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modal-product-title"></h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-content">
+                <div class="modal-product-image">
+                    <img id="modal-product-image" src="" alt="">
+                </div>
+                <div class="modal-product-details">
+                    <p id="modal-product-price" class="product-price"></p>
+                    <!-- La fonction affichera ici l'indicateur de stock -->
+                    <p id="modal-product-description" class="product-description">Montre exclusive et élégante de notre collection limitée.</p>
+                    <div class="modal-actions">
+                        <button id="modal-add-to-cart" class="add-to-cart-btn">Ajouter au panier</button>
+                        <button class="add-to-wishlist-btn" aria-label="Ajouter aux favoris">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer amélioré -->
     <footer class="footer">
         <div class="footer-content">
@@ -624,31 +767,174 @@
         </div>
     </footer>
 
-    <script src="../../assets/js/cart.js"></script>
+<!-- Premier et unique script avec toutes les fonctionnalités -->
+<script>
+console.log('Script démarré'); // Pour déboguer
 
-    <script>
-        // Code pour la fonctionnalité d'aperçu rapide
-        document.addEventListener('DOMContentLoaded', function() {
-            const quickViewButtons = document.querySelectorAll('.quick-view-btn');
-
-            if (quickViewButtons.length) {
-                quickViewButtons.forEach(button => {
-                    button.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        const productId = this.getAttribute('data-product-id');
-                        window.location.href = '../products/product-detail.php?id=' + productId;
-                    });
-                });
-            }
-        });
-    </script>
-    <script src="../../assets/js/cart.js" defer></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
+// Attendre que le DOM soit complètement chargé
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM chargé'); // Pour déboguer
+    
     // Fix pour le problème de fondu blanc
     document.body.classList.add('video-loaded');
     
-    // Filtrage par genre
+    // -------- Fonctions du panier --------
+    
+    // Afficher un message debug sur le nombre d'événements
+    console.log('Nombre de boutons "Ajouter au panier":', document.querySelectorAll('.add-to-cart-btn').length);
+    
+    function checkProductStock(productId, productName, productPrice, productImage) {
+        console.log('Vérification stock pour:', productName); // Pour déboguer
+        
+        // Pour éviter l'ajout en double, on vérifie si on a déjà effectué cette action récemment
+        const lastAddTime = parseInt(localStorage.getItem(`last_add_${productId}`)) || 0;
+        const now = Date.now();
+        if (now - lastAddTime < 2000) { // Ignorer les clics multiples dans un intervalle de 2 secondes
+            console.log('Action ignorée - trop rapide');
+            return;
+        }
+        localStorage.setItem(`last_add_${productId}`, now);
+        
+        // Ajouter directement au panier (sans vérification de stock pour simplifier)
+        addToCart(productId, productName, 1, productPrice, productImage);
+        showNotification('Produit ajouté au panier');
+    }
+    
+    function addToCart(productId, productName, quantity, price, imageSrc) {
+        // Récupérer le panier existant ou créer un nouveau
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        // Vérifier si l'article existe déjà dans le panier
+        const existingItemIndex = cart.findIndex(item => item.id === productId);
+        
+        if (existingItemIndex > -1) {
+            // Incrémenter la quantité si le produit existe déjà
+            cart[existingItemIndex].quantity += quantity;
+        } else {
+            // Ajouter le nouvel article
+            cart.push({
+                id: productId,
+                name: productName,
+                price: price,
+                quantity: quantity,
+                image: imageSrc
+            });
+        }
+        
+        // Sauvegarder le panier mis à jour
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Mettre à jour l'affichage
+        updateCartDisplay();
+    }
+    
+    function updateCartDisplay() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const cartBadge = document.querySelector('.cart-badge');
+        const cartDropdownItems = document.querySelector('.cart-dropdown-items');
+        const cartDropdownEmpty = document.querySelector('.cart-dropdown-empty');
+        const cartDropdownTotal = document.querySelector('.cart-dropdown-total-value');
+        
+        if (!cartBadge || !cartDropdownItems || !cartDropdownEmpty || !cartDropdownTotal) {
+            console.error("Éléments du panier manquants dans le DOM");
+            return;
+        }
+        
+        // Mettre à jour le compteur d'articles
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartBadge.textContent = totalItems;
+        
+        // Vider le contenu précédent
+        cartDropdownItems.innerHTML = '';
+        
+        // Calculer le total
+        let total = 0;
+        
+        if (cart.length === 0) {
+            // Afficher le message "panier vide"
+            cartDropdownEmpty.style.display = 'block';
+        } else {
+            // Masquer le message "panier vide"
+            cartDropdownEmpty.style.display = 'none';
+            
+            // Afficher chaque article
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <div class="cart-item-image">
+                        <img src="${item.image}" alt="${item.name}">
+                    </div>
+                    <div class="cart-item-info">
+                        <h4>${item.name}</h4>
+                        <div class="cart-item-price">${item.quantity} × ${item.price.toFixed(2).replace('.', ',')} €</div>
+                    </div>
+                    <button class="cart-item-remove" data-id="${item.id}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                cartDropdownItems.appendChild(cartItem);
+            });
+            
+            // Ajouter des écouteurs d'événements pour les boutons de suppression
+            document.querySelectorAll('.cart-item-remove').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const productId = this.getAttribute('data-id');
+                    removeFromCart(productId);
+                });
+            });
+        }
+        
+        // Mettre à jour le total
+        cartDropdownTotal.textContent = `${total.toFixed(2).replace('.', ',')} €`;
+    }
+    
+    function removeFromCart(productId) {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        // Filtrer le produit à supprimer
+        cart = cart.filter(item => item.id !== productId);
+        
+        // Sauvegarder le panier mis à jour
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Mettre à jour l'affichage
+        updateCartDisplay();
+        
+        // Afficher une confirmation
+        showNotification('Produit retiré du panier');
+    }
+    
+    function showNotification(message) {
+        // Supprimer toute notification existante
+        const existingNotif = document.querySelector('.cart-notification');
+        if (existingNotif) {
+            document.body.removeChild(existingNotif);
+        }
+        
+        // Créer et afficher la nouvelle notification
+        const notification = document.createElement('div');
+        notification.className = 'cart-notification';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        // Masquer et supprimer après un délai
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    document.body.removeChild(notification);
+                }
+            }, 500);
+        }, 2000);
+    }
+    
+    // -------- Filtrage et affichage des produits --------
     const hommeButton = document.getElementById('homme-button');
     const femmeButton = document.getElementById('femme-button');
     const hommeProducts = document.getElementById('homme-products');
@@ -722,158 +1008,98 @@
         });
     }
     
-    // Gestion des boutons d'ajout aux favoris
-    const wishlistButtons = document.querySelectorAll('.add-to-wishlist-btn');
-    wishlistButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            this.classList.toggle('active');
-            const productId = this.getAttribute('data-product-id');
-            // Vous pourriez implémenter ici l'ajout réel aux favoris
-        });
-    });
+    // -------- Gestion du modal d'aperçu rapide --------
+    const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+    const modal = document.getElementById('quick-view-modal');
+    const closeModalButton = document.querySelector('.close-modal');
     
-    // Mettre à jour l'affichage du panier
-    updateCartDisplay();
-});
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Fix pour le fondu blanc
-        document.body.classList.add('video-loaded');
-        
-        // Gestion de la vidéo
-        const video = document.querySelector('.video-bg');
-        const fallbackImg = document.querySelector('.fallback-img');
-        
-        if (video) {
-            // En cas d'erreur de chargement de la vidéo, afficher l'image de secours
-            video.addEventListener('error', function() {
-                if (fallbackImg) {
-                    fallbackImg.style.display = 'block';
+    if (quickViewButtons.length) {
+        quickViewButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Option 1: Redirection vers la page de détail du produit
+                const productId = this.getAttribute('data-product-id');
+                window.location.href = '../products/product-detail.php?id=' + productId;
+                
+                /* Option 2: Afficher le modal (décommentez pour utiliser)
+                if (modal) {
+                    const productId = this.getAttribute('data-product-id');
+                    const productCard = this.closest('.product-card');
+                    const title = productCard.querySelector('.product-title').textContent;
+                    const price = productCard.querySelector('.product-price').textContent;
+                    const imageSrc = productCard.querySelector('.product-image').getAttribute('src');
+                    
+                    document.getElementById('modal-product-title').textContent = title;
+                    document.getElementById('modal-product-price').textContent = price;
+                    document.getElementById('modal-product-image').setAttribute('src', imageSrc);
+                    document.getElementById('modal-product-image').setAttribute('alt', title);
+                    
+                    // Ajouter l'ID du produit au bouton d'ajout au panier
+                    const addToCartBtn = document.getElementById('modal-add-to-cart');
+                    if (addToCartBtn) {
+                        addToCartBtn.setAttribute('data-product-id', productId);
+                        addToCartBtn.addEventListener('click', function() {
+                            const id = this.getAttribute('data-product-id');
+                            const modalTitle = document.getElementById('modal-product-title').textContent;
+                            const modalPriceText = document.getElementById('modal-product-price').textContent;
+                            const modalPrice = parseFloat(modalPriceText.replace(/[^0-9,.-]+/g, '').replace(',', '.'));
+                            const modalImage = document.getElementById('modal-product-image').getAttribute('src');
+                            
+                            checkProductStock(id, modalTitle, modalPrice, modalImage);
+                            modal.style.display = 'none';
+                        });
+                    }
+                    
+                    modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
                 }
+                */
             });
-            
-            // Si la vidéo ne démarre pas après 3 secondes, afficher l'image de secours
-            setTimeout(function() {
-                if (video.paused || video.readyState < 2) {
-                    if (fallbackImg) {
-                        fallbackImg.style.display = 'block';
-                    }
-                }
-            }, 3000);
-        }
-    });
-</script>
-<script>
-// Modal d'aperçu rapide
-const quickViewButtons = document.querySelectorAll('.quick-view-btn');
-const modal = document.getElementById('quick-view-modal');
-const closeModalButton = document.querySelector('.close-modal');
-
-if (quickViewButtons.length && modal) {
-    quickViewButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const productId = this.getAttribute('data-product-id');
-            const productCard = this.closest('.product-card');
-            const title = productCard.querySelector('.product-title').textContent;
-            const price = productCard.querySelector('.product-price').textContent;
-            const imageSrc = productCard.querySelector('.product-image').getAttribute('src');
-            
-            document.getElementById('modal-product-title').textContent = title;
-            document.getElementById('modal-product-price').textContent = price;
-            document.getElementById('modal-product-image').setAttribute('src', imageSrc);
-            document.getElementById('modal-product-image').setAttribute('alt', title);
-            
-            // Supprimer l'ancien indicateur de stock s'il existe
-            const existingStockIndicator = document.querySelector('.modal-product-details .stock-indicator');
-            if (existingStockIndicator) {
-                existingStockIndicator.remove();
-            }
-            
-            // Réinitialiser le bouton d'ajout au panier
-            const addToCartBtn = document.getElementById('modal-add-to-cart');
-            addToCartBtn.disabled = false;
-            addToCartBtn.classList.remove('disabled');
-            
-            // Attribuer l'ID du produit au bouton d'ajout au panier
-            addToCartBtn.setAttribute('data-product-id', productId);
-            
-            // Vérifier et afficher le stock
-            fetch(`/public/php/api/products/check-stock.php?id=${productId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const stockInfo = document.createElement('div');
-                    stockInfo.className = 'stock-indicator';
-                    
-                    // Utiliser le seuil d'alerte défini dans la base de données
-                    const stockAlerte = data.stock_alerte || 5; // Valeur par défaut si non définie
-                    
-                    if (data.stock > stockAlerte) {
-                        stockInfo.classList.add('in-stock');
-                        stockInfo.innerHTML = '<i class="fas fa-check-circle"></i> En stock';
-                    } else if (data.stock > 0) {
-                        stockInfo.classList.add('low-stock');
-                        stockInfo.innerHTML = `<i class="fas fa-exclamation-circle"></i> Plus que ${data.stock} en stock`;
-                    } else {
-                        stockInfo.classList.add('out-of-stock');
-                        stockInfo.innerHTML = '<i class="fas fa-times-circle"></i> Rupture de stock';
-                        addToCartBtn.disabled = true;
-                        addToCartBtn.classList.add('disabled');
-                    }
-                    
-                    // Afficher le prix promotionnel si disponible
-                    if (data.prix_promo && parseFloat(data.prix_promo) < parseFloat(data.prix)) {
-                        const priceElement = document.getElementById('modal-product-price');
-                        priceElement.innerHTML = `<span class="price-old">${parseFloat(data.prix).toFixed(2).replace('.', ',')} €</span> ${parseFloat(data.prix_promo).toFixed(2).replace('.', ',')} €`;
-                    }
-                    
-                    // Insérer l'indicateur de stock après le prix
-                    const priceElement = document.getElementById('modal-product-price');
-                    priceElement.parentNode.insertBefore(stockInfo, priceElement.nextSibling);
-                })
-                .catch(error => {
-                    console.error("Erreur lors de la récupération du stock:", error);
-                });
-            
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
         });
-    });
-    
-    closeModalButton.addEventListener('click', function() {
-        modal.style.display = 'none';
-        document.body.style.overflow = '';
-    });
-    
-    window.addEventListener('click', function(event) {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-            document.body.style.overflow = '';
-        }
-    });
-}
-</script>
-<script>
-// Déléguer la gestion du dropdown du panier au script cart.js
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialiser l'affichage du panier
-    if (typeof updateCartDisplay === 'function') {
-        updateCartDisplay();
     }
     
+    // Fermeture du modal
+    if (closeModalButton && modal) {
+        closeModalButton.addEventListener('click', function() {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        });
+        
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        });
+    }
+    
+    // -------- Gestion du panier --------
     // Configuration du dropdown du panier
     const cartIcon = document.querySelector('.cart-icon');
     if (cartIcon) {
-        // Supprimer les anciens écouteurs d'événements potentiels
-        const newCartIcon = cartIcon.cloneNode(true);
-        cartIcon.parentNode.replaceChild(newCartIcon, cartIcon);
+        // Supprimer le lien direct transparent qui bloque les clics
+        const directLink = cartIcon.querySelector('.cart-direct-link');
+        if (directLink) {
+            directLink.remove();
+        }
         
-        // Ajouter le nouvel écouteur d'événement
-        newCartIcon.addEventListener('click', function(e) {
+        // Gestionnaire d'événement simple sur l'icône
+        cartIcon.addEventListener('click', function(e) {
+            // Toujours arrêter la propagation pour éviter la fermeture immédiate
             e.stopPropagation();
+            
+            // Vérifier si le clic est sur un bouton ou lien du dropdown
+            if (e.target.closest('.cart-dropdown-button')) {
+                // Ne rien faire, laisser le lien fonctionner naturellement
+                return;
+            }
+            
+            // Sinon, toggle le dropdown
             const dropdown = this.querySelector('.cart-dropdown');
             if (dropdown) {
                 dropdown.classList.toggle('show');
+                console.log('Dropdown toggled:', dropdown.classList.contains('show'));
             }
         });
     }
@@ -890,19 +1116,54 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Gestion des boutons d'ajout au panier
     document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const productId = this.getAttribute('data-product-id');
-            const productCard = this.closest('.product-card');
-            const productName = productCard.querySelector('.product-title').textContent;
-            const productPriceText = productCard.querySelector('.product-price').textContent;
-            const productPrice = parseFloat(productPriceText.replace(/[^0-9,.-]+/g, '').replace(',', '.'));
-            const productImage = productCard.querySelector('.product-image').getAttribute('src');
-            
-            if (typeof checkProductStock === 'function') {
+        if (!button.closest('#quick-view-modal')) { // Évite les boutons dans le modal
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                const productCard = this.closest('.product-card');
+                const productName = productCard.querySelector('.product-title').textContent;
+                const productPriceText = productCard.querySelector('.product-price').textContent;
+                const productPrice = parseFloat(productPriceText.replace(/[^0-9,.-]+/g, '').replace(',', '.'));
+                const productImage = productCard.querySelector('.product-image').getAttribute('src');
+                
                 checkProductStock(productId, productName, productPrice, productImage);
-            }
+            });
+        }
+    });
+    
+    // Gestion des boutons d'ajout aux favoris
+    const wishlistButtons = document.querySelectorAll('.add-to-wishlist-btn');
+    wishlistButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            this.classList.toggle('active');
+            const productId = this.getAttribute('data-product-id');
+            // Vous pourriez implémenter ici l'ajout réel aux favoris
         });
     });
+    
+    // -------- Gestion de la vidéo d'arrière-plan --------
+    const video = document.querySelector('.video-bg');
+    const fallbackImg = document.querySelector('.fallback-img');
+    
+    if (video) {
+        // En cas d'erreur de chargement de la vidéo, afficher l'image de secours
+        video.addEventListener('error', function() {
+            if (fallbackImg) {
+                fallbackImg.style.display = 'block';
+            }
+        });
+        
+        // Si la vidéo ne démarre pas après 3 secondes, afficher l'image de secours
+        setTimeout(function() {
+            if (video.paused || video.readyState < 2) {
+                if (fallbackImg) {
+                    fallbackImg.style.display = 'block';
+                }
+            }
+        }, 3000);
+    }
+    
+    // Initialiser l'affichage du panier au chargement de la page
+    updateCartDisplay();
 });
 </script>
 </body>

@@ -734,16 +734,27 @@ if ($isLoggedIn && isset($_POST['action'])) {
             }
 
             /**
-             * Fonction pour sauvegarder le panier dans localStorage
+             * Fonction pour sauvegarder le panier dans localStorage avec rafraîchissement plus rapide
              */
-            function saveCart(cart) {
+            function saveCart(cart, refresh = true) {
                 localStorage.setItem('cart', JSON.stringify(cart));
-                updateCartUI(cart);
+                
+                // Uniquement pour les mises à jour de l'UI sans rafraîchissement
+                if (!refresh) {
+                    updateCartUI(cart);
+                }
 
                 // Synchroniser avec le serveur si l'utilisateur est connecté
                 <?php if ($isLoggedIn): ?>
                 syncCartWithServer(cart);
                 <?php endif; ?>
+                
+                // Rafraîchir la page plus rapidement si demandé
+                if (refresh) {
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 50); // Réduit de 800ms à 300ms pour une expérience plus rapide
+                }
             }
 
             /**
@@ -817,28 +828,36 @@ if ($isLoggedIn && isset($_POST['action'])) {
                 notification.style.display = 'block';
                 notification.style.opacity = '1';
                 
-                // Faire disparaître après 3 secondes
-                setTimeout(() => {
-                    notification.style.opacity = '0';
-                    setTimeout(() => {
-                        notification.style.display = 'none';
-                    }, 500);
-                }, 3000);
+                // Ne pas masquer automatiquement la notification si la page va être rafraîchie
+                // Elle disparaîtra naturellement lors du refresh
             }
 
             /**
-             * Supprime un article du panier
+             * Supprime un article du panier et rafraîchit la page
              */
             function removeFromCart(productId) {
                 let cart = getCart();
                 cart = cart.filter(item => item.id !== productId);
                 
-                saveCart(cart);
-                loadCart(); // Recharger l'affichage complet
+                // Afficher une notification avant de rafraîchir
+                showNotification('Article supprimé du panier', 'success');
+                
+                // Sauvegarder le panier
+                localStorage.setItem('cart', JSON.stringify(cart));
+                
+                <?php if ($isLoggedIn): ?>
+                // Synchroniser avec le serveur avant le rafraîchissement
+                syncCartWithServer(cart);
+                <?php endif; ?>
+                
+                // Pour les opérations où nous voulons un rafraîchissement:
+                setTimeout(function() {
+                    window.location.reload();
+                }, 50); // Réduit à 300ms
             }
 
             /**
-             * Diminue la quantité d'un article dans le panier
+             * Diminue la quantité d'un article dans le panier et rafraîchit la page
              */
             function decreaseCartQuantity(productId) {
                 const cart = getCart();
@@ -847,15 +866,27 @@ if ($isLoggedIn && isset($_POST['action'])) {
                 if (productIndex > -1) {
                     if (cart[productIndex].quantity > 1) {
                         cart[productIndex].quantity--;
-                        saveCart(cart);
+                        
+                        showNotification('Quantité mise à jour', 'success');
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                        
+                        <?php if ($isLoggedIn): ?>
+                        // Synchroniser avec le serveur avant le rafraîchissement
+                        syncCartWithServer(cart);
+                        <?php endif; ?>
+                        
+                        // Pour les opérations où nous voulons un rafraîchissement:
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 50); // Réduit à 300ms
                     } else {
-                        removeFromCart(productId);
+                        removeFromCart(productId); // Cette fonction rafraîchit déjà la page
                     }
                 }
             }
 
             /**
-             * Augmente la quantité d'un article dans le panier
+             * Augmente la quantité d'un article dans le panier et rafraîchit la page
              */
             function increaseCartQuantity(productId) {
                 const cart = getCart();
@@ -867,8 +898,7 @@ if ($isLoggedIn && isset($_POST['action'])) {
                         .then(stockInfo => {
                             if (stockInfo.visible === false) {
                                 showNotification(`Ce produit n'est plus disponible`, 'error');
-                                removeFromCart(productId);
-                                loadCart();
+                                removeFromCart(productId); // Cette fonction rafraîchit déjà la page
                                 return;
                             }
                             
@@ -889,8 +919,18 @@ if ($isLoggedIn && isset($_POST['action'])) {
                                     cart[productIndex].hasPromo = false;
                                 }
                                 
-                                saveCart(cart);
-                                loadCart(); // Recharger l'affichage
+                                showNotification('Quantité mise à jour', 'success');
+                                localStorage.setItem('cart', JSON.stringify(cart));
+                                
+                                <?php if ($isLoggedIn): ?>
+                                // Synchroniser avec le serveur avant le rafraîchissement
+                                syncCartWithServer(cart);
+                                <?php endif; ?>
+                                
+                                // Pour les opérations où nous voulons un rafraîchissement:
+                                setTimeout(function() {
+                                    window.location.reload();
+                                }, 50); // Réduit à 300ms
                             } else {
                                 showNotification(`Stock maximum atteint pour ce produit (${stockInfo.stock})`, 'warning');
                             }

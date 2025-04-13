@@ -275,6 +275,27 @@ function showNotification(message, type = 'success') {
     }, 3000);
 }
 
+// Ajouter cette fonction à votre fichier cart.js existant
+function handleApiResponse(response) {
+    if (response && response.success) {
+        // Afficher le message de succès
+        if (response.message) {
+            showNotification(response.message);
+        }
+        
+        // Si la réponse indique qu'un rafraîchissement est nécessaire
+        if (response.refresh === true) {
+            // Attendre que la notification soit visible avant de rafraîchir
+            setTimeout(function() {
+                window.location.reload();
+            }, 1000); // Attendre 1 seconde pour que l'utilisateur puisse voir la notification
+        }
+    } else {
+        // Gérer les erreurs
+        showNotification(response.message || 'Une erreur s\'est produite', 'error');
+    }
+}
+
 // Exporter les fonctions pour les rendre disponibles globalement
 window.addToCart = addToCart;
 window.removeFromCart = removeFromCart;
@@ -282,3 +303,4 @@ window.updateCartDisplay = updateCartDisplay;
 window.getCart = getCart;
 window.saveCart = saveCart;
 window.showNotification = showNotification;
+window.handleApiResponse = handleApiResponse;

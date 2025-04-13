@@ -860,142 +860,87 @@ try {
         }
         
         /* Style pour le compteur de panier */
-        .cart-count {
-            display: none;
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background-color: #d4af37;
-            color: white;
-            font-size: 12px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            justify-content: center;
-            align-items: center;
+        /* Supprimer tous ces styles */
+        
+        /* Styles pour le dropdown du panier */
+        /* Supprimer tous ces styles */
+        
+        /* Correction du positionnement du panier */
+        /* Supprimer tous ces styles */
+
+        /* Assurer que le menu déroulant reste visible */
+        /* Supprimer tous ces styles */
+
+        /* Correction des styles de notification */
+        .notifications-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            pointer-events: none; /* Permet de cliquer à travers */
         }
 
-        /* Styles pour le dropdown du panier */
-        .cart-icon {
-            position: relative;
-            cursor: pointer;
-            display: inline-block;
-        }
-        
-        .cart-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background-color: #d4af37;
+        .notification {
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
             color: white;
-            font-size: 12px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'Raleway', sans-serif;
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: auto; /* Réactive les interactions sur cet élément */
         }
-        
-        .cart-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            width: 320px;
-            background-color: white;
-            border-radius: 4px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-            padding: 1rem;
-            display: none;
-            z-index: 1000;
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
         }
-        
-        .cart-dropdown.show {
-            display: block !important;
+
+        /* Amélioration du responsive design */
+        @media (max-width: 992px) {
+            .product-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding: 0 1rem;
+            }
+            
+            .product-title {
+                font-size: 2rem;
+            }
+            
+            .specs-grid, .related-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .cart-container {
+                top: 10px;
+                right: 10px;
+            }
         }
-        
-        .cart-dropdown-header {
-            border-bottom: 1px solid #eee;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .cart-item {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #f5f5f5;
-        }
-        
-        .cart-item-image {
-            width: 50px;
-            height: 50px;
-            overflow: hidden;
-            border-radius: 4px;
-            margin-right: 0.75rem;
-        }
-        
-        .cart-item-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .cart-item-info {
-            flex-grow: 1;
-        }
-        
-        .cart-item-info h4 {
-            margin: 0;
-            font-size: 0.9rem;
-        }
-        
-        .cart-item-price {
-            font-size: 0.8rem;
-            color: #666;
-        }
-        
-        .cart-item-remove {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #999;
-            padding: 0.25rem;
-        }
-        
-        .cart-item-remove:hover {
-            color: #d4af37;
-        }
-        
-        .cart-dropdown-total {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            margin: 1rem 0;
-        }
-        
-        .cart-dropdown-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .cart-dropdown-button {
-            padding: 0.5rem 1rem;
-            text-decoration: none;
-            text-align: center;
-            border-radius: 4px;
-            flex-grow: 1;
-            font-size: 0.9rem;
-        }
-        
-        .cart-dropdown-button.primary {
-            background: linear-gradient(to bottom, #d4af37, #c0992a);
-            color: white;
-        }
-        
-        .cart-dropdown-button.secondary {
-            background-color: #f5f5f5;
-            color: #333;
+
+        @media (max-width: 768px) {
+            .product-actions {
+                flex-direction: column;
+            }
+            
+            .add-to-wishlist-btn {
+                margin-top: 10px;
+                width: 100%;
+            }
+            
+            .gallery-thumbnails {
+                overflow-x: auto;
+                padding-bottom: 10px;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .gallery-thumbnail {
+                width: 60px;
+                height: 60px;
+                flex-shrink: 0;
+            }
         }
     </style>
 </head>
@@ -1003,36 +948,6 @@ try {
     <header class="header">
         <!-- Insérer ici le header de votre site -->
     </header>
-
-    <!-- Ajouter après le header -->
-    <div class="cart-container">
-        <div class="cart-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="9" cy="21" r="1"></circle>
-                <circle cx="20" cy="21" r="1"></circle>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
-            <span class="cart-badge">0</span>
-            
-            <div class="cart-dropdown">
-                <div class="cart-dropdown-header">
-                    <h3>Mon Panier</h3>
-                </div>
-                <div class="cart-dropdown-items">
-                    <!-- Le panier sera rempli dynamiquement via JavaScript -->
-                </div>
-                <div class="cart-dropdown-empty">Votre panier est vide</div>
-                <div class="cart-dropdown-total">
-                    <span>Total:</span>
-                    <span class="cart-dropdown-total-value">0,00 €</span>
-                </div>
-                <div class="cart-dropdown-buttons">
-                    <a href="../products/panier.php" class="cart-dropdown-button secondary">Voir le panier</a>
-                    <a href="../Montres.html" class="cart-dropdown-button primary">Découvrir nos montres</a>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Navigation controls with back button and account access -->
     <div class="navigation-controls">
@@ -1287,32 +1202,50 @@ try {
                     }
                 });
             }
-            
-            // Initialiser l'affichage du panier
-            if (typeof updateCartDisplay === 'function') {
-                updateCartDisplay();
-            }
-            
-            // Configuration du dropdown du panier
-            const cartIcon = document.querySelector('.cart-icon');
-            if (cartIcon) {
-                cartIcon.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const dropdown = this.querySelector('.cart-dropdown');
-                    if (dropdown) {
-                        dropdown.classList.toggle('show');
-                    }
-                });
-                
-                document.addEventListener('click', function() {
-                    const dropdown = document.querySelector('.cart-dropdown.show');
-                    if (dropdown) {
-                        dropdown.classList.remove('show');
-                    }
-                });
-            }
         });
     </script>
+    <script>
+// Correction spécifique pour le dropdown du panier
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuration du dropdown du panier
+    const cartIcon = document.querySelector('.cart-icon');
+    if (cartIcon) {
+        // Supprimer tous les gestionnaires d'événements existants
+        const newCartIcon = cartIcon.cloneNode(true);
+        cartIcon.parentNode.replaceChild(newCartIcon, cartIcon);
+        
+        // Ajouter un nouveau gestionnaire
+        newCartIcon.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const dropdown = this.querySelector('.cart-dropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        });
+        
+        // Permettre aux liens dans le dropdown de fonctionner
+        const dropdownButtons = newCartIcon.querySelectorAll('.cart-dropdown-button');
+        dropdownButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Ne pas arrêter la propagation pour permettre la navigation
+                e.stopPropagation();
+            });
+        });
+    }
+    
+    // Fermer le dropdown quand on clique ailleurs
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.cart-dropdown') && !e.target.closest('.cart-icon')) {
+            const dropdown = document.querySelector('.cart-dropdown.show');
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+        }
+    });
+});
+</script>
     <div class="notifications-container"></div>
     <script src="../../assets/js/cart.js" defer></script>
 </body>

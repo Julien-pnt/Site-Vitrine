@@ -1,0 +1,188 @@
+/* Styles pour le modal d'aperçu rapide et les détails produit */
+
+/* Styles pour le modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-container {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: modalFadeIn 0.3s ease;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #777;
+}
+
+.modal-content {
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.modal-product-image {
+    flex: 1;
+    min-width: 300px;
+    padding-right: 20px;
+}
+
+.modal-product-image img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.modal-product-details {
+    flex: 1;
+    min-width: 300px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Animation */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Styles pour les cartes produit */
+.product-card {
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.product-image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.product-overlay {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    width: 100%;
+    background-color: rgba(255,255,255,0.9);
+    padding: 10px;
+    transition: bottom 0.3s ease;
+}
+
+.product-card:hover .product-overlay {
+    bottom: 0;
+}
+
+.quick-view-btn {
+    width: 100%;
+    background: none;
+    border: 1px solid #d4af37;
+    color: #d4af37;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quick-view-btn:hover {
+    background-color: #d4af37;
+    color: white;
+}
+
+.product-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.add-to-cart-btn {
+    flex: 1;
+    background: linear-gradient(to bottom, #d4af37, #c0992a);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.add-to-wishlist-btn {
+    background: white;
+    border: 1px solid #ddd;
+    color: #777;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.add-to-wishlist-btn:hover,
+.add-to-wishlist-btn.active {
+    color: #d4af37;
+    border-color: #d4af37;
+}
+
+.add-to-wishlist-btn.active svg {
+    fill: #d4af37;
+}
+
+/* Style pour les prix en promotion */
+.price-old {
+    text-decoration: line-through;
+    color: #777;
+    margin-right: 8px;
+    font-size: 0.85em;
+}
+
+.price-new {
+    color: #d4af37;
+    font-weight: bold;
+}

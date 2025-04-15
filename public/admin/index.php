@@ -603,6 +603,9 @@ try {
                     <a href="orders.php?filter=newest" class="quick-action-btn">
                         <i class="fas fa-shopping-cart"></i> Voir nouvelles commandes
                     </a>
+                    <a href="reviews.php?filter=pending" class="quick-action-btn">
+                        <i class="fas fa-star"></i> Modérer les avis
+                    </a>
                     <a href="export.php" class="quick-action-btn">
                         <i class="fas fa-file-export"></i> Exporter données
                     </a>

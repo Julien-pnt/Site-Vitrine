@@ -2592,11 +2592,16 @@ document.addEventListener('DOMContentLoaded', function() {
             fetch(this.getAttribute('action'), {
                 method: 'POST',
                 body: formData,
-                credentials: 'same-origin' // Ceci est important pour transmettre les cookies de session
+                credentials: 'same-origin'
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
-                console.log('Réponse serveur:', data); // Pour débogage
+                console.log('Réponse serveur:', data);
                 if (data.success) {
                     showNotification('Votre avis a été soumis avec succès et sera publié après validation', 'success');
                     this.reset();
@@ -2614,7 +2619,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                showNotification('Une erreur est survenue lors de l\'envoi de votre avis', 'error');
+                showNotification('Une erreur de communication est survenue. Veuillez réessayer.', 'error');
             });
         });
     }

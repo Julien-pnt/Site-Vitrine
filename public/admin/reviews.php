@@ -145,15 +145,21 @@ if ($filterDateTo) {
 $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
 
 // Requête pour compter le nombre total d'avis
-$countSql = "SELECT COUNT(*) FROM avis a 
-             LEFT JOIN produits p ON a.produit_id = p.id 
-             LEFT JOIN utilisateurs u ON a.utilisateur_id = u.id 
-             $whereClause";
+try {
+    $countSql = "SELECT COUNT(*) FROM avis a 
+                 LEFT JOIN produits p ON a.produit_id = p.id 
+                 LEFT JOIN utilisateurs u ON a.utilisateur_id = u.id 
+                 $whereClause";
 
-$countStmt = $pdo->prepare($countSql);
-$countStmt->execute($params);
-$totalReviews = $countStmt->fetchColumn();
-$totalPages = ceil($totalReviews / $limit);
+    $countStmt = $pdo->prepare($countSql);
+    $countStmt->execute($params);
+    $totalReviews = $countStmt->fetchColumn();
+    $totalPages = ceil($totalReviews / $limit);
+} catch (PDOException $e) {
+    error_log("Erreur de comptage des avis: " . $e->getMessage());
+    $totalReviews = 0;
+    $totalPages = 1;
+}
 
 // Requête pour récupérer les avis avec pagination
 $sql = "SELECT a.*, p.nom as produit_nom, p.slug as produit_slug, CONCAT(u.prenom, ' ', u.nom) as utilisateur_nom
@@ -174,6 +180,14 @@ $products = $productStmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Nombre d'avis en attente pour la notification
 $pendingReviewsCount = $pdo->query("SELECT COUNT(*) FROM avis WHERE statut = 'en_attente'")->fetchColumn();
+
+
+// Simplification du code de pagination avec une fonction
+function getPaginationUrl($newPage) {
+    $queryParams = $_GET;
+    $queryParams['page'] = $newPage;
+    return '?' . http_build_query($queryParams);
+}
 ?>
 
 <!DOCTYPE html>
@@ -184,315 +198,10 @@ $pendingReviewsCount = $pdo->query("SELECT COUNT(*) FROM avis WHERE statut = 'en
     <title>Gestion des avis clients - Elixir du Temps</title>
     <link rel="icon" href="../assets/img/layout/jb3.jpg" type="image/x-icon">
     <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/reviews.css">
     <!-- FontAwesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    
-    <style>
-        /* Styles spécifiques pour la gestion des avis */
-        .review-filters {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-            align-items: end;
-        }
-        
-        .review-filters .filter-group {
-            margin-bottom: 0;
-        }
-        
-        .review-filters .filter-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .star-rating {
-            color: #d4af37;
-            white-space: nowrap;
-        }
-        
-        .table-actions form {
-            display: inline;
-        }
-        
-        .review-content {
-            max-width: 250px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .review-status {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-        
-        .status-pending {
-            background-color: rgba(255, 193, 7, 0.2);
-            color: #856404;
-        }
-        
-        .status-approved {
-            background-color: rgba(40, 167, 69, 0.2);
-            color: #155724;
-        }
-        
-        .status-rejected {
-            background-color: rgba(220, 53, 69, 0.2);
-            color: #721c24;
-        }
-        
-        .bulk-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .review-detail-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1000;
-            overflow-y: auto;
-        }
-        
-        .modal-content {
-            background-color: white;
-            margin: 50px auto;
-            padding: 25px;
-            border-radius: 8px;
-            max-width: 700px;
-            position: relative;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-        }
-        
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            cursor: pointer;
-            font-size: 1.3rem;
-            color: #666;
-        }
-        
-        .review-detail-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .review-image img {
-            max-width: 100%;
-            border-radius: 4px;
-            border: 1px solid #eee;
-        }
-        
-        .detail-heading {
-            font-weight: 600;
-            color: #555;
-            margin-bottom: 5px;
-            font-size: 0.85rem;
-        }
-        
-        .detail-value {
-            margin-bottom: 15px;
-        }
-        
-        .detail-comment {
-            grid-column: 1 / -1;
-            background-color: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            white-space: pre-line;
-            margin-top: 10px;
-        }
-        
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-            border-top: 1px solid #eee;
-            padding-top: 20px;
-        }
-        
-        /* Animation de fondu pour le modal */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.3s;
-        }
-        
-        /* Style pour les étoiles interactives */
-        .static-stars {
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-        }
-        
-        /* Checkbox customisée */
-        .custom-checkbox {
-            position: relative;
-            padding-left: 30px;
-            cursor: pointer;
-            user-select: none;
-            display: flex;
-            align-items: center;
-        }
-        
-        .custom-checkbox input {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-            height: 0;
-            width: 0;
-        }
-        
-        .checkbox-mark {
-            position: absolute;
-            left: 0;
-            height: 20px;
-            width: 20px;
-            background-color: #eee;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-        
-        .custom-checkbox:hover input ~ .checkbox-mark {
-            background-color: #ddd;
-        }
-        
-        .custom-checkbox input:checked ~ .checkbox-mark {
-            background-color: #d4af37;
-            border-color: #d4af37;
-        }
-        
-        .checkbox-mark:after {
-            content: "";
-            position: absolute;
-            display: none;
-        }
-        
-        .custom-checkbox input:checked ~ .checkbox-mark:after {
-            display: block;
-        }
-        
-        .custom-checkbox .checkbox-mark:after {
-            left: 7px;
-            top: 3px;
-            width: 5px;
-            height: 10px;
-            border: solid white;
-            border-width: 0 2px 2px 0;
-            transform: rotate(45deg);
-        }
-        
-        /* Alertes et messages */
-        .alert {
-            padding: 12px 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-            border-left: 4px solid;
-            display: flex;
-            align-items: center;
-            animation: slideIn 0.3s;
-        }
-        
-        .alert i {
-            margin-right: 10px;
-            font-size: 1.1rem;
-        }
-        
-        .alert-success {
-            background-color: rgba(40, 167, 69, 0.1);
-            border-color: #28a745;
-            color: #155724;
-        }
-        
-        .alert-error {
-            background-color: rgba(220, 53, 69, 0.1);
-            border-color: #dc3545;
-            color: #721c24;
-        }
-        
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Pagination améliorée */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 25px;
-            flex-wrap: wrap;
-        }
-        
-        .pagination a, .pagination span {
-            display: inline-block;
-            padding: 8px 12px;
-            margin: 0 5px;
-            border-radius: 4px;
-            background: white;
-            border: 1px solid #e0e0e0;
-            color: #333;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-        
-        .pagination a:hover {
-            background-color: #f5f5f5;
-            border-color: #d4af37;
-        }
-        
-        .pagination .current {
-            background-color: #d4af37;
-            color: white;
-            border-color: #d4af37;
-        }
-        
-        /* Responsive design */
-        @media (max-width: 992px) {
-            .review-detail-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .data-table th, .data-table td {
-                padding: 10px 12px;
-            }
-            
-            .review-content {
-                max-width: 150px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .review-filters {
-                grid-template-columns: 1fr;
-            }
-            
-            .data-table {
-                display: block;
-                overflow-x: auto;
-            }
-            
-            .modal-content {
-                margin: 30px 15px;
-            }
-        }
-    </style>
 </head>
 <body>
     <div class="admin-container">
@@ -768,20 +477,10 @@ $pendingReviewsCount = $pdo->query("SELECT COUNT(*) FROM avis WHERE statut = 'en
                         <?php if ($totalPages > 1): ?>
                         <div class="pagination">
                             <?php if ($page > 1): ?>
-                                <a href="?page=1<?= isset($_GET['status']) ? '&status='.$_GET['status'] : '' ?>
-                                                <?= isset($_GET['product']) ? '&product='.$_GET['product'] : '' ?>
-                                                <?= isset($_GET['rating']) ? '&rating='.$_GET['rating'] : '' ?>
-                                                <?= isset($_GET['keyword']) ? '&keyword='.$_GET['keyword'] : '' ?>
-                                                <?= isset($_GET['date_from']) ? '&date_from='.$_GET['date_from'] : '' ?>
-                                                <?= isset($_GET['date_to']) ? '&date_to='.$_GET['date_to'] : '' ?>">
+                                <a href="<?= getPaginationUrl(1) ?>">
                                     <i class="fas fa-angle-double-left"></i>
                                 </a>
-                                <a href="?page=<?= $page-1 ?><?= isset($_GET['status']) ? '&status='.$_GET['status'] : '' ?>
-                                                            <?= isset($_GET['product']) ? '&product='.$_GET['product'] : '' ?>
-                                                            <?= isset($_GET['rating']) ? '&rating='.$_GET['rating'] : '' ?>
-                                                            <?= isset($_GET['keyword']) ? '&keyword='.$_GET['keyword'] : '' ?>
-                                                            <?= isset($_GET['date_from']) ? '&date_from='.$_GET['date_from'] : '' ?>
-                                                            <?= isset($_GET['date_to']) ? '&date_to='.$_GET['date_to'] : '' ?>">
+                                <a href="<?= getPaginationUrl($page-1) ?>">
                                     <i class="fas fa-angle-left"></i>
                                 </a>
                             <?php endif; ?>
@@ -792,13 +491,7 @@ $pendingReviewsCount = $pdo->query("SELECT COUNT(*) FROM avis WHERE statut = 'en
                                 if ($i == $page) {
                                     echo "<span class=\"current\">$i</span>";
                                 } else {
-                                    echo "<a href=\"?page=$i" . 
-                                        (isset($_GET['status']) ? '&status='.$_GET['status'] : '') .
-                                        (isset($_GET['product']) ? '&product='.$_GET['product'] : '') .
-                                        (isset($_GET['rating']) ? '&rating='.$_GET['rating'] : '') .
-                                        (isset($_GET['keyword']) ? '&keyword='.$_GET['keyword'] : '') .
-                                        (isset($_GET['date_from']) ? '&date_from='.$_GET['date_from'] : '') .
-                                        (isset($_GET['date_to']) ? '&date_to='.$_GET['date_to'] : '') . "\">$i</a>";
+                                    echo "<a href=\"" . getPaginationUrl($i) . "\">$i</a>";
                                 }
                             }
                             
@@ -812,13 +505,7 @@ $pendingReviewsCount = $pdo->query("SELECT COUNT(*) FROM avis WHERE statut = 'en
                                 if ($i == $page) {
                                     echo "<span class=\"current\">$i</span>";
                                 } else {
-                                    echo "<a href=\"?page=$i" . 
-                                        (isset($_GET['status']) ? '&status='.$_GET['status'] : '') .
-                                        (isset($_GET['product']) ? '&product='.$_GET['product'] : '') .
-                                        (isset($_GET['rating']) ? '&rating='.$_GET['rating'] : '') .
-                                        (isset($_GET['keyword']) ? '&keyword='.$_GET['keyword'] : '') .
-                                        (isset($_GET['date_from']) ? '&date_from='.$_GET['date_from'] : '') .
-                                        (isset($_GET['date_to']) ? '&date_to='.$_GET['date_to'] : '') . "\">$i</a>";
+                                    echo "<a href=\"" . getPaginationUrl($i) . "\">$i</a>";
                                 }
                             }
                             
@@ -833,33 +520,17 @@ $pendingReviewsCount = $pdo->query("SELECT COUNT(*) FROM avis WHERE statut = 'en
                                     if ($i == $page) {
                                         echo "<span class=\"current\">$i</span>";
                                     } else {
-                                        echo "<a href=\"?page=$i" . 
-                                            (isset($_GET['status']) ? '&status='.$_GET['status'] : '') .
-                                            (isset($_GET['product']) ? '&product='.$_GET['product'] : '') .
-                                            (isset($_GET['rating']) ? '&rating='.$_GET['rating'] : '') .
-                                            (isset($_GET['keyword']) ? '&keyword='.$_GET['keyword'] : '') .
-                                            (isset($_GET['date_from']) ? '&date_from='.$_GET['date_from'] : '') .
-                                            (isset($_GET['date_to']) ? '&date_to='.$_GET['date_to'] : '') . "\">$i</a>";
+                                        echo "<a href=\"" . getPaginationUrl($i) . "\">$i</a>";
                                     }
                                 }
                             }
                             ?>
                             
                             <?php if ($page < $totalPages): ?>
-                                <a href="?page=<?= $page+1 ?><?= isset($_GET['status']) ? '&status='.$_GET['status'] : '' ?>
-                                                            <?= isset($_GET['product']) ? '&product='.$_GET['product'] : '' ?>
-                                                            <?= isset($_GET['rating']) ? '&rating='.$_GET['rating'] : '' ?>
-                                                            <?= isset($_GET['keyword']) ? '&keyword='.$_GET['keyword'] : '' ?>
-                                                            <?= isset($_GET['date_from']) ? '&date_from='.$_GET['date_from'] : '' ?>
-                                                            <?= isset($_GET['date_to']) ? '&date_to='.$_GET['date_to'] : '' ?>">
+                                <a href="<?= getPaginationUrl($page+1) ?>">
                                     <i class="fas fa-angle-right"></i>
                                 </a>
-                                <a href="?page=<?= $totalPages ?><?= isset($_GET['status']) ? '&status='.$_GET['status'] : '' ?>
-                                                                <?= isset($_GET['product']) ? '&product='.$_GET['product'] : '' ?>
-                                                                <?= isset($_GET['rating']) ? '&rating='.$_GET['rating'] : '' ?>
-                                                                <?= isset($_GET['keyword']) ? '&keyword='.$_GET['keyword'] : '' ?>
-                                                                <?= isset($_GET['date_from']) ? '&date_from='.$_GET['date_from'] : '' ?>
-                                                                <?= isset($_GET['date_to']) ? '&date_to='.$_GET['date_to'] : '' ?>">
+                                <a href="<?= getPaginationUrl($totalPages) ?>">
                                     <i class="fas fa-angle-double-right"></i>
                                 </a>
                             <?php endif; ?>
@@ -1031,7 +702,7 @@ $pendingReviewsCount = $pdo->query("SELECT COUNT(*) FROM avis WHERE statut = 'en
                 
                 // Ajouter la classe pour l'animation
                 setTimeout(() => {
-                    document.querySelector('.modal-content').classList.add('fade-in');
+                    document.querySelector('#reviewDetailModal .modal-content').classList.add('fade-in');
                 }, 10);
             });
         });

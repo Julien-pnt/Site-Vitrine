@@ -129,8 +129,8 @@ if (isset($_SESSION['success'])) {
     <meta property="og:image" content="/public/assets/img/layout/social-share.jpg">
     
     <!-- Ressources -->
-    <link rel="stylesheet" href="/public/assets/css/main.css">
-    <link rel="stylesheet" href="/public/assets/css/auth.css">
+    <link rel="stylesheet" href="../../../assets/css/auth.css">
+    <link rel="stylesheet" href="../../../assets/css/main.css">
     <link rel="shortcut icon" href="/public/assets/img/layout/icon.png" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

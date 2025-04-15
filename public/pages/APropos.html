@@ -28,6 +28,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <title>Elixir du Temps | À propos de notre maison horlogère</title>
+
+    <style>
+        
+        .user-cart-container {
+            margin-right: 15px; /* Ajoute une marge à droite pour décaler les icônes du bord */
+        }
+        
+        .user-icon, .cart-icon {
+            margin-left: 5px; /* Espace entre les icônes */
+            position: relative;
+        }
+    
+    </style>
 </head>
 <body>
     <!-- Header section with logo and navigation menu -->
@@ -344,30 +357,30 @@
         </div>
     </footer>
     
+    
+    <!-- Importation des fichiers JS modulaires (une seule fois chacun) -->
+    <script src="../assets/js/gestion-cart.js"></script>
+    <script src="../assets/js/product-filters.js"></script>
+    <script src="../assets/js/quick-view.js"></script>
+    <script src="../assets/js/video-background.js"></script>
     <script src="../assets/js/main.js"></script>
+
+    <!-- Script spécifique à la page (qui ne fait pas doublon avec les modules) -->
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Chercher la vidéo de fond
-        const video = document.querySelector('.video-bg');
-        
-        // Si la vidéo existe
-        if (video) {
-          // Fonction pour marquer le chargement
-          const markAsLoaded = () => {
-            document.body.classList.add('video-loaded');
-          };
-          
-          // Event listeners pour différents cas
-          video.addEventListener('loadeddata', markAsLoaded);
-          video.addEventListener('canplay', markAsLoaded);
-          
-          // Backup: si la vidéo prend trop de temps, afficher quand même la page après 1.5s
-          setTimeout(markAsLoaded, 1500);
-        } else {
-          // Pas de vidéo trouvée, afficher la page quand même
-          document.body.classList.add('video-loaded');
-        }
-      });
+        // Redirection depuis les boutons d'aperçu rapide vers les pages de détail
+        document.addEventListener('DOMContentLoaded', function() {
+            const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+            
+            if (quickViewButtons.length) {
+                quickViewButtons.forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const productId = this.getAttribute('data-product-id');
+                        window.location.href = '../products/product-detail.php?id=' + productId;
+                    });
+                });
+            }
+        });
     </script>
 </body>
 </html>

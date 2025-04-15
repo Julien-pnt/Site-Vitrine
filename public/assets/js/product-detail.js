@@ -1,75 +1,170 @@
 /**
- * Gestion des aperçus rapides et détails des produits
- * Fonctionne en complément de cart.js pour les fonctionnalités liées aux produits
+ * Module de gestion des détails produit et aperçus rapides
+ * Peut être utilisé de deux façons:
+ * 1. Redirection vers une page dédiée (product-detail.php)
+ * 2. Affichage dans un modal sur la même page
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialiser toutes les fonctionnalités relatives aux produits
-    initProductFunctionality();
-});
-
-/**
- * Initialise toutes les fonctionnalités liées aux produits
- */
-function initProductFunctionality() {
+    console.log('Module product-detail chargé');
+    
+    // Configuration - peut être modifiée selon les besoins
+    const config = {
+        useModal: false, // true = afficher modal, false = rediriger vers page dédiée
+        detailPageUrl: '../products/product-detail.php', // URL de redirection
+        modalId: 'quick-view-modal' // ID du modal (s'il est utilisé)
+    };
+    
+    // Initialiser les éléments
     initQuickViewButtons();
-    initWishlistButtons();
-    initFilterButtons();
-    initSearchAndSort();
-}
-
-/**
- * Initialise les boutons d'aperçu rapide
- */
-function initQuickViewButtons() {
-    const quickViewButtons = document.querySelectorAll('.quick-view-btn');
-    const modal = document.getElementById('quick-view-modal');
-    const closeModalButton = document.querySelector('.close-modal');
     
-    if (quickViewButtons.length) {
+    /**
+     * Initialise les boutons d'aperçu rapide
+     */
+    function initQuickViewButtons() {
+        const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+        
+        if (quickViewButtons.length === 0) {
+            console.log('Aucun bouton d\'aperçu rapide trouvé');
+            return;
+        }
+        
         quickViewButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const productId = this.getAttribute('data-product-id');
-                
-                // Par défaut, rediriger vers la page détail
-                window.location.href = '../products/product-detail.php?id=' + productId;
-                
-                /* Alternative : afficher un modal (décommenter pour activer)
-                if (modal) {
-                    const productCard = this.closest('.product-card');
-                    const title = productCard.querySelector('.product-title').textContent;
-                    const price = productCard.querySelector('.product-price').textContent;
-                    const imageSrc = productCard.querySelector('.product-image').getAttribute('src');
-                    
-                    document.getElementById('modal-product-title').textContent = title;
-                    document.getElementById('modal-product-price').textContent = price;
-                    document.getElementById('modal-product-image').setAttribute('src', imageSrc);
-                    document.getElementById('modal-product-image').setAttribute('alt', title);
-                    
-                    // Configurer le bouton d'ajout au panier dans le modal
-                    const addToCartBtn = document.getElementById('modal-add-to-cart');
-                    if (addToCartBtn) {
-                        addToCartBtn.setAttribute('data-product-id', productId);
-                        // La fonction handleAddToCartClick de cart.js est utilisée ici
-                    }
-                    
-                    modal.style.display = 'flex';
-                    document.body.style.overflow = 'hidden';
-                }
-                */
-            });
-        });
-    }
-    
-    // Fermeture du modal
-    if (closeModalButton && modal) {
-        closeModalButton.addEventListener('click', function() {
-            modal.style.display = 'none';
-            document.body.style.overflow = '';
+            button.addEventListener('click', handleQuickView);
         });
         
+        console.log(`${quickViewButtons.length} boutons d'aperçu rapide initialisés`);
+        
+        // Initialiser également la fermeture des modals si on utilise cette option
+        if (config.useModal) {
+            initModalClosers();
+        }
+    }
+    
+    /**
+     * Gère le clic sur un bouton d'aperçu rapide
+     */
+    function handleQuickView(e) {
+        e.preventDefault();
+        const productId = this.getAttribute('data-product-id');
+        
+        if (!productId) {
+            console.error('ID de produit manquant');
+            return;
+        }
+        
+        if (config.useModal) {
+            // Option 1: Afficher les détails dans un modal
+            openProductModal(productId, this);
+        } else {
+            // Option 2: Rediriger vers la page de détail
+            redirectToProductPage(productId);
+        }
+    }
+    
+    /**
+     * Redirige vers la page de détail du produit
+     */
+    function redirectToProductPage(productId) {
+        const url = `${config.detailPageUrl}?id=${productId}`;
+        console.log(`Redirection vers ${url}`);
+        window.location.href = url;
+    }
+    
+    /**
+     * Ouvre le modal avec les détails du produit
+     */
+    function openProductModal(productId, clickedButton) {
+        const modal = document.getElementById(config.modalId);
+        if (!modal) {
+            console.error(`Modal avec ID ${config.modalId} non trouvé`);
+            return;
+        }
+        
+        // Récupérer les informations du produit depuis le DOM
+        const productCard = clickedButton.closest('.product-card');
+        if (!productCard) {
+            console.error('Carte produit non trouvée');
+            return;
+        }
+        
+        const title = productCard.querySelector('.product-title').textContent;
+        const price = productCard.querySelector('.product-price').textContent;
+        const imageSrc = productCard.querySelector('.product-image').getAttribute('src');
+        
+        // Mettre à jour le contenu du modal
+        updateModalContent(modal, {
+            id: productId,
+            title: title,
+            price: price,
+            imageSrc: imageSrc
+        });
+        
+        // Afficher le modal
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Désactiver le défilement de la page
+    }
+    
+    /**
+     * Met à jour le contenu du modal avec les détails du produit
+     */
+    function updateModalContent(modal, product) {
+        const titleElement = modal.querySelector('#modal-product-title');
+        const priceElement = modal.querySelector('#modal-product-price');
+        const imageElement = modal.querySelector('#modal-product-image');
+        const addToCartButton = modal.querySelector('#modal-add-to-cart');
+        
+        if (titleElement) titleElement.textContent = product.title;
+        if (priceElement) priceElement.textContent = product.price;
+        if (imageElement) {
+            imageElement.setAttribute('src', product.imageSrc);
+            imageElement.setAttribute('alt', product.title);
+        }
+        
+        // Configuration du bouton d'ajout au panier
+        if (addToCartButton) {
+            // Supprimer les gestionnaires d'événements précédents
+            const newButton = addToCartButton.cloneNode(true);
+            addToCartButton.parentNode.replaceChild(newButton, addToCartButton);
+            
+            // Ajouter l'ID du produit
+            newButton.setAttribute('data-product-id', product.id);
+            
+            // Ajouter le gestionnaire d'événement
+            newButton.addEventListener('click', function() {
+                // Si le module de panier est disponible, utiliser ses fonctions
+                if (window.cartFunctions) {
+                    const priceValue = parseFloat(product.price.replace(/[^0-9,.-]+/g, '').replace(',', '.'));
+                    window.cartFunctions.addToCart(product.id, product.title, 1, priceValue, product.imageSrc);
+                    window.cartFunctions.showNotification('Produit ajouté au panier');
+                } else {
+                    console.error('Module de panier non disponible');
+                }
+                
+                // Fermer le modal
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            });
+        }
+    }
+    
+    /**
+     * Initialise les gestionnaires pour fermer le modal
+     */
+    function initModalClosers() {
+        const modal = document.getElementById(config.modalId);
+        if (!modal) return;
+        
+        // Fermer avec le bouton X
+        const closeButton = modal.querySelector('.close-modal');
+        if (closeButton) {
+            closeButton.addEventListener('click', function() {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            });
+        }
+        
+        // Fermer en cliquant en dehors du modal
         window.addEventListener('click', function(event) {
             if (event.target === modal) {
                 modal.style.display = 'none';
@@ -77,6 +172,22 @@ function initQuickViewButtons() {
             }
         });
     }
+    
+    // Exporter les fonctions pour les rendre accessibles depuis d'autres scripts
+    window.productDetailFunctions = {
+        openProductModal,
+        redirectToProductPage,
+        initQuickViewButtons
+    };
+});
+
+/**
+ * Initialise toutes les fonctionnalités liées aux produits
+ */
+function initProductFunctionality() {
+    initWishlistButtons();
+    initFilterButtons();
+    initSearchAndSort();
 }
 
 /**
@@ -199,7 +310,6 @@ function initSearchAndSort() {
 
 // Exporter les fonctions
 window.initProductFunctionality = initProductFunctionality;
-window.initQuickViewButtons = initQuickViewButtons;
 window.initWishlistButtons = initWishlistButtons;
 window.initFilterButtons = initFilterButtons;
 window.initSearchAndSort = initSearchAndSort;

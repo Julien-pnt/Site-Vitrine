@@ -1,3 +1,15 @@
+/**
+ * Styles principaux combinant toutes les fonctionnalités
+ * Ce fichier importe tous les autres fichiers CSS spécifiques
+ */
+
+/* Importer les différents modules CSS */
+@import 'cart.css';
+@import 'filters.css';
+@import 'quick-view.css';
+@import 'video-background.css';
+@import 'products.css';
+
 /* Fichier principal qui importe tous les autres fichiers CSS */
 @import 'base/variables.css';
 @import 'base/reset.css';

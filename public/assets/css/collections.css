@@ -1094,106 +1094,136 @@ body.video-loaded .loader-container {
 
 /* ================ Section Recommandations ================ */
 .recommendations {
-    padding: 70px 0;
-    background-color: var(--color-light);
-    position: relative;
-}
-
-.recommendations:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("../../assets/img/patterns/subtle-pattern.png");
-    opacity: 0.05;
-    pointer-events: none;
+    padding: 50px 0;
+    background-color: #f8f8f8;
+    border-top: 1px solid #e0e0e0;
 }
 
 .section-title {
+    text-align: center;
     font-family: 'Playfair Display', serif;
     font-size: 32px;
-    text-align: center;
-    margin-bottom: 50px;
-    position: relative;
-    color: var(--color-dark);
-}
-
-.section-title:after {
-    content: '';
-    position: absolute;
-    bottom: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 2px;
-    background-color: var(--color-gold);
+    margin-bottom: 30px;
+    color: #1a1a1a;
 }
 
 .recommendations-carousel {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    display: flex;
     gap: 25px;
+    overflow-x: auto;
+    padding: 15px 0;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.recommendations-carousel::-webkit-scrollbar {
+    height: 8px;
+}
+
+.recommendations-carousel::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.recommendations-carousel::-webkit-scrollbar-thumb {
+    background: #d4af37;
+    border-radius: 10px;
 }
 
 .recommendation-item {
-    background-color: var(--color-white);
-    border-radius: var(--radius);
+    min-width: 220px;
+    background-color: white;
+    border-radius: 5px;
     overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
-    text-align: center;
-    padding-bottom: 25px;
-    position: relative;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    padding-bottom: 15px;
+    transition: transform 0.3s ease;
+    flex: 0 0 auto;
 }
 
 .recommendation-item:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    transform: translateY(-5px);
 }
 
 .recommendation-item img {
     width: 100%;
-    height: 220px;
+    height: 180px;
     object-fit: cover;
-    transition: transform 0.8s ease;
-}
-
-.recommendation-item:hover img {
-    transform: scale(1.07);
 }
 
 .recommendation-item h3 {
     font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    margin: 20px 0 8px;
-    padding: 0 15px;
+    font-size: 16px;
+    padding: 10px 15px 5px;
+    margin: 0;
 }
 
 .recommendation-item p {
-    color: var(--color-gold);
+    color: #d4af37;
     font-weight: 600;
-    margin-bottom: 20px;
+    padding: 0 15px;
+    margin: 5px 0 10px;
 }
 
 .view-product {
     display: inline-block;
-    padding: 10px 24px;
-    background-color: transparent;
-    color: var(--color-dark);
-    border: 1px solid rgba(0,0,0,0.1);
-    border-radius: 30px;
-    font-size: 14px;
+    margin: 0 15px;
+    padding: 8px 15px;
+    background-color: #f0f0f0;
+    color: #333;
     text-decoration: none;
-    transition: var(--transition);
-    font-weight: 500;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.3s ease;
 }
 
 .view-product:hover {
-    background-color: var(--color-gold);
-    color: var(--color-white);
-    border-color: var(--color-gold);
+    background-color: #d4af37;
+    color: white;
+}
+
+/* Spécificités pour la section héro de collection */
+.collection-hero-content {
+    text-align: center;
+    color: white;
+    max-width: 800px;
+    padding: 0 20px;
+}
+
+.collection-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.collection-description {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Corrections pour le footer sur les pages de collections */
+.footer-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+}
+
+@media (max-width: 768px) {
+    .collection-title {
+        font-size: 36px;
+    }
+    
+    .collection-description {
+        font-size: 16px;
+    }
+    
+    .recommendation-item {
+        min-width: 180px;
+    }
 }
 
 /* ================ Modal ================ */
@@ -1345,7 +1375,7 @@ body.video-loaded .loader-container {
 
 .btn-outline:hover {
     border-color: var(--color-gold);
-    color: var(--color-gold);
+    color: var (--color-gold);
 }
 
 /* ================ Responsive Design ================ */

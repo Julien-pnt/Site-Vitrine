@@ -1,0 +1,206 @@
+/**
+ * Styles pour le modal d'aperçu rapide des produits
+ */
+
+/* Bouton d'aperçu rapide */
+.quick-view-btn {
+    background-color: #d4af37;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
+}
+
+.product-overlay:hover .quick-view-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.quick-view-btn:hover {
+    background-color: #c69c16;
+}
+
+/* Modal d'aperçu rapide */
+#quick-view-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 5px;
+    max-width: 900px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+    animation: modalFadeIn 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.modal-title {
+    margin: 0;
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.2s ease;
+}
+
+.close-modal:hover {
+    color: #d4af37;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: row;
+    overflow-y: auto;
+}
+
+.modal-image {
+    flex: 1;
+    max-width: 50%;
+    border-right: 1px solid #f0f0f0;
+}
+
+.modal-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.modal-details {
+    flex: 1;
+    max-width: 50%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-detail-row {
+    margin-bottom: 20px;
+}
+
+.product-detail-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 10px 0;
+}
+
+.product-detail-price {
+    font-size: 22px;
+    color: #d4af37;
+    font-weight: 600;
+    margin: 0 0 20px 0;
+}
+
+.product-detail-description {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.product-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 10px;
+}
+
+#modal-add-to-cart, #modal-add-to-wishlist {
+    padding: 12px 25px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#modal-add-to-cart {
+    background-color: #d4af37;
+    color: white;
+    border: none;
+    flex: 1;
+}
+
+#modal-add-to-cart:hover {
+    background-color: #c69c16;
+}
+
+#modal-add-to-wishlist {
+    background-color: transparent;
+    border: 1px solid #d1d1d1;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#modal-add-to-wishlist:hover {
+    border-color: #d4af37;
+    color: #d4af37;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-body {
+        flex-direction: column;
+    }
+
+    .modal-image, .modal-details {
+        max-width: 100%;
+    }
+
+    .modal-image {
+        border-right: none;
+        border-bottom: 1px solid #f0f0f0;
+    }
+}

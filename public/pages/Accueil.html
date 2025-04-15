@@ -28,6 +28,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <title>Elixir du Temps | Montres de Luxe et Haute Horlogerie</title>
+    
+    <style>
+        .user-cart-container {
+            margin-right: 15px; /* Ajoute une marge à droite pour décaler les icônes du bord */
+        }
+        
+        .user-icon, .cart-icon {
+            margin-left: 5px; /* Espace entre les icônes */
+            position: relative;
+        }
+    </style>
 </head>
 <body>
     <!-- Header section with logo and navigation menu -->
@@ -83,7 +94,7 @@
                         <span class="cart-dropdown-total-value">0,00 €</span>
                     </div>
                     <div class="cart-dropdown-buttons">
-                        <a href="products/panier.html" class="cart-dropdown-button secondary">Voir le panier</a>
+                        <a href="products/panier.php" class="cart-dropdown-button secondary">Voir le panier</a>
                         <a href="products/Montres.html" class="cart-dropdown-button primary">Découvrir nos montres</a>
                     </div>
                 </div>
@@ -361,65 +372,10 @@
         </div>
     </footer>
     
-    <!-- Scripts -->
-    <script>
-        // Script pour gérer le panier
-        document.querySelectorAll('.add-to-cart').forEach(button => {
-            button.addEventListener('click', function() {
-                const cartBadge = document.querySelector('.cart-badge');
-                const currentCount = parseInt(cartBadge.textContent);
-                const productName = this.dataset.product;
-                const productPrice = this.dataset.price;
-                
-                cartBadge.textContent = currentCount + 1;
-                cartBadge.classList.add('has-items');
-                
-                // Stocker les informations du panier dans le stockage local
-                const cart = JSON.parse(localStorage.getItem('cart') || '{}');
-                cart[productName] = (cart[productName] || 0) + 1;
-                localStorage.setItem('cart', JSON.stringify(cart));
-                
-                // Afficher notification
-                showToast('Produit ajouté au panier');
-            });
-        });
-        
-        // Fonction pour afficher une notification
-        function showToast(message) {
-            // Créer la notification si elle n'existe pas
-            let toast = document.querySelector('.toast');
-            if (!toast) {
-                toast = document.createElement('div');
-                toast.className = 'toast';
-                document.body.appendChild(toast);
-            }
-            
-            // Afficher le message
-            toast.textContent = message;
-            toast.classList.add('show');
-            
-            // Cacher après 3 secondes
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-        
-        // Optimisation du chargement vidéo
-        document.addEventListener('DOMContentLoaded', function() {
-            const video = document.querySelector('.video-bg');
-            if (video) {
-                video.addEventListener('loadeddata', function() {
-                    document.body.classList.add('video-loaded');
-                });
-                
-                // Fallback si la vidéo ne charge pas après 3 secondes
-                setTimeout(() => {
-                    if (!document.body.classList.contains('video-loaded')) {
-                        document.body.classList.add('video-loaded');
-                    }
-                }, 3000);
-            }
-        });
-    </script>
+    <!-- Importation des fichiers JS modulaires (une seule fois chacun) -->
+    <script src="../assets/js/gestion-cart.js"></script>
+    <script src="../assets/js/quick-view.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+    <script src="../assets/js/main.js"></script>
 </body>
 </html>

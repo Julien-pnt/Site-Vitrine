@@ -4,6 +4,13 @@ require_once '../../../php/config/database.php';
 
 // Vérification de l'état de connexion de l'utilisateur
 session_start();
+
+// DEBUG - Vérification de la session (à retirer une fois le problème résolu)
+if (!isset($_SESSION['user_id'])) {
+    // Si l'utilisateur n'est pas connecté, on vérifie le bon fonctionnement des sessions
+    $_SESSION['test_session'] = true;
+}
+
 $isLoggedIn = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 $accountLink = $isLoggedIn ? '../account/dashboard.php' : '../account/login.php';
 $accountText = $isLoggedIn ? 'Mon espace' : 'Connexion';
@@ -56,6 +63,28 @@ try {
     ");
     $stmtRelated->execute([$product['collection_id'], $productId]);
     $relatedProducts = $stmtRelated->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Récupération des avis approuvés pour ce produit
+    $stmtAvis = $pdo->prepare("
+        SELECT a.*, u.nom as utilisateur_nom, u.prenom as utilisateur_prenom
+        FROM avis a
+        JOIN utilisateurs u ON a.utilisateur_id = u.id
+        WHERE a.produit_id = ? AND a.statut = 'approuve'
+        ORDER BY a.date_creation DESC
+    ");
+    $stmtAvis->execute([$productId]);
+    $avis = $stmtAvis->fetchAll(PDO::FETCH_ASSOC);
+
+    // Calcul de la note moyenne
+    $noteMoyenne = 0;
+    $nbAvis = count($avis);
+    if ($nbAvis > 0) {
+        $sommeNotes = 0;
+        foreach ($avis as $unAvis) {
+            $sommeNotes += $unAvis['note'];
+        }
+        $noteMoyenne = round($sommeNotes / $nbAvis, 1);
+    }
     
 } catch (PDOException $e) {
     // En cas d'erreur
@@ -111,39 +140,43 @@ try {
         /* Gallery */
         .product-gallery {
             position: relative;
+            margin-bottom: 2rem;
         }
         
         .main-image {
             width: 100%;
             height: auto;
-            border-radius: 8px;
-            object-fit: cover;
-            aspect-ratio: 1 / 1;
-            background-color: #f8f8f8;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            transition: all 0.5s ease;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
         }
         
         .gallery-thumbnails {
             display: flex;
             justify-content: center;
-            margin-top: 1rem;
-            gap: 0.5rem;
+            margin-top: 1.5rem;
+            gap: 0.8rem;
         }
         
         .gallery-thumbnail {
-            width: 80px;
-            height: 80px;
-            border-radius: 4px;
+            width: 90px;
+            height: 90px;
+            border-radius: 8px;
             cursor: pointer;
-            object-fit: cover;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 2px solid transparent;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         }
         
-        .gallery-thumbnail:hover, .gallery-thumbnail.active {
+        .gallery-thumbnail:hover {
             border-color: #d4af37;
-            transform: translateY(-2px);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 8px 15px rgba(212, 175, 55, 0.2);
+        }
+        
+        .gallery-thumbnail.active {
+            border-color: #d4af37;
+            box-shadow: 0 8px 15px rgba(212, 175, 55, 0.3);
         }
         
         /* Product info */
@@ -154,40 +187,57 @@ try {
         
         .product-title {
             font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            color: #121212;
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            color: #111;
+            line-height: 1.2;
+            letter-spacing: 0.5px;
         }
         
         .product-reference {
             font-family: 'Raleway', sans-serif;
-            font-size: 0.95rem;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
             color: #666;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
         }
         
         .product-price-container {
             display: flex;
             align-items: baseline;
-            margin: 1rem 0;
+            margin: 1.5rem 0;
         }
         
         .product-price {
             font-family: 'Playfair Display', serif;
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: bold;
-            color: #121212;
+            letter-spacing: 0.5px;
         }
         
         .price-old {
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             text-decoration: line-through;
-            color: #888;
+            color: #999;
             margin-right: 1rem;
         }
         
         .price-promo {
-            color: #d44c4c;
+            color: #c0392b;
+            position: relative;
+        }
+        
+        .price-promo::after {
+            content: '';
+            display: block;
+            width: 30px;
+            height: 2px;
+            background-color: #c0392b;
+            margin-top: 5px;
         }
         
         .product-description {
@@ -244,40 +294,83 @@ try {
         }
         
         .add-to-cart-btn {
-            background-color: #d4af37;
+            background: linear-gradient(135deg, #d4af37, #a17b10);
             color: white;
             border: none;
+            border-radius: 30px;
+            padding: 1rem 2rem;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
             flex-grow: 1;
         }
         
         .add-to-cart-btn:hover {
-            background-color: #c19b26;
+            background: linear-gradient(135deg, #e5c458, #d4af37);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+        
+        .add-to-cart-btn:active {
             transform: translateY(-2px);
         }
         
+        .add-to-cart-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+        
+        .add-to-cart-btn:hover::after {
+            transform: translateX(100%);
+        }
+        
         .add-to-cart-btn.disabled {
-            background-color: #6c757d;
+            background: linear-gradient(to bottom, #999, #777);
             cursor: not-allowed;
-            opacity: 0.6;
+            opacity: 0.7;
+            box-shadow: none;
         }
         
         .add-to-wishlist-btn {
-            background-color: white;
-            color: #121212;
-            border: 1px solid #ddd;
-            width: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: 56px !important;
+            height: 56px !important;
+            border-radius: 50% !important;
+            background: white !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
         }
         
         .add-to-wishlist-btn:hover {
-            border-color: #d4af37;
-            color: #d4af37;
+            transform: translateY(-4px) !important;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15) !important;
         }
         
-        .add-to-wishlist-btn.active {
-            color: #d4af37;
+        .add-to-wishlist-btn i {
+            font-size: 20px !important;
+            color: #444 !important;
+            transition: transform 0.3s ease, color 0.3s ease !important;
+        }
+        
+        .add-to-wishlist-btn:hover i {
+            color: #d4af37 !important;
+            transform: scale(1.2) !important;
+        }
+        
+        .add-to-wishlist-btn.active i {
+            color: #d4af37 !important;
         }
 
         /* Styles améliorés pour le bouton favoris */
@@ -422,9 +515,21 @@ try {
 
         /* Specs */
         .product-specs {
-            background-color: #f9f9f9;
-            padding: 3rem 0;
-            margin-top: 4rem;
+            background-color: #f5f5f5;
+            padding: 4rem 0;
+            margin-top: 5rem;
+            position: relative;
+        }
+
+        .product-specs::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: #d4af37;
         }
         
         .specs-container {
@@ -435,47 +540,66 @@ try {
         
         .specs-title {
             font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
+            font-size: 2.2rem;
+            margin-bottom: 2.5rem;
             text-align: center;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .specs-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: #d4af37;
         }
         
         .specs-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
         }
         
         .spec-item {
             background-color: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+            transition: all 0.4s ease;
+            border-bottom: 3px solid transparent;
         }
         
         .spec-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border-bottom-color: #d4af37;
         }
         
         .spec-label {
             font-family: 'Raleway', sans-serif;
             font-weight: 600;
             font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 0.5rem;
+            color: #777;
+            margin-bottom: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .spec-value {
             font-family: 'Playfair Display', serif;
-            font-size: 1.1rem;
-            color: #121212;
+            font-size: 1.2rem;
+            color: #222;
+            line-height: 1.6;
         }
         
         /* Related */
         .related-products {
-            padding: 4rem 0;
+            padding: 5rem 0;
+            background-color: #f9f9f9;
         }
         
         .related-container {
@@ -486,68 +610,110 @@ try {
         
         .related-title {
             font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            margin-bottom: 2rem;
+            font-size: 2.2rem;
+            margin-bottom: 3rem;
             text-align: center;
+            position: relative;
+            padding-bottom: 0.8rem;
+        }
+
+        .related-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: #d4af37;
         }
         
         .related-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2.5rem;
         }
         
         .related-item {
             background-color: white;
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .related-item::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: #d4af37;
+            transition: width 0.3s ease;
         }
         
         .related-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .related-item:hover::before {
+            width: 100%;
         }
         
         .related-image {
             width: 100%;
-            height: 200px;
+            height: 250px;
             object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .related-item:hover .related-image {
+            transform: scale(1.05);
         }
         
         .related-info {
-            padding: 1.5rem;
+            padding: 1.8rem;
         }
         
         .related-name {
             font-family: 'Playfair Display', serif;
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+            color: #111;
         }
         
         .related-price {
             font-family: 'Raleway', sans-serif;
             font-weight: 600;
-            color: #121212;
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
         }
         
         .view-product {
             display: inline-block;
-            margin-top: 1rem;
-            padding: 0.5rem 1rem;
-            background-color: #d4af37;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #d4af37, #a17b10);
             color: white;
             text-decoration: none;
-            border-radius: 4px;
+            border-radius: 30px;
             font-family: 'Raleway', sans-serif;
             font-weight: 600;
-            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
         }
         
         .view-product:hover {
-            background-color: #c19b26;
-            transform: translateY(-2px);
+            background: linear-gradient(135deg, #e5c458, #d4af37);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(212, 175, 55, 0.3);
         }
 
         /* Fade-in animation */
@@ -605,7 +771,7 @@ try {
         /* Navigation controls */
         .navigation-controls {
             max-width: 1400px;
-            margin: 1rem auto 0;
+            margin: 2rem auto 1rem;
             padding: 0 2rem;
             display: flex;
             justify-content: space-between;
@@ -615,19 +781,20 @@ try {
         .back-button, .account-access {
             display: flex;
             align-items: center;
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.25rem;
             text-decoration: none;
             color: #333;
             font-family: 'Raleway', sans-serif;
             font-weight: 500;
-            transition: all 0.2s ease;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             background-color: #f8f8f8;
-            border-radius: 4px;
+            border-radius: 30px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
         }
         
         .back-button:hover, .account-access:hover {
-            background-color: #eaeaea;
-            transform: translateY(-2px);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
         }
         
         .back-button i, .account-access i {
@@ -907,7 +1074,7 @@ try {
             }
             
             .product-title {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
             
             .specs-grid, .related-grid {
@@ -940,6 +1107,1011 @@ try {
                 width: 60px;
                 height: 60px;
                 flex-shrink: 0;
+            }
+        }
+
+        /* Styles pour la section des avis */
+        .product-reviews {
+            padding: 5rem 0;
+            margin-top: 0;
+            background-color: #fcfcfc;
+            position: relative;
+        }
+
+        .reviews-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .reviews-title {
+            font-size: 2.2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 0.8rem;
+        }
+
+        .reviews-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: #d4af37;
+        }
+
+        /* Résumé des avis */
+        .reviews-summary {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .average-rating {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            transform: translateY(0);
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .average-rating:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .rating-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #111;
+            margin-bottom: 0.8rem;
+        }
+
+        .rating-stars {
+            margin-bottom: 0.5rem;
+        }
+
+        .rating-stars i {
+            color: #d4af37;
+            font-size: 1.5rem;
+            margin: 0 3px;
+        }
+
+        .rating-count {
+            font-family: 'Raleway', sans-serif;
+            font-size: 1rem;
+            color: #666;
+            margin-top: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* Liste des avis */
+        .reviews-list {
+            margin-top: 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .review-item {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .review-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border-left-color: #d4af37;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 1rem;
+        }
+
+        .review-author {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .review-date {
+            font-family: 'Raleway', sans-serif;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .review-rating {
+            margin-bottom: 1.2rem;
+        }
+
+        .review-rating i {
+            color: #d4af37;
+            font-size: 1.1rem;
+            margin-right: 3px;
+        }
+
+        .review-content {
+            font-family: 'Raleway', sans-serif;
+            line-height: 1.8;
+            color: #444;
+            font-size: 1.05rem;
+        }
+
+        /* Formulaire d'avis */
+        .review-form-container {
+            margin-top: 4rem;
+            padding: 2.5rem;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            transition: transform 0.4s ease;
+        }
+
+        .review-form-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .review-form-container h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+            padding-bottom: 0.8rem;
+        }
+
+        .review-form-container h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: #d4af37;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            color: #333;
+            letter-spacing: 0.5px;
+        }
+
+        .rating-select {
+            display: flex;
+            gap: 0.8rem;
+            font-size: 1.8rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .rating-star {
+            color: #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform: scale(1);
+        }
+
+        .rating-star:hover {
+            transform: scale(1.2);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Raleway', sans-serif;
+            resize: vertical;
+        }
+
+        .form-actions {
+            text-align: center;
+        }
+
+        .submit-review-btn {
+            background: linear-gradient(135deg, #d4af37, #a17b10);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 1rem 2.5rem;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+        }
+
+        .submit-review-btn:hover {
+            background: linear-gradient(135deg, #e5c458, #d4af37);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .login-to-review {
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            font-family: 'Raleway', sans-serif;
+        }
+
+        .login-to-review a {
+            color: #d4af37;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-to-review a:hover {
+            text-decoration: underline;
+        }
+
+        .no-reviews {
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            font-family: 'Raleway', sans-serif;
+            color: #666;
+        }
+
+        /* Animation pour les avis */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .review-item {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .review-item:nth-child(2) { animation-delay: 0.1s; }
+        .review-item:nth-child(3) { animation-delay: 0.2s; }
+        .review-item:nth-child(4) { animation-delay: 0.3s; }
+        .review-item:nth-child(5) { animation-delay: 0.4s; }
+
+        /* Améliorations générales */
+        body {
+            background-color: #fbfbfb;
+            color: #212121;
+        }
+
+        /* Amélioration de la navigation */
+        .navigation-controls {
+            max-width: 1400px;
+            margin: 2rem auto 1rem;
+            padding: 0 2rem;
+        }
+
+        .back-button, .account-access {
+            padding: 0.75rem 1.25rem;
+            border-radius: 30px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .back-button:hover, .account-access:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Galerie d'images améliorée */
+        .product-gallery {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .main-image {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            transition: all 0.5s ease;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-thumbnails {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.5rem;
+            gap: 0.8rem;
+        }
+
+        .gallery-thumbnail {
+            width: 90px;
+            height: 90px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        .gallery-thumbnail:hover {
+            border-color: #d4af37;
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 8px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .gallery-thumbnail.active {
+            border-color: #d4af37;
+            box-shadow: 0 8px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Amélioration des informations produit */
+        .product-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            color: #111;
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+        }
+
+        .product-reference {
+            font-family: 'Raleway', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+
+        .product-price-container {
+            display: flex;
+            align-items: baseline;
+            margin: 1.5rem 0;
+        }
+
+        .product-price {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .price-old {
+            font-size: 1.3rem;
+            text-decoration: line-through;
+            color: #999;
+            margin-right: 1rem;
+        }
+
+        .price-promo {
+            color: #c0392b;
+            position: relative;
+        }
+
+        .price-promo::after {
+            content: '';
+            display: block;
+            width: 30px;
+            height: 2px;
+            background-color: #c0392b;
+            margin-top: 5px;
+        }
+
+        /* Style du bouton "Ajouter au panier" */
+        .add-to-cart-btn {
+            background: linear-gradient(135deg, #d4af37, #a17b10);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 1rem 2rem;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-to-cart-btn:hover {
+            background: linear-gradient(135deg, #e5c458, #d4af37);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .add-to-cart-btn:active {
+            transform: translateY(-2px);
+        }
+
+        .add-to-cart-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .add-to-cart-btn:hover::after {
+            transform: translateX(100%);
+        }
+
+        /* Style du bouton favoris */
+        .add-to-wishlist-btn {
+            width: 56px !important;
+            height: 56px !important;
+            border-radius: 50% !important;
+            background: white !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        }
+
+        .add-to-wishlist-btn:hover {
+            transform: translateY(-4px) !important;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15) !important;
+        }
+
+        .add-to-wishlist-btn i {
+            font-size: 20px !important;
+            color: #444 !important;
+            transition: transform 0.3s ease, color 0.3s ease !important;
+        }
+
+        .add-to-wishlist-btn:hover i {
+            color: #d4af37 !important;
+            transform: scale(1.2) !important;
+        }
+
+        .add-to-wishlist-btn.active i {
+            color: #d4af37 !important;
+        }
+
+        /* Améliorations des spécifications */
+        .product-specs {
+            background-color: #f5f5f5;
+            padding: 4rem 0;
+            margin-top: 5rem;
+            position: relative;
+        }
+
+        .product-specs::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: #d4af37;
+        }
+
+        .specs-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .specs-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: #d4af37;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .spec-item {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+            transition: all 0.4s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .spec-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border-bottom-color: #d4af37;
+        }
+
+        .spec-label {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #777;
+            margin-bottom: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .spec-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: #222;
+            line-height: 1.6;
+        }
+
+        /* Style amélioré des avis */
+        .product-reviews {
+            padding: 5rem 0;
+            margin-top: 0;
+            background-color: #fcfcfc;
+            position: relative;
+        }
+
+        .reviews-title {
+            font-size: 2.2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 0.8rem;
+        }
+
+        .reviews-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: #d4af37;
+        }
+
+        .average-rating {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            transform: translateY(0);
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .average-rating:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .rating-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #111;
+            margin-bottom: 0.8rem;
+        }
+
+        .rating-stars i {
+            color: #d4af37;
+            font-size: 1.5rem;
+            margin: 0 3px;
+        }
+
+        .rating-count {
+            font-family: 'Raleway', sans-serif;
+            font-size: 1rem;
+            color: #666;
+            margin-top: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .reviews-list {
+            margin-top: 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .review-item {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .review-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border-left-color: #d4af37;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 1rem;
+        }
+
+        .review-author {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .review-date {
+            font-family: 'Raleway', sans-serif;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .review-rating {
+            margin-bottom: 1.2rem;
+        }
+
+        .review-rating i {
+            color: #d4af37;
+            font-size: 1.1rem;
+            margin-right: 3px;
+        }
+
+        .review-content {
+            font-family: 'Raleway', sans-serif;
+            line-height: 1.8;
+            color: #444;
+            font-size: 1.05rem;
+        }
+
+        /* Style amélioré du formulaire d'avis */
+        .review-form-container {
+            margin-top: 4rem;
+            padding: 2.5rem;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            transition: transform 0.4s ease;
+        }
+
+        .review-form-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .review-form-container h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+            padding-bottom: 0.8rem;
+        }
+
+        .review-form-container h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: #d4af37;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            color: #333;
+            letter-spacing: 0.5px;
+        }
+
+        .rating-select {
+            display: flex;
+            gap: 0.8rem;
+            font-size: 1.8rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .rating-star {
+            color: #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform: scale(1);
+        }
+
+        .rating-star:hover {
+            transform: scale(1.2);
+        }
+
+        .submit-review-btn {
+            background: linear-gradient(135deg, #d4af37, #a17b10);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 1rem 2.5rem;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+        }
+
+        .submit-review-btn:hover {
+            background: linear-gradient(135deg, #e5c458, #d4af37);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Styles pour les produits similaires */
+        .related-products {
+            padding: 5rem 0;
+            background-color: #f9f9f9;
+        }
+
+        .related-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            position: relative;
+            padding-bottom: 0.8rem;
+        }
+
+        .related-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: #d4af37;
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .related-item {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .related-item::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: #d4af37;
+            transition: width 0.3s ease;
+        }
+
+        .related-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .related-item:hover::before {
+            width: 100%;
+        }
+
+        .related-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .related-item:hover .related-image {
+            transform: scale(1.05);
+        }
+
+        .related-info {
+            padding: 1.8rem;
+        }
+
+        .related-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+            color: #111;
+        }
+
+        .related-price {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .view-product {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #d4af37, #a17b10);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+        }
+
+        .view-product:hover {
+            background: linear-gradient(135deg, #e5c458, #d4af37);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Animations avancées */
+        @keyframes shimmer {
+            0% { background-position: -100% 0; }
+            100% { background-position: 100% 0; }
+        }
+
+        .product-title, .product-price, .specs-title, .reviews-title, .related-title {
+            background: linear-gradient(90deg, 
+                rgba(212, 175, 55, 0) 0%, 
+                rgba(212, 175, 55, 0.1) 25%, 
+                rgba(212, 175, 55, 0.1) 50%, 
+                rgba(212, 175, 55, 0) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite;
+            background-repeat: no-repeat;
+        }
+
+        /* Animation des notifications */
+        .notification {
+            animation: none;
+            opacity: 0;
+            transform: translateX(30px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Améliorations responsives */
+        @media (max-width: 992px) {
+            .product-container {
+                padding: 0 2rem;
+            }
+            
+            .product-title {
+                font-size: 2.2rem;
+            }
+            
+            .specs-grid, .related-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navigation-controls {
+                padding: 0 1.5rem;
+                margin-top: 1.5rem;
+            }
+            
+            .product-container {
+                padding: 0 1.5rem;
+            }
+            
+            .add-to-cart-btn, .add-to-wishlist-btn {
+                font-size: 0.9rem;
+            }
+            
+            .product-title {
+                font-size: 2rem;
+            }
+            
+            .specs-title, .reviews-title, .related-title {
+                font-size: 1.8rem;
+            }
+            
+            .gallery-thumbnails {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 1rem;
+            }
+            
+            .gallery-thumbnail {
+                width: 70px;
+                height: 70px;
+                flex-shrink: 0;
+            }
+            
+            .add-to-wishlist-btn {
+                width: 50px !important;
+                height: 50px !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .product-title {
+                font-size: 1.8rem;
+            }
+            
+            .product-actions {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .add-to-wishlist-btn {
+                width: 100% !important;
+                height: 48px !important;
+                border-radius: 30px !important;
+            }
+            
+            .review-form-container, .average-rating, .review-item {
+                padding: 1.5rem;
             }
         }
     </style>
@@ -1108,6 +2280,100 @@ try {
     </section>
     <?php endif; ?>
     
+    <!-- Section des avis -->
+    <section class="product-reviews">
+        <div class="reviews-container">
+            <h2 class="reviews-title">Avis clients</h2>
+            
+            <div class="reviews-summary">
+                <div class="average-rating">
+                    <div class="rating-number"><?php echo $noteMoyenne; ?>/5</div>
+                    <div class="rating-stars">
+                        <?php
+                        // Afficher les étoiles en fonction de la note moyenne
+                        for ($i = 1; $i <= 5; $i++) {
+                            if ($i <= $noteMoyenne) {
+                                echo '<i class="fas fa-star"></i>';
+                            } elseif ($i - 0.5 <= $noteMoyenne) {
+                                echo '<i class="fas fa-star-half-alt"></i>';
+                            } else {
+                                echo '<i class="far fa-star"></i>';
+                            }
+                        }
+                        ?>
+                    </div>
+                    <div class="rating-count"><?php echo $nbAvis; ?> avis</div>
+                </div>
+            </div>
+            
+            <?php if ($nbAvis > 0): ?>
+            <div class="reviews-list">
+                <?php foreach ($avis as $unAvis): ?>
+                <div class="review-item">
+                    <div class="review-header">
+                        <div class="review-author">
+                            <?php echo htmlspecialchars($unAvis['utilisateur_prenom'] . ' ' . substr($unAvis['utilisateur_nom'], 0, 1) . '.'); ?>
+                        </div>
+                        <div class="review-date">
+                            <?php echo date('d/m/Y', strtotime($unAvis['date_creation'])); ?>
+                        </div>
+                    </div>
+                    <div class="review-rating">
+                        <?php
+                        // Afficher les étoiles en fonction de la note
+                        for ($i = 1; $i <= 5; $i++) {
+                            echo ($i <= $unAvis['note']) ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
+                        }
+                        ?>
+                    </div>
+                    <div class="review-content">
+                        <?php echo nl2br(htmlspecialchars($unAvis['commentaire'])); ?>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php else: ?>
+            <div class="no-reviews">
+                <p>Aucun avis pour ce produit pour le moment.</p>
+            </div>
+            <?php endif; ?>
+            
+            <?php if ($isLoggedIn): ?>
+            <div class="review-form-container">
+                <h3>Donnez votre avis</h3>
+                <form id="review-form" action="../../../php/api/reviews/add-review.php" method="post">
+                    <input type="hidden" name="produit_id" value="<?php echo $productId; ?>">
+                    
+                    <div class="form-group">
+                        <label for="note">Note</label>
+                        <div class="rating-select">
+                            <i class="far fa-star rating-star" data-value="1"></i>
+                            <i class="far fa-star rating-star" data-value="2"></i>
+                            <i class="far fa-star rating-star" data-value="3"></i>
+                            <i class="far fa-star rating-star" data-value="4"></i>
+                            <i class="far fa-star rating-star" data-value="5"></i>
+                            <input type="hidden" name="note" id="note" value="">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="commentaire">Commentaire</label>
+                        <textarea name="commentaire" id="commentaire" rows="4" required></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="submit-review-btn">Envoyer mon avis</button>
+                    </div>
+                </form>
+            </div>
+            <?php else: ?>
+            <div class="login-to-review">
+                <p>Vous devez être <a href="<?php echo $accountLink; ?>">connecté</a> pour laisser un avis.</p>
+            </div>
+            <?php endif; ?>
+        </div>
+    </section>
+    
     <!-- Footer -->
     <footer class="footer">
         <!-- Insérer ici le footer de votre site -->
@@ -1244,6 +2510,141 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+});
+</script>
+    <script>
+// Gestion du formulaire d'avis
+document.addEventListener('DOMContentLoaded', function() {
+    // Sélection des étoiles pour la note
+    const ratingStars = document.querySelectorAll('.rating-star');
+    if (ratingStars.length) {
+        ratingStars.forEach(star => {
+            star.addEventListener('click', function() {
+                const value = this.getAttribute('data-value');
+                document.getElementById('note').value = value;
+                
+                // Mettre à jour l'apparence des étoiles
+                ratingStars.forEach(s => {
+                    if (s.getAttribute('data-value') <= value) {
+                        s.classList.remove('far');
+                        s.classList.add('fas');
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('fas');
+                        s.classList.add('far');
+                        s.classList.remove('active');
+                    }
+                });
+            });
+            
+            // Effet de survol
+            star.addEventListener('mouseenter', function() {
+                const value = this.getAttribute('data-value');
+                
+                ratingStars.forEach(s => {
+                    if (s.getAttribute('data-value') <= value) {
+                        s.classList.remove('far');
+                        s.classList.add('fas');
+                    } else {
+                        s.classList.remove('fas');
+                        s.classList.add('far');
+                    }
+                });
+            });
+        });
+        
+        // Rétablir l'état des étoiles lorsque la souris quitte la zone
+        const ratingSelect = document.querySelector('.rating-select');
+        if (ratingSelect) {
+            ratingSelect.addEventListener('mouseleave', function() {
+                const selectedValue = document.getElementById('note').value;
+                
+                ratingStars.forEach(s => {
+                    if (selectedValue && s.getAttribute('data-value') <= selectedValue) {
+                        s.classList.remove('far');
+                        s.classList.add('fas');
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('fas');
+                        s.classList.add('far');
+                        s.classList.remove('active');
+                    }
+                });
+            });
+        }
+    }
+    
+    // Soumission du formulaire
+    const reviewForm = document.getElementById('review-form');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const note = document.getElementById('note').value;
+            if (!note) {
+                showNotification('Veuillez sélectionner une note', 'error');
+                return;
+            }
+            
+            const formData = new FormData(this);
+            
+            // Ajouter un header pour assurer le maintien de la session
+            fetch(this.getAttribute('action'), {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin' // Ceci est important pour transmettre les cookies de session
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Réponse serveur:', data); // Pour débogage
+                if (data.success) {
+                    showNotification('Votre avis a été soumis avec succès et sera publié après validation', 'success');
+                    this.reset();
+                    
+                    // Réinitialiser les étoiles
+                    document.querySelectorAll('.rating-star').forEach(s => {
+                        s.classList.remove('fas');
+                        s.classList.add('far');
+                        s.classList.remove('active');
+                    });
+                    document.getElementById('note').value = '';
+                } else {
+                    showNotification(data.error || 'Une erreur est survenue lors de l\'envoi de votre avis', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showNotification('Une erreur est survenue lors de l\'envoi de votre avis', 'error');
+            });
+        });
+    }
+    
+    // Fonction pour afficher les notifications si elle n'existe pas déjà
+    if (typeof showNotification !== 'function') {
+        window.showNotification = function(message, type) {
+            const container = document.querySelector('.notifications-container');
+            if (!container) return;
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            container.appendChild(notification);
+            
+            // Afficher la notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Supprimer la notification après 5 secondes
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 5000);
+        }
+    }
 });
 </script>
     <div class="notifications-container"></div>

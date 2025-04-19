@@ -373,144 +373,31 @@ try {
             color: #d4af37 !important;
         }
 
-        /* Styles améliorés pour le bouton favoris */
+        /* Amélioration du bouton favoris pour inclure le texte */
         .add-to-wishlist-btn {
-            background-color: #f8f8f8;
-            color: #777;
-            border: 1px solid #ddd;
-            width: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-
-        .add-to-wishlist-btn:hover {
-            border-color: #d4af37;
-            color: #d4af37;
-            background-color: #faf7ea;
-        }
-
-        .add-to-wishlist-btn.active {
-            color: #d4af37;
-            background-color: #faf7ea;
-            border-color: #d4af37;
-        }
-
-        .add-to-wishlist-btn.active svg {
-            fill: #d4af37;
-        }
-
-        /* Animation du cœur lorsqu'il est ajouté aux favoris */
-        @keyframes heartBeat {
-            0% { transform: scale(1); }
-            15% { transform: scale(1.25); }
-            30% { transform: scale(1); }
-            45% { transform: scale(1.15); }
-            60% { transform: scale(1); }
-        }
-
-        .add-to-wishlist-btn.active svg {
-            animation: heartBeat 0.8s;
-        }
-
-        /* Amélioration du style du cœur */
-        .heart-icon {
-            transition: transform 0.3s ease, fill 0.3s ease;
-            color: #777;
-        }
-
-        .add-to-wishlist-btn:hover .heart-icon {
-            color: #d4af37;
-            transform: scale(1.1);
-        }
-
-        .add-to-wishlist-btn.active .heart-icon {
-            fill: #d4af37;
-            color: #d4af37;
-        }
-
-        /* Animation plus prononcée au clic */
-        @keyframes heartPulse {
-            0% { transform: scale(1); }
-            25% { transform: scale(1.3); }
-            50% { transform: scale(0.95); }
-            75% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .add-to-wishlist-btn:active .heart-icon {
-            animation: heartPulse 0.5s ease-in-out;
-        }
-
-        /* Correction pour rendre le cœur visible */
-        .heart-icon {
-            stroke: #333;      /* Couleur du contour plus foncée */
-            stroke-width: 2;   /* Contour plus épais */
-            width: 24px;       /* Légèrement plus grand */
-            height: 24px;      /* Légèrement plus grand */
-        }
-
-        /* Assurer que le SVG est bien centré et visible */
-        .add-to-wishlist-btn {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f0f0f0; /* Fond légèrement plus foncé pour contraste */
-        }
-
-        /* État actif plus visible */
-        .add-to-wishlist-btn.active .heart-icon {
-            fill: #d4af37;
-            stroke: #d4af37;
-        }
-
-        /* Style du bouton favoris avec Font Awesome */
-        .add-to-wishlist-btn {
-            background-color: #f0f0f0 !important; 
-            color: #333 !important;
-            border: 1px solid #ddd !important;
-            width: 50px !important;
+            width: auto !important;
+            padding: 0 15px !important;
             height: 42px !important;
             display: flex !important;
             justify-content: center !important;
             align-items: center !important;
-            transition: all 0.3s ease !important;
+            gap: 8px !important;
         }
 
-        .add-to-wishlist-btn:hover {
-            border-color: #d4af37 !important;
-            color: #d4af37 !important;
-            background-color: #faf7ea !important;
+        .wishlist-text {
+            display: none;
         }
 
-        .add-to-wishlist-btn.active {
-            color: #d4af37 !important;
-            background-color: #faf7ea !important;
-            border-color: #d4af37 !important;
-        }
-
-        .add-to-wishlist-btn i {
-            font-size: 18px !important;
-        }
-
-        .add-to-wishlist-btn:hover i {
-            transform: scale(1.2) !important;
-        }
-
-        /* Animation au clic */
-        @keyframes heartPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.3); }
-            100% { transform: scale(1); }
-        }
-
-        .add-to-wishlist-btn:active i {
-            animation: heartPulse 0.4s ease-in-out !important;
+        /* Afficher le texte seulement en mobile quand le bouton est pleine largeur */
+        @media (max-width: 576px) {
+            .wishlist-text {
+                display: inline-block;
+                font-size: 14px;
+            }
         }
 
         .add-to-wishlist-btn.active i {
-            animation: heartPulse 0.8s !important;
+            color: #d4af37 !important;
         }
 
         /* Specs */
@@ -2195,8 +2082,9 @@ try {
                             <?php echo $disableAddToCart ? 'disabled' : ''; ?>>
                         Ajouter au panier
                     </button>
-                    <button class="add-to-wishlist-btn" data-product-id="<?php echo $product['id']; ?>" aria-label="Ajouter aux favoris">
-                        <i class="fas fa-heart"></i>
+                    <button class="add-to-wishlist-btn toggle-wishlist" data-product-id="<?php echo $product['id']; ?>" aria-label="Ajouter aux favoris">
+                        <i class="fas fa-heart"></i> 
+                        <span class="wishlist-text">Ajouter aux favoris</span>
                     </button>
                 </div>
             </div>
@@ -2456,20 +2344,87 @@ try {
                     }
                 }
             }
-
-            // Ajouter aux favoris (juste visuel pour l'instant)
-            const wishlistBtn = document.querySelector('.add-to-wishlist-btn');
-            if (wishlistBtn) {
-                wishlistBtn.addEventListener('click', function() {
-                    this.classList.toggle('active');
-                    const productName = document.querySelector('.product-title').textContent;
-                    if (typeof showNotification === 'function') {
-                        showNotification(`"${productName}" ${this.classList.contains('active') ? 'ajouté aux' : 'retiré des'} favoris`, 'success');
-                    }
-                });
-            }
         });
     </script>
+    <script>
+// Remplacer le code existant de gestion des favoris par celui-ci
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion des favoris avec API backend
+    const toggleWishlistBtn = document.querySelector('.toggle-wishlist');
+    if (toggleWishlistBtn) {
+        const productId = toggleWishlistBtn.getAttribute('data-product-id');
+        const productName = document.querySelector('.product-title').textContent;
+        
+        // Vérifier si le produit est déjà en favoris
+        fetch('/Site-Vitrine/php/api/wishlist/manage.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `action=check&product_id=${productId}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.is_favorite) {
+                toggleWishlistBtn.classList.add('active');
+                toggleWishlistBtn.querySelector('span').textContent = 'Retirer des favoris';
+            }
+        })
+        .catch(error => {
+            console.error('Erreur lors de la vérification des favoris:', error);
+        });
+        
+        // Gérer le clic sur le bouton
+        toggleWishlistBtn.addEventListener('click', function() {
+            if (!<?php echo $isLoggedIn ? 'true' : 'false'; ?>) {
+                // Rediriger l'utilisateur vers la page de connexion s'il n'est pas connecté
+                window.location.href = '../auth/login.html?redirect=' + encodeURIComponent(window.location.href);
+                return;
+            }
+            
+            const isActive = this.classList.contains('active');
+            const action = isActive ? 'remove' : 'add';
+            
+            fetch('/Site-Vitrine/php/api/wishlist/manage.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=${action}&product_id=${productId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (action === 'add') {
+                        this.classList.add('active');
+                        this.querySelector('span').textContent = 'Retirer des favoris';
+                        if (typeof showNotification === 'function') {
+                            showNotification(`"${productName}" ajouté aux favoris`, 'success');
+                        }
+                    } else {
+                        this.classList.remove('active');
+                        this.querySelector('span').textContent = 'Ajouter aux favoris';
+                        if (typeof showNotification === 'function') {
+                            showNotification(`"${productName}" retiré des favoris`, 'success');
+                        }
+                    }
+                } else {
+                    if (typeof showNotification === 'function') {
+                        showNotification(data.message || 'Une erreur est survenue', 'error');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                if (typeof showNotification === 'function') {
+                    showNotification('Une erreur est survenue lors de la communication avec le serveur', 'error');
+                }
+            });
+        });
+    }
+});
+</script>
     <script>
 // Correction spécifique pour le dropdown du panier
 document.addEventListener('DOMContentLoaded', function() {

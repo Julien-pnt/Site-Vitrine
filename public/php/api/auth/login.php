@@ -54,6 +54,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $authService = new AuthService($pdo);
                 $userData = $authService->login($email, $password);
                 
+                // Après une authentification réussie, ajoutez ce code :
+                if ($userData) {
+                    $_SESSION['user_id'] = $userData['id'];
+                    $_SESSION['user_email'] = $userData['email'];
+                    $_SESSION['user_role'] = $userData['role'];
+                    
+                    // Rediriger vers l'espace client pour les utilisateurs standards
+                    if ($userData['role'] === 'client') {
+                        header('Location: ../../../user/index.php');
+                        exit;
+                    } 
+                    // Rediriger vers le tableau de bord admin pour les administrateurs
+                    else if ($userData['role'] === 'admin') {
+                        header('Location: ../../../admin/index.php');
+                        exit;
+                    }
+                }
+                
                 // Définir un cookie si "Se souvenir de moi" est coché
                 if ($remember) {
                     $token = bin2hex(random_bytes(32));

@@ -9,6 +9,7 @@
 @import 'quick-view.css';
 @import 'video-background.css';
 @import 'products.css';
+@import 'whishlist.css';
 
 /* Fichier principal qui importe tous les autres fichiers CSS */
 @import 'base/variables.css';

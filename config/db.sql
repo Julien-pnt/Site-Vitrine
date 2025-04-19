@@ -319,6 +319,19 @@ CREATE TABLE `system_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
+-- Table `favoris` pour la wishlist
+CREATE TABLE favoris (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    utilisateur_id INT NOT NULL,
+    produit_id INT NOT NULL,
+    date_ajout DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (utilisateur_id) REFERENCES utilisateurs(id) ON DELETE CASCADE,
+    FOREIGN KEY (produit_id) REFERENCES produits(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_favori (utilisateur_id, produit_id),
+    INDEX idx_user_date (utilisateur_id, date_ajout)
+) ENGINE=InnoDB;
+
+
 -- Insertion des catégories de produits (à placer AVANT les insertions de produits)
 INSERT INTO categories (id, nom, slug, description, image, position) VALUES
 (1, 'Montres Homme', 'montres-homme', 'Notre collection exclusive de montres pour homme combine élégance intemporelle et précision technique exceptionnelle.', '/assets/img/categories/montres-homme.jpg', 10),

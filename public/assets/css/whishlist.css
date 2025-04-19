@@ -1,0 +1,85 @@
+/* Styles des boutons favoris */
+.add-to-wishlist-btn {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.add-to-wishlist-btn svg {
+    transition: all 0.3s ease;
+    fill: transparent;
+}
+
+.add-to-wishlist-btn.active svg {
+    fill: #d4af37;
+    stroke: #d4af37;
+}
+
+.add-to-wishlist-btn:hover svg {
+    transform: scale(1.1);
+}
+
+.add-to-wishlist-btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.add-to-wishlist-btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin-top: -8px;
+    margin-left: -8px;
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    border-top-color: #d4af37;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Styles pour les notifications */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.notification.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notification.success {
+    border-left: 4px solid #d4af37;
+}
+
+.notification.error {
+    border-left: 4px solid #dc3545;
+}
+
+.notification i {
+    font-size: 18px;
+}
+
+.notification.success i {
+    color: #d4af37;
+}
+
+.notification.error i {
+    color: #dc3545;
+}

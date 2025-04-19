@@ -242,35 +242,35 @@
             background-color: #f5f5f5;
             color: #333;
         }
-        
-        /* Badge de collection */
-        .collection-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            margin-bottom: 8px;
+
+        /* Amélioration de la visibilité du titre */
+        .collection-title {
+            color: var(--color-white);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        
-        .collection-badge.classic {
-            background-color: rgba(129, 107, 69, 0.1);
-            color: #816b45;
+
+        .collection-description {
+            color: var(--color-white);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            max-width: 700px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+            margin-left: auto;
+            margin-right: auto;
         }
-        
-        .collection-badge.sport {
-            background-color: rgba(51, 102, 153, 0.1);
-            color: #336699;
-        }
-        
-        .collection-badge.limited {
-            background-color: rgba(153, 51, 51, 0.1);
-            color: #993333;
-        }
-        
-        .collection-badge.vintage {
-            background-color: rgba(90, 90, 90, 0.1);
-            color: #5a5a5a;
+
+        .collection-hero-content {
+            text-align: center;
+            padding: 0 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
         }
     </style>
     
@@ -368,7 +368,7 @@
         <div class="collection-hero">
             <div class="collection-hero-content">
                 <h1 class="collection-title">Nos Garde-Temps d'Exception</h1>
-                <p class="collection-description">Explorez notre sélection de montres de haute horlogerie issues de toutes nos collections. Chaque modèle incarne la perfection artisanale et l'innovation technologique qui font la renommée d'Elixir du Temps.</p>
+                <p class="collection-description">Explorez notre sélection de montres de haute horlogerie. Chaque modèle incarne la perfection artisanale et l'innovation technologique qui font la renommée d'Elixir du Temps.</p>
                 <a href="#products" class="btn-primary">Découvrir nos montres</a>
             </div>
         </div>
@@ -389,17 +389,6 @@
                 </div>
                 
                 <div class="filter-options">
-                    <div class="sort-section">
-                        <label for="collection-filter">Collection :</label>
-                        <select id="collection-filter" aria-label="Filtrer par collection">
-                            <option value="all">Toutes les collections</option>
-                            <option value="classic">Classic</option>
-                            <option value="sport">Sport</option>
-                            <option value="limited">Édition Limitée</option>
-                            <option value="vintage">Vintage</option>
-                        </select>
-                    </div>
-                    
                     <div class="sort-section">
                         <label for="sort-by">Trier par :</label>
                         <select id="sort-by" aria-label="Trier les montres par">
@@ -424,12 +413,12 @@
     </section>
 
     <!-- Section produits -->
-    <section class="products-section">
+    <section class="products-section" id="products">
         <div class="container">
             <!-- Grille de produits mixte (visible par défaut) -->
             <div id="all-products" class="product-grid active">
-                <!-- Produit 1 - Collection Classic Homme -->
-                <div class="product-card" data-collection="classic" data-gender="homme">
+                <!-- Produit 1 -->
+                <div class="product-card" data-gender="homme">
                     <div class="product-image-container">
                         <img src="../../assets/img/products/elegance-eternal.jpg" alt="Montre Élégance Éternelle" class="product-image" loading="lazy">
                         <div class="product-overlay">
@@ -437,7 +426,6 @@
                         </div>
                     </div>
                     <div class="product-info">
-                        <span class="collection-badge classic">Collection Classic</span>
                         <h3 class="product-title">Élégance Éternelle</h3>
                         <p class="product-price">8 950 €</p>
                         <div class="product-actions">
@@ -450,9 +438,9 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Produit 2 - Collection Sport Homme -->
-                <div class="product-card" data-collection="sport" data-gender="homme">
+
+                <!-- Produit 2 -->
+                <div class="product-card" data-gender="homme">
                     <div class="product-image-container">
                         <img src="../../assets/img/products/chrono-sport.jpg" alt="Montre Chrono Sport" class="product-image" loading="lazy">
                         <div class="product-overlay">
@@ -460,7 +448,6 @@
                         </div>
                     </div>
                     <div class="product-info">
-                        <span class="collection-badge sport">Collection Sport</span>
                         <h3 class="product-title">Chrono Sport</h3>
                         <p class="product-price">6 750 €</p>
                         <div class="product-actions">
@@ -474,8 +461,8 @@
                     </div>
                 </div>
                 
-                <!-- Produit 3 - Collection Limited Homme -->
-                <div class="product-card" data-collection="limited" data-gender="homme">
+                <!-- Produit 3 -->
+                <div class="product-card" data-gender="homme">
                     <div class="product-image-container">
                         <img src="../../assets/img/products/edition-1895.jpg" alt="Montre Édition 1895" class="product-image" loading="lazy">
                         <div class="product-overlay">
@@ -483,7 +470,6 @@
                         </div>
                     </div>
                     <div class="product-info">
-                        <span class="collection-badge limited">Édition Limitée</span>
                         <h3 class="product-title">Édition 1895</h3>
                         <p class="product-price">24 500 €</p>
                         <div class="product-actions">
@@ -497,8 +483,8 @@
                     </div>
                 </div>
                 
-                <!-- Produit 4 - Collection Classic Femme -->
-                <div class="product-card" data-collection="classic" data-gender="femme">
+                <!-- Produit 4 -->
+                <div class="product-card" data-gender="femme">
                     <div class="product-image-container">
                         <img src="../../assets/img/products/elegance-rose.jpg" alt="Montre Élégance Rose" class="product-image" loading="lazy">
                         <div class="product-overlay">
@@ -506,7 +492,6 @@
                         </div>
                     </div>
                     <div class="product-info">
-                        <span class="collection-badge classic">Collection Classic</span>
                         <h3 class="product-title">Élégance Rose</h3>
                         <p class="product-price">13 500 €</p>
                         <div class="product-actions">
@@ -520,8 +505,8 @@
                     </div>
                 </div>
                 
-                <!-- Produit 5 - Collection Sport Femme -->
-                <div class="product-card" data-collection="sport" data-gender="femme">
+                <!-- Produit 5 -->
+                <div class="product-card" data-gender="femme">
                     <div class="product-image-container">
                         <img src="../../assets/img/products/aqua-lady.jpg" alt="Montre Aqua Lady" class="product-image" loading="lazy">
                         <div class="product-overlay">
@@ -529,7 +514,6 @@
                         </div>
                     </div>
                     <div class="product-info">
-                        <span class="collection-badge sport">Collection Sport</span>
                         <h3 class="product-title">Aqua Lady</h3>
                         <p class="product-price">9 200 €</p>
                         <div class="product-actions">
@@ -543,8 +527,8 @@
                     </div>
                 </div>
                 
-                <!-- Produit 6 - Collection Vintage Femme -->
-                <div class="product-card" data-collection="vintage" data-gender="femme">
+                <!-- Produit 6 -->
+                <div class="product-card" data-gender="femme">
                     <div class="product-image-container">
                         <img src="../../assets/img/products/heritage-lady.jpg" alt="Montre Heritage Lady" class="product-image" loading="lazy">
                         <div class="product-overlay">
@@ -552,7 +536,6 @@
                         </div>
                     </div>
                     <div class="product-info">
-                        <span class="collection-badge vintage">Collection Vintage</span>
                         <h3 class="product-title">Heritage Lady</h3>
                         <p class="product-price">7 800 €</p>
                         <div class="product-actions">
@@ -566,8 +549,8 @@
                     </div>
                 </div>
                 
-                <!-- Produit 7 - Collection Classic Homme -->
-                <div class="product-card" data-collection="classic" data-gender="homme">
+                <!-- Produit 7 -->
+                <div class="product-card" data-gender="homme">
                     <div class="product-image-container">
                         <img src="../../assets/img/products/tradition-classique.jpg" alt="Montre Tradition Classique" class="product-image" loading="lazy">
                         <div class="product-overlay">
@@ -575,7 +558,6 @@
                         </div>
                     </div>
                     <div class="product-info">
-                        <span class="collection-badge classic">Collection Classic</span>
                         <h3 class="product-title">Tradition Classique</h3>
                         <p class="product-price">4 750 €</p>
                         <div class="product-actions">
@@ -589,8 +571,8 @@
                     </div>
                 </div>
                 
-                <!-- Produit 8 - Collection Vintage Homme -->
-                <div class="product-card" data-collection="vintage" data-gender="homme">
+                <!-- Produit 8 -->
+                <div class="product-card" data-gender="homme">
                     <div class="product-image-container">
                         <img src="../../assets/img/products/heritage-prestige.jpg" alt="Montre Heritage Prestige" class="product-image" loading="lazy">
                         <div class="product-overlay">
@@ -598,12 +580,77 @@
                         </div>
                     </div>
                     <div class="product-info">
-                        <span class="collection-badge vintage">Collection Vintage</span>
                         <h3 class="product-title">Heritage Prestige</h3>
                         <p class="product-price">7 500 €</p>
                         <div class="product-actions">
                             <button class="add-to-cart-btn" data-product-id="701">Ajouter au panier</button>
                             <button class="add-to-wishlist-btn" data-product-id="701" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Produit 9 -->
+                <div class="product-card" data-gender="homme">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/constellation.jpg" alt="Montre Constellation" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="801">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Constellation</h3>
+                        <p class="product-price">18 200 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="801">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="801" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Produit 10 -->
+                <div class="product-card" data-gender="homme">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/carbone-fusion.jpg" alt="Montre Carbone Fusion" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="802">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Carbone Fusion</h3>
+                        <p class="product-price">15 800 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="802">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="802" aria-label="Ajouter aux favoris">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Produit 11 -->
+                <div class="product-card" data-gender="femme">
+                    <div class="product-image-container">
+                        <img src="../../assets/img/products/lumiere-celeste.jpg" alt="Montre Lumière Céleste" class="product-image" loading="lazy">
+                        <div class="product-overlay">
+                            <button class="quick-view-btn" data-product-id="803">Aperçu rapide</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Lumière Céleste</h3>
+                        <p class="product-price">22 500 €</p>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-product-id="803">Ajouter au panier</button>
+                            <button class="add-to-wishlist-btn" data-product-id="803" aria-label="Ajouter aux favoris">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                 </svg>
@@ -623,17 +670,6 @@
                 <!-- Les produits femmes seront filtrés par JavaScript -->
             </div>
             
-            <!-- Pagination -->
-            <div class="pagination">
-                <button class="pagination-btn active">1</button>
-                <button class="pagination-btn">2</button>
-                <button class="pagination-btn">3</button>
-                <button class="pagination-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                </button>
-            </div>
         </div>
     </section>
 
@@ -832,28 +868,7 @@
                 });
             }
             
-            // Filtrage des produits par collection et genre
-            const collectionFilter = document.getElementById('collection-filter');
-            const allButton = document.getElementById('all-button');
-            const hommeButton = document.getElementById('homme-button');
-            const femmeButton = document.getElementById('femme-button');
-            const allProducts = document.querySelectorAll('.product-card');
-            
-            if (collectionFilter) {
-                collectionFilter.addEventListener('change', function() {
-                    const selectedCollection = this.value;
-                    
-                    allProducts.forEach(product => {
-                        const productCollection = product.getAttribute('data-collection');
-                        
-                        if (selectedCollection === 'all' || selectedCollection === productCollection) {
-                            product.style.display = 'block';
-                        } else {
-                            product.style.display = 'none';
-                        }
-                    });
-                });
-            }
+            // Le filtrage par collection a été supprimé
             
             // Gestion des filtres par genre
             function setActiveGenderFilter(button) {
@@ -868,12 +883,14 @@
                 button.setAttribute('aria-pressed', 'true');
             }
             
+            const allProducts = document.querySelectorAll('.product-card');
+            const allButton = document.getElementById('all-button');
+            const hommeButton = document.getElementById('homme-button');
+            const femmeButton = document.getElementById('femme-button');
+            
             if (allButton) {
                 allButton.addEventListener('click', function() {
                     setActiveGenderFilter(this);
-                    document.getElementById('all-products').classList.add('active');
-                    document.getElementById('homme-products').classList.remove('active');
-                    document.getElementById('femme-products').classList.remove('active');
                     
                     // Afficher tous les produits
                     allProducts.forEach(product => {

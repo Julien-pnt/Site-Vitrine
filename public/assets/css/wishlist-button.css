@@ -25,14 +25,13 @@
 
 /* État actif amélioré avec animation */
 .add-to-wishlist-btn.active {
-    background-color: #fff0e9; /* Fond légèrement coloré pour indiquer l'état actif */
+    background-color: #fff0e9;
 }
 
 .add-to-wishlist-btn.active svg {
     fill: #d4af37;
     stroke: #d4af37;
     transform: scale(1.1);
-    animation: heartPulse 0.4s ease;
 }
 
 /* Animation au clic */
@@ -49,6 +48,10 @@
     0% { transform: scale(1); }
     50% { transform: scale(1.3); }
     100% { transform: scale(1.1); }
+}
+
+.add-to-wishlist-btn.active svg {
+    animation: heartPulse 0.4s ease;
 }
 
 /* État de chargement */
@@ -78,50 +81,4 @@
 
 @keyframes spin {
     to { transform: rotate(360deg); }
-}
-
-/* Styles pour les notifications */
-.notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 12px 20px;
-    background-color: white;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    transform: translateX(100%);
-    opacity: 0;
-    transition: all 0.3s ease;
-}
-
-.notification.show {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-.notification-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.notification.success {
-    border-left: 4px solid #d4af37;
-}
-
-.notification.error {
-    border-left: 4px solid #dc3545;
-}
-
-.notification i {
-    font-size: 18px;
-}
-
-.notification.success i {
-    color: #d4af37;
-}
-
-.notification.error i {
-    color: #dc3545;
 }

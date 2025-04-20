@@ -356,13 +356,158 @@
             color: #777;
             margin-right: 8px;
         }
+
+        /* Styles améliorés pour les boutons favoris */
+        .add-to-wishlist-btn {
+            position: relative;
+            transition: all 0.3s ease;
+            background-color: #f5f5f5;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .add-to-wishlist-btn:hover {
+            background-color: #e8e8e8;
+        }
+
+        .add-to-wishlist-btn svg {
+            transition: all 0.3s ease;
+            stroke: #333;
+            fill: transparent;
+        }
+
+        /* État actif amélioré */
+        .add-to-wishlist-btn.active {
+            background-color: #fff0e9;
+        }
+
+        .add-to-wishlist-btn.active svg {
+            fill: #d4af37;
+            stroke: #d4af37;
+            transform: scale(1.1);
+        }
+
+        /* État de chargement */
+        .add-to-wishlist-btn.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .add-to-wishlist-btn.loading svg {
+            opacity: 0.5;
+        }
+
+        .add-to-wishlist-btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            margin-top: -8px;
+            margin-left: -8px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-top-color: #d4af37;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Styles pour le menu utilisateur déroulant */
+        .user-menu-container {
+            position: relative;
+            margin-right: 15px;
+        }
+
+        .user-icon-wrapper {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .user-menu-arrow {
+            font-size: 10px;
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            width: 200px;
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .user-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .dropdown-item i {
+            margin-right: 10px;
+            color: #d4af37;
+            width: 18px;
+            text-align: center;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .dropdown-item.logout {
+            color: #dc3545;
+        }
+
+        .dropdown-item.logout i {
+            color: #dc3545;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #eee;
+            margin: 5px 0;
+        }
+
+        /* Animation de la flèche */
+        .user-icon-wrapper.active .user-menu-arrow {
+            transform: rotate(180deg);
+        }
     </style>
     
     <!-- Ressources -->
     <link rel="stylesheet" href="../../assets/css/main.css">
     <link rel="stylesheet" href="../../assets/css/collections.css">
-    <link rel="shortcut icon" href="../../assets/img/layout/icon.png" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="shortcut icon" href="../../assets/img/layout/icon2.png" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -396,19 +541,45 @@
         
         <!-- User and Cart Icons -->
         <div class="user-cart-container">
-            <a href="../auth/login.html" class="user-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-user">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-                <div class="dropdown-menu">
-                    <a href="../auth/login.html" id="login-link">Se connecter</a>
-                    <a href="../../php/api/auth/register.php" id="register-link">S'inscrire</a>
-                    <a href="../user/MonCompte.html" id="account-link" style="display: none;">Mon compte</a>
-                    <a href="../user/MesCommandes.html" id="orders-link" style="display: none;">Mes commandes</a>
-                    <a href="../../php/api/auth/logout.php" id="logout-link" class="logout" style="display: none;">Déconnexion</a>
+            <!-- User dropdown menu -->
+            <div class="user-menu-container">
+                <div class="user-icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-user">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span class="user-menu-arrow">▼</span>
                 </div>
-            </a>
+                
+                <div class="user-dropdown">
+                    <!-- Options pour utilisateurs non connectés -->
+                    <div class="guest-options">
+                        <a href="../auth/login.php" id="login-link" class="dropdown-item">
+                            <i class="fas fa-sign-in-alt"></i> Se connecter
+                        </a>
+                        <a href="../auth/register.php" id="register-link" class="dropdown-item">
+                            <i class="fas fa-user-plus"></i> S'inscrire
+                        </a>
+                    </div>
+                    
+                    <!-- Options pour utilisateurs connectés -->
+                    <div class="user-options" style="display: none;">
+                        <a href="../user/MonCompte.html" id="account-link" class="dropdown-item">
+                            <i class="fas fa-user-circle"></i> Mon compte
+                        </a>
+                        <a href="../user/MesCommandes.html" id="orders-link" class="dropdown-item">
+                            <i class="fas fa-box"></i> Mes commandes
+                        </a>
+                        <a href="../user/wishlist.php" id="wishlist-link" class="dropdown-item">
+                            <i class="fas fa-heart"></i> Mes favoris
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="../../php/api/auth/logout.php" id="logout-link" class="dropdown-item logout">
+                            <i class="fas fa-sign-out-alt"></i> Déconnexion
+                        </a>
+                    </div>
+                </div>
+            </div>
             
             <div class="cart-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1133,16 +1304,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Gestion des boutons d'ajout aux favoris
-    const wishlistButtons = document.querySelectorAll('.add-to-wishlist-btn');
-    wishlistButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            this.classList.toggle('active');
-            const productId = this.getAttribute('data-product-id');
-            // Vous pourriez implémenter ici l'ajout réel aux favoris
-        });
-    });
-    
     // -------- Gestion de la vidéo d'arrière-plan --------
     const video = document.querySelector('.video-bg');
     const fallbackImg = document.querySelector('.fallback-img');
@@ -1167,6 +1328,52 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialiser l'affichage du panier au chargement de la page
     updateCartDisplay();
+});
+</script>
+
+<script>
+// Gestion du menu déroulant utilisateur
+document.addEventListener('DOMContentLoaded', function() {
+    const userIconWrapper = document.querySelector('.user-icon-wrapper');
+    const userDropdown = document.querySelector('.user-dropdown');
+    const guestOptions = document.querySelector('.guest-options');
+    const userOptions = document.querySelector('.user-options');
+    
+    // Vérifier si l'utilisateur est connecté
+    function checkUserLoggedIn() {
+        fetch('/Site-Vitrine/php/api/auth/check-status.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.isLoggedIn) {
+                    guestOptions.style.display = 'none';
+                    userOptions.style.display = 'block';
+                } else {
+                    guestOptions.style.display = 'block';
+                    userOptions.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la vérification de connexion:', error);
+            });
+    }
+    
+    // Vérifier l'état de connexion au chargement
+    checkUserLoggedIn();
+    
+    // Toggle du menu au clic sur l'icône
+    userIconWrapper.addEventListener('click', function(e) {
+        e.stopPropagation();
+        userIconWrapper.classList.toggle('active');
+        userDropdown.classList.toggle('show');
+    });
+    
+    // Fermer le menu au clic en dehors
+    document.addEventListener('click', function(e) {
+        if (!userIconWrapper.contains(e.target) && !userDropdown.contains(e.target)) {
+            userIconWrapper.classList.remove('active');
+            userDropdown.classList.remove('show');
+        }
+    });
 });
 </script>
 </body>

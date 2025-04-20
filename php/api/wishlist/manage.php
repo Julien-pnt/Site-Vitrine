@@ -24,6 +24,11 @@ if (!in_array($action, ['add', 'remove', 'clear', 'check'])) {
     exit;
 }
 
+// Si l'action est "add", le serveur doit renvoyer success=true et un message approprié
+// Si l'action est "remove", le serveur doit renvoyer success=true et un autre message
+
+// Vérifiez les logs sur le serveur pour voir si le paramètre "action" est correctement reçu
+
 // Traiter les différentes actions
 try {
     switch ($action) {

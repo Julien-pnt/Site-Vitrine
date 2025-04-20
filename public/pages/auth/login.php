@@ -1,3 +1,80 @@
+<?php
+// Démarrer la session
+session_start();
+
+// Rediriger si l'utilisateur est déjà connecté
+if (isset($_SESSION['user_id'])) {
+    // Rediriger vers le tableau de bord ou la page d'accueil selon le rôle
+    if ($_SESSION['user_role'] === 'admin') {
+        header('Location: ../../admin/index.php');
+    } else {
+        header('Location: ../../user/index.php');
+    }
+    exit;
+}
+
+// Variables pour stocker les messages d'erreur et les valeurs soumises
+$error_message = '';
+$email = '';
+$redirect = isset($_GET['redirect']) ? htmlspecialchars($_GET['redirect']) : '';
+
+// Traitement du formulaire de connexion
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once '../../../php/config/database.php';
+    
+    // Récupérer et nettoyer les entrées
+    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+    $password = $_POST['password'] ?? '';
+    
+    // Validation basique
+    if (empty($email) || empty($password)) {
+        $error_message = 'Veuillez remplir tous les champs';
+    } else {
+        try {
+            // Connexion à la base de données
+            $db = new Database();
+            $conn = $db->getConnection();
+            
+            // Vérifier si l'utilisateur existe
+            $stmt = $conn->prepare("SELECT id, email, mot_de_passe, role, nom, prenom, actif FROM utilisateurs WHERE email = ?");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($user && $user['actif'] && password_verify($password, $user['mot_de_passe'])) {
+                // Connexion réussie, créer la session
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_email'] = $user['email'];
+                $_SESSION['user_role'] = $user['role'];
+                $_SESSION['user_name'] = $user['prenom'] . ' ' . $user['nom'];
+                $_SESSION['logged_in_time'] = time();
+                
+                // Rediriger selon le rôle
+                if ($user['role'] === 'admin' || $user['role'] === 'manager') {
+                    header('Location: ../../admin/index.php');
+                } else {
+                    // Vérifier s'il y a une redirection demandée
+                    if (!empty($redirect)) {
+                        header('Location: ' . $redirect);
+                    } else {
+                        header('Location: ../../user/index.php');
+                    }
+                }
+                exit;
+            } else {
+                // Échec de la connexion
+                if ($user && !$user['actif']) {
+                    $error_message = 'Votre compte a été désactivé. Veuillez contacter le support.';
+                } else {
+                    $error_message = 'Identifiants incorrects. Veuillez réessayer.';
+                }
+            }
+        } catch (PDOException $e) {
+            $error_message = 'Une erreur est survenue lors de la connexion. Veuillez réessayer plus tard.';
+            // Pour le débogage: error_log('Erreur de connexion: ' . $e->getMessage());
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -47,16 +124,16 @@
         <nav aria-label="Navigation principale">
             <ul class="menu-bar">
                 <li><a href="../Accueil.html">Accueil</a></li>
-                <li><a href="../Collections.html">Collections</a></li>
-                <li><a href="../Montres.html">Montres</a></li>
-                <li><a href="../APropos.html">À propos</a></li>
-                <li><a href="../Contact.html">Contact</a></li>
+                <li><a href="../collections/Collections.html">Collections</a></li>
+                <li><a href="../products/Montres.html">Montres</a></li>
+                <li><a href="../about/APropos.html">À propos</a></li>
+                <li><a href="../contact/Contact.html">Contact</a></li>
             </ul>
         </nav>
         
         <!-- User and Cart Icons -->
         <div class="user-cart-container">
-            <a href="login.html" class="user-icon active" aria-current="page">
+            <a href="login.php" class="user-icon active" aria-current="page">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-user">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
@@ -84,8 +161,8 @@
                         <span class="cart-dropdown-total-value">0,00 €</span>
                     </div>
                     <div class="cart-dropdown-buttons">
-                        <a href="products/panier.html" class="cart-dropdown-button secondary">Voir le panier</a>
-                        <a href="products/Montres.html" class="cart-dropdown-button primary">Découvrir nos montres</a>
+                        <a href="../products/panier.php" class="cart-dropdown-button secondary">Voir le panier</a>
+                        <a href="../products/Montres.html" class="cart-dropdown-button primary">Découvrir nos montres</a>
                     </div>
                 </div>
             </div>
@@ -102,17 +179,19 @@
         <div class="auth-container">
             <h1 class="auth-title">Connexion</h1>
             
-            <div id="alert" class="alert" style="display: none;"></div>
+            <?php if (!empty($error_message)): ?>
+            <div id="alert" class="alert alert-danger"><?php echo $error_message; ?></div>
+            <?php endif; ?>
             
-            <form id="loginForm" class="auth-form" novalidate>
+            <form id="loginForm" class="auth-form" method="post" action="login.php<?php echo !empty($redirect) ? '?redirect='.urlencode($redirect) : ''; ?>" novalidate>
                 <div class="form-group">
                     <!-- Icône email -->
                     <svg class="form-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                         <polyline points="22,6 12,13 2,6"></polyline>
                     </svg>
-                    <input type="email" id="email" name="email" required>
-                    <label for="email">Adresse email</label>
+                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required>
+                    <label for="email" class="<?php echo !empty($email) ? 'active' : ''; ?>">Adresse email</label>
                     <div class="form-border"></div>
                 </div>
                 
@@ -128,7 +207,7 @@
                 </div>
                 
                 <div class="forgot-password">
-                    <a href="../../php/api/auth/password-reset.php">Mot de passe oublié ?</a>
+                    <a href="reset-password.php">Mot de passe oublié ?</a>
                 </div>
                 
                 <button type="submit" id="loginButton" class="btn-primary auth-button">Se connecter</button>
@@ -139,13 +218,13 @@
                 
                 <div class="auth-footer">
                     <p>Vous n'avez pas de compte ?</p>
-                    <a href="register.html" class="btn-outline">Créer un compte</a>
+                    <a href="register.php" class="btn-outline">Créer un compte</a>
                 </div>
             </form>
         </div>
     </section>
 
-    <!-- Footer Section (simplifié pour éviter les problèmes) -->
+    <!-- Footer Section -->
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-columns">
@@ -157,8 +236,8 @@
                 <div class="footer-column">
                     <h3>Informations</h3>
                     <ul>
-                        <li><a href="../APropos.html">À propos</a></li>
-                        <li><a href="../Contact.html">Contact</a></li>
+                        <li><a href="../about/APropos.html">À propos</a></li>
+                        <li><a href="../contact/Contact.html">Contact</a></li>
                     </ul>
                 </div>
                 
@@ -178,6 +257,33 @@
     </footer>
 
     <!-- Script d'animation et de validation -->
-    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/gestion-cart.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animation des champs de formulaire
+        const inputs = document.querySelectorAll('.form-group input');
+        
+        inputs.forEach(input => {
+            // Ajouter la classe active si le champ a une valeur (utile pour les erreurs)
+            if (input.value) {
+                input.parentNode.querySelector('label').classList.add('active');
+            }
+            
+            input.addEventListener('focus', function() {
+                this.parentNode.querySelector('label').classList.add('active');
+            });
+            
+            input.addEventListener('blur', function() {
+                if (this.value === '') {
+                    this.parentNode.querySelector('label').classList.remove('active');
+                }
+            });
+        });
+
+        // Mise à jour de l'affichage du panier
+        updateCartDisplay();
+    });
+    </script>
 </body>
 </html>

@@ -1,17 +1,63 @@
 /**
  * Gestion des favoris pour les pages produits
+ * Version 3.0
  */
-document.addEventListener('DOMContentLoaded', function() {
+
+// Variables globales pour l'état d'authentification
+let userAuthStatus = {
+    isLoggedIn: false,
+    isAdmin: false,
+    userId: null
+};
+
+// Vérifier l'état de connexion via l'API
+async function checkAuthStatus() {
+    try {
+        const response = await fetch('/Site-Vitrine/php/api/auth/check-status.php');
+        const data = await response.json();
+        
+        if (data.success) {
+            userAuthStatus = {
+                isLoggedIn: data.isLoggedIn,
+                isAdmin: data.isAdmin,
+                userId: data.userId
+            };
+            return userAuthStatus;
+        }
+        return { isLoggedIn: false, isAdmin: false };
+    } catch (error) {
+        console.error('Erreur lors de la vérification de l\'authentification:', error);
+        return { isLoggedIn: false, isAdmin: false };
+    }
+}
+
+// Vérifier si l'utilisateur est connecté (méthode améliorée)
+function isUserLoggedIn() {
+    // Avant de tester la variable globale, essayer également de vérifier le DOM
+    const domLoggedIn = (
+        document.getElementById('account-link') && 
+        document.getElementById('account-link').style.display !== 'none'
+    ) || (
+        document.querySelector('.user-menu') && 
+        !document.querySelector('.login-link')
+    );
+    
+    // Si l'utilisateur semble connecté selon le DOM, on considère qu'il l'est
+    // même si la variable globale dit le contraire
+    return domLoggedIn || userAuthStatus.isLoggedIn;
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+    // Vérifier l'état d'authentification au chargement
+    await checkAuthStatus();
+    
+    // Récupérer tous les boutons d'ajout aux favoris
     const wishlistButtons = document.querySelectorAll('.add-to-wishlist-btn');
     
-    // Vérifier si l'utilisateur est connecté
-    function isUserLoggedIn() {
-        // Cette fonction vérifie si l'élément "account-link" est visible, ce qui indique que l'utilisateur est connecté
-        return document.getElementById('account-link') && 
-               document.getElementById('account-link').style.display !== 'none';
-    }
-    
     // Vérifier l'état des favoris pour tous les produits
+    checkWishlistStatus();
+    
+    // Fonction pour vérifier l'état des favoris
     function checkWishlistStatus() {
         if (!isUserLoggedIn()) return;
         
@@ -43,6 +89,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (data.favorites.includes(parseInt(productId))) {
                         button.classList.add('active');
                         button.setAttribute('title', 'Retirer des favoris');
+                    } else {
+                        button.classList.remove('active');
+                        button.setAttribute('title', 'Ajouter aux favoris');
                     }
                 });
             }
@@ -52,13 +101,25 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Gérer le clic sur les boutons de favoris
     wishlistButtons.forEach(button => {
-        button.addEventListener('click', function(event) {
+        // Remplacer tous les gestionnaires existants
+        button.onclick = async function(event) {
             event.preventDefault();
             
-            if (!isUserLoggedIn()) {
-                // Rediriger vers la page de connexion
-                window.location.href = '../auth/login.html?redirect=' + encodeURIComponent(window.location.href);
+            // Ignorer si déjà en cours de traitement
+            if (this.classList.contains('loading')) {
                 return;
+            }
+            
+            // Vérifier d'abord si l'utilisateur est connecté
+            if (!isUserLoggedIn()) {
+                // Double vérification avec l'API
+                await checkAuthStatus();
+                
+                // Si toujours pas connecté, rediriger
+                if (!userAuthStatus.isLoggedIn) {
+                    window.location.href = '../auth/login.php?redirect=' + encodeURIComponent(window.location.href);
+                    return;
+                }
             }
             
             const productId = this.getAttribute('data-product-id');
@@ -67,17 +128,21 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Animation pendant le chargement
             this.classList.add('loading');
+            this.disabled = true;
             
-            fetch('/Site-Vitrine/php/api/wishlist/manage.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `action=${action}&product_id=${productId}`
-            })
-            .then(response => response.json())
-            .then(data => {
+            try {
+                const response = await fetch('/Site-Vitrine/php/api/wishlist/manage.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `action=${action}&product_id=${productId}`
+                });
+                
+                const data = await response.json();
+                
                 this.classList.remove('loading');
+                this.disabled = false;
                 
                 if (data.success) {
                     if (action === 'add') {
@@ -92,49 +157,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     showNotification(data.message || 'Une erreur est survenue', 'error');
                 }
-            })
-            .catch(error => {
-                this.classList.remove('loading');
+            } catch (error) {
                 console.error('Erreur:', error);
+                this.classList.remove('loading');
+                this.disabled = false;
                 showNotification('Une erreur est survenue lors de la communication avec le serveur', 'error');
-            });
-        });
+            }
+        };
     });
     
     // Afficher une notification
     function showNotification(message, type = 'success') {
-        // Vérifier si la fonction existe déjà dans main.js
+        // Réutiliser la fonction existante si disponible
         if (typeof window.showNotification === 'function') {
-            window.showNotification(message, type);
+            window.showNotification(message);
             return;
         }
         
-        // Sinon, implémenter notre propre système de notification
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.innerHTML = `
-            <div class="notification-content">
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-                <span>${message}</span>
-            </div>
-        `;
+        // Supprimer les notifications existantes
+        const existingNotification = document.querySelector('.cart-notification');
+        if (existingNotification) {
+            document.body.removeChild(existingNotification);
+        }
         
+        // Créer et afficher la nouvelle notification
+        const notification = document.createElement('div');
+        notification.className = 'cart-notification ' + type;
+        notification.textContent = message;
         document.body.appendChild(notification);
         
-        // Afficher la notification avec une animation
+        // Masquer et supprimer après un délai
         setTimeout(() => {
-            notification.classList.add('show');
-        }, 10);
-        
-        // Supprimer après 3 secondes
-        setTimeout(() => {
-            notification.classList.remove('show');
+            notification.style.opacity = '0';
             setTimeout(() => {
-                notification.remove();
-            }, 300);
-        }, 3000);
+                if (notification.parentNode) {
+                    document.body.removeChild(notification);
+                }
+            }, 500);
+        }, 2000);
     }
-    
-    // Vérifier l'état des favoris au chargement
-    checkWishlistStatus();
 });

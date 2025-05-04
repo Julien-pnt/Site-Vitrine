@@ -504,3 +504,50 @@ INSERT INTO `produits` (`id`, `nom`, `slug`, `reference`, `description`, `descri
 -- Montre Allure Détente
 INSERT INTO `produits` (`id`, `nom`, `slug`, `reference`, `description`, `description_courte`, `prix`, `prix_promo`, `image`, `images_supplementaires`, `stock`, `stock_alerte`, `poids`, `categorie_id`, `collection_id`, `date_creation`, `visible`, `featured`, `nouveaute`) VALUES
 (755, 'Allure Détente', 'allure-detente', 'ELX-SP-F05', 'L\'Allure Détente réinvente le concept de la montre de sport féminine avec son boîtier en aluminium aéronautique anodisé turquoise de 39mm. Ultraléger (seulement 55 grammes avec le bracelet), ce garde-temps se fait oublier au poignet tout en affirmant un style audacieux. Le cadran en nacre noire avec motif vagues en trois dimensions capture et réfléchit la lumière de façon spectaculaire. Notre calibre automatique avec indicateur jour/nuit à 6 heures est visible par le fond transparent. L\'étanchéité à 100 mètres permet de pratiquer la natation ou le snorkeling en toute sérénité. Les index et aiguilles luminescents garantissent une parfaite lisibilité dans toutes les conditions. Le bracelet en caoutchouc technique turquoise avec système de fixation rapide permet de changer facilement de style.', 'Montre sport-loisir ultraléger en aluminium turquoise avec cadran en nacre noire texturée. Design contemporain et audacieux pour une femme active appréciant confort et style distinctif.', 13200.00, NULL, '/assets/img/products/allure-detente.jpg', '/assets/img/products/allure-detente-detail1.jpg,/assets/img/products/allure-detente-detail2.jpg', 14, 3, 0.055, 5, 2, CURRENT_TIMESTAMP, 1, 1, 1);
+
+INSERT INTO produits (
+    id, nom, slug, reference, description, description_courte, 
+    prix, prix_promo, image, stock, stock_alerte, poids, 
+    categorie_id, collection_id, visible, featured, nouveaute
+) VALUES
+-- Conquest Chrono (Homme)
+(306, 'Conquest Chrono', 'conquest-chrono', 'SP-306', 
+'Le Conquest Chrono est le chronographe de référence pour les passionnés de précision. Avec son mouvement mécanique à remontage automatique et son boîtier en acier inoxydable, cette montre incarne l''alliance parfaite entre robustesse et élégance sportive. Son cadran noir avec compteurs contrastés et sa lunette tachymétrique permettent une lecture immédiate dans toutes les conditions.', 
+'Chronographe haute performance avec boîtier en acier inoxydable, étanche jusqu''à 300 mètres. Précision exceptionnelle pour les amateurs de sports extrêmes.',
+14200.00, NULL, 'conquest-chrono.jpg', 15, 5, 98.500, 2, 3, TRUE, TRUE, FALSE),
+
+-- Lady Diver (Femme)
+(307, 'Lady Diver', 'lady-diver', 'SP-307', 
+'La Lady Diver réinvente la montre de plongée au féminin. Son boîtier en acier de 38mm accueille un cadran bleu profond avec des index luminescents et une lunette tournante unidirectionnelle. Étanche jusqu''à 300 mètres, elle combine fonctionnalité et élégance avec son bracelet en acier à maillons satinés et polis.', 
+'Montre de plongée élégante pour femme avec étanchéité jusqu''à 300 mètres. Son design raffiné en fait un accessoire polyvalent aussi bien sous l''eau qu''en soirée.',
+7900.00, NULL, 'lady-diver.jpg', 12, 4, 85.200, 1, 3, TRUE, FALSE, TRUE),
+
+-- Sport Élégance (Femme)
+(308, 'Sport Élégance', 'sport-elegance', 'SP-308', 
+'La Sport Élégance offre une silhouette dynamique qui s''adresse aux femmes actives. Son boîtier en acier de 36mm aux finitions alternées satinées et polies abrite un mouvement automatique de haute précision. Le cadran argenté avec détails roses et le bracelet intégré en font un modèle à la fois sportif et chic.', 
+'Alliance parfaite entre sport et sophistication, cette montre automatique accompagne les femmes actives dans leur quotidien avec style et fiabilité.',
+8400.00, NULL, 'sport-elegance.jpg', 8, 5, 78.500, 1, 3, TRUE, FALSE, FALSE),
+
+-- Aquatic Rose (Femme)
+(309, 'Aquatic Rose', 'aquatic-rose', 'SP-309', 
+'L''Aquatic Rose séduit par son boîtier en acier rehaussé d''une lunette en céramique rose. Étanche jusqu''à 200 mètres, son cadran nacré est orné d''index diamantés et protégé par un verre saphir. Cette montre de sport féminine marie performance et esthétique avec son mouvement automatique suisse de haute précision.', 
+'Montre aquatique féminine avec touches de rose et détails délicats. Parfaite combinaison de performance technique et d''élégance raffinée pour toutes les activités.',
+9200.00, 8280.00, 'aquatic-rose.jpg', 6, 5, 82.300, 1, 3, TRUE, TRUE, FALSE),
+
+-- Diamond Sport (Femme)
+(310, 'Diamond Sport', 'diamond-sport', 'SP-310', 
+'La Diamond Sport transcende les codes du sport luxe avec son cadran serti de 12 diamants véritables pour marquer les heures. Son boîtier en acier et or rose de 40mm abrite un mouvement chronographe automatique de haute précision. La lunette en céramique noire et le bracelet en caoutchouc texturé soulignent son caractère sportif malgré sa préciosité.', 
+'Chronographe de luxe combinant diamants et matériaux techniques pour les femmes qui ne font aucun compromis entre performance et élégance.',
+16500.00, NULL, 'diamond-sport.jpg', 4, 3, 92.750, 1, 3, TRUE, TRUE, FALSE),
+
+-- Chrono Lady (Femme)
+(311, 'Chrono Lady', 'chrono-lady', 'SP-311', 
+'Le Chrono Lady offre toutes les fonctionnalités d''un chronographe sportif dans un format adapté aux poignets féminins. Boîtier en acier de 38mm avec finition PVD or rose, cadran blanc nacré avec compteurs à 3, 6 et 9 heures. Mouvement chronographe quartz de haute précision, étanche à 100 mètres avec bracelet en acier bicolore.', 
+'Chronographe féminin combinant performance et style. Fonctionnalités avancées et lisibilité parfaite dans un design élégamment sportif.',
+9600.00, NULL, 'chrono-lady.jpg', 10, 4, 84.200, 1, 3, TRUE, FALSE, FALSE),
+
+-- Athletic Grace (Femme)
+(312, 'Athletic Grace', 'athletic-grace', 'SP-312', 
+'L''Athletic Grace redéfinit l''esthétique des montres de sport pour femme avec son profil affiné et ses lignes épurées. Boîtier en céramique légère de 36mm résistant aux rayures, cadran bleu marine avec détails argentés. Mouvement automatique avec réserve de marche de 48 heures, étanche à 150 mètres et bracelet interchangeable en caoutchouc et cuir de veau.', 
+'Montre sport féminine alliant légèreté, durabilité et confort. Son design épuré et ses matériaux innovants en font l''accessoire idéal pour un style actif.',
+7900.00, NULL, 'athletic-grace.jpg', 9, 4, 68.500, 1, 3, TRUE, FALSE, FALSE);

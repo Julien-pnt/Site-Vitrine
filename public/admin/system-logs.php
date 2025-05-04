@@ -146,8 +146,13 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Journaux système - Administration</title>
+    <link rel="icon" href="../assets/img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="js/header.js" defer></script>
     <style>
         :root {
             --primary-color: #d4af37;
@@ -174,22 +179,8 @@ try {
             line-height: 1.5;
         }
 
-        .admin-container {
-            display: flex; /* Changer grid pour flex */
-            min-height: 100vh;
-            width: 100%;
-        }
-
-        .main-content {
-            margin-left: 250px; /* Même valeur que la largeur du sidebar */
-            flex: 1;
-            padding: 0; /* Enlever le padding général */
-            background-color: #f5f5f7;
-            min-height: 100vh;
-        }
-
         .dashboard {
-            padding: 1.5rem; /* Ajouter du padding ici à la place */
+            padding: 1.5rem;
         }
 
         .dashboard h1 {
@@ -213,88 +204,10 @@ try {
             border-radius: 12px;
         }
 
-        /* Sidebar styles */
-        .sidebar {
-            background-color: var(--bg-dark);
-            color: white;
-            padding: 1.5rem 0; /* Réduire légèrement le padding */
-            position: fixed; /* Fixed au lieu de sticky */
-            top: 0;
-            left: 0;
-            width: 250px; /* Largeur fixe */
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .sidebar-brand {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .sidebar-brand img {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
-        }
-
-        .sidebar-brand h2 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: white;
-        }
-
-        .sidebar-nav {
-            padding: 0 1rem;
-        }
-
-        .sidebar-heading {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #6c757d;
-            padding: 0.75rem 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .sidebar-nav a {
-            color: #f8f9fa;
-            position: relative;
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            border-radius: var(--radius);
-            margin-bottom: 0.25rem;
-            font-size: 0.95rem;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .sidebar-nav a:hover {
-            background-color: rgba(212, 175, 55, 0.1);
-            color: var(--primary-color);
-        }
-
-        .sidebar-nav a.active {
-            background-color: rgba(212, 175, 55, 0.15);
-            color: var(--primary-color);
-            font-weight: 500;
-        }
-
-        .sidebar-nav a i {
-            margin-right: 0.75rem;
-            font-size: 1rem;
-            width: 20px;
-            text-align: center;
-        }
-
         /* Filters section */
         .filter-form {
             background-color: white;
-            border-radius: var (--radius);
+            border-radius: var(--radius);
             padding: 1.5rem;
             margin-bottom: 1.5rem;
             box-shadow: var(--shadow);
@@ -371,7 +284,7 @@ try {
         .reset-filters {
             background-color: transparent;
             border: 1px solid #ddd;
-            color: var (--text-light);
+            color: var(--text-light);
             padding: 0.6rem 1rem;
             border-radius: var(--radius);
             cursor: pointer;
@@ -389,7 +302,7 @@ try {
             padding: 0.6rem 1.25rem;
             border-radius: var(--radius);
             cursor: pointer;
-            transition: var (--transition);
+            transition: var(--transition);
             border: none;
             font-weight: 500;
             font-size: 0.9rem;
@@ -420,7 +333,7 @@ try {
         /* Table styles */
         .table-container {
             background-color: white;
-            border-radius: var (--radius);
+            border-radius: var(--radius);
             box-shadow: var(--shadow);
             overflow: auto;
             margin-bottom: 2rem;
@@ -804,409 +717,83 @@ try {
             color: white;
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 1200px) {
-            .admin-container {
-                grid-template-columns: 220px 1fr;
-            }
+        /* Amélioration spécifiques */
+        .filter-advanced {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px dashed #e9ecef;
         }
 
+        .filter-form h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+
+        /* Responsive */
         @media (max-width: 992px) {
-            .admin-container {
-                grid-template-columns: auto 1fr;
+            .filter-row {
+                grid-template-columns: repeat(2, 1fr);
             }
             
-            .sidebar {
-                width: 70px;
-            }
-            
-            .main-content {
-                margin-left: 70px;
-            }
-            
-            .sidebar-logo h2,
-            .sidebar-heading,
-            .sidebar-nav a span {
-                display: none;
-            }
-            
-            .sidebar-nav a {
-                justify-content: center;
-                padding: 0.75rem;
-            }
-            
-            .sidebar-nav a i {
-                margin-right: 0;
-            }
-            
-            .sidebar-logo {
-                justify-content: center;
-                padding: 0;
+            .log-modal-content {
+                width: 90%;
+                margin: 10% auto;
             }
         }
 
         @media (max-width: 768px) {
-            .main-content {
-                margin-left: 0;
-            }
-            
-            .filter-row {
+            .filter-row, .filter-advanced {
                 grid-template-columns: 1fr;
             }
             
             .filter-buttons {
                 flex-direction: column;
-                align-items: stretch;
+            }
+            
+            .filter-buttons button, 
+            .filter-buttons a {
+                width: 100%;
             }
             
             .log-modal-content {
                 width: 95%;
                 padding: 1.5rem;
-                margin: 2% auto;
             }
             
             .log-modal-tabs {
                 flex-wrap: wrap;
-                gap: 0.5rem;
             }
-            
-            .log-modal-tab {
-                padding: 0.5rem;
-            }
-            
-            .modal-details-table th {
-                width: 120px;
-            }
-        }
-
-        /* Header styles */
-        .main-header {
-            background-color: white;
-            padding: 0.75rem 1.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header-search {
-            position: relative;
-            max-width: 400px;
-            width: 100%;
-        }
-
-        .header-search i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-light);
-        }
-
-        .header-search input {
-            width: 100%;
-            padding: 0.6rem 0.75rem 0.6rem 2.5rem;
-            border: 1px solid #eee;
-            border-radius: 30px;
-            font-size: 0.9rem;
-        }
-
-        .header-search input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .header-icon {
-            position: relative;
-            color: var(--text-color);
-            font-size: 1.25rem;
-        }
-
-        .header-icon .badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background-color: var(--primary-color);
-            color: white;
-            font-size: 10px;
-            font-weight: 600;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .user-dropdown {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            cursor: pointer;
-            position: relative;
-            padding: 0.5rem;
-            border-radius: var(--radius);
-        }
-
-        .user-dropdown:hover {
-            background-color: #f8f9fa;
-        }
-
-        .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .username {
-            font-weight: 500;
-        }
-
-        .user-dropdown i {
-            font-size: 0.75rem;
-            color: var(--text-light);
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            width: 200px;
-            background-color: white;
-            border-radius: var(--radius);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 0.5rem;
-            margin-top: 0.5rem;
-            display: none;
-            z-index: 100;
-        }
-
-        .user-dropdown:hover .dropdown-menu {
-            display: block;
-            animation: fadeIn 0.2s ease-out;
-        }
-
-        .dropdown-menu a {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem;
-            color: var(--text-color);
-            text-decoration: none;
-            border-radius: 4px;
-            gap: 0.75rem;
-        }
-
-        .dropdown-menu a:hover {
-            background-color: #f8f9fa;
-        }
-
-        .dropdown-menu a.logout {
-            color: var(--danger);
-        }
-
-        .dropdown-menu a.logout:hover {
-            background-color: rgba(220, 53, 69, 0.1);
-        }
-
-        @media (max-width: 768px) {
-            .header-search {
-                display: none;
-            }
-            
-            .main-header {
-                padding: 0.75rem 1rem;
-            }
-            
-            .username {
-                display: none;
-            }
-            
-            .user-dropdown i {
-                display: none;
-            }
-        }
-
-        /* Ajouter ou modifier ces styles dans la section CSS */
-        .sidebar-brand {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .logo-img {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            border-radius: 6px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            margin-bottom: 5%;
-        }
-
-        /* Ajoutez ces styles au bas de votre section CSS */
-        .dropdown-menu {
-            visibility: hidden;
-            opacity: 0;
-            position: absolute;
-            top: calc(100% + 5px);
-            right: 0;
-            width: 200px;
-            background-color: white;
-            border-radius: var(--radius);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 0.5rem;
-            z-index: 1000;
-            transition: all 0.2s ease-in-out;
-            transform: translateY(-10px);
-        }
-
-        .user-dropdown:hover .dropdown-menu {
-            visibility: visible;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Ajoutez cette classe pour créer une zone de survol étendue qui empêche le menu de disparaître */
-        .user-dropdown {
-            position: relative;
-        }
-
-        .user-dropdown::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            height: 10px;
         }
     </style>
 </head>
 <body>
     <div class="admin-container">
-        <!-- Sidebar avec navigation moderne -->
-        <aside class="sidebar">
-            <div class="sidebar-brand">
-                <img src="../assets/img/layout/Aubry-ladmin.png" alt="Elixir du Temps" class="logo-img">
-                <h2>Administration</h2>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <div class="sidebar-heading">Tableau de bord</div>
-                <a href="index.php">
-                    <i class="fas fa-home"></i>
-                    <span>Accueil</span>
-                </a>
-                <a href="analytics.php">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Analytiques</span>
-                </a>
-                
-                <div class="sidebar-heading">Catalogue</div>
-                <a href="products.php">
-                    <i class="fas fa-box"></i>
-                    <span>Produits</span>
-                </a>
-                <a href="categories.php">
-                    <i class="fas fa-tags"></i>
-                    <span>Catégories</span>
-                </a>
-                <a href="collections.php">
-                    <i class="fas fa-layer-group"></i>
-                    <span>Collections</span>
-                </a>
-                
-                <div class="sidebar-heading">Ventes</div>
-                <a href="orders.php">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Commandes</span>
-                </a>
-                <a href="customers.php">
-                    <i class="fas fa-users"></i>
-                    <span>Clients</span>
-                </a>
-                
-                <div class="sidebar-heading">Système</div>
-                <a href="users.php">
-                    <i class="fas fa-user-shield"></i>
-                    <span>Utilisateurs</span>
-                </a>
-                <a href="settings.php">
-                    <i class="fas fa-cog"></i>
-                    <span>Paramètres</span>
-                </a>
-                <a href="system-logs.php" class="active">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Journaux</span>
-                </a>
-            </nav>
-        </aside>
-        
-        <main class="main-content">
-            <header class="main-header">
-                <div class="header-content">
-                    <div class="header-search">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Recherche rapide..." id="quick-search">
-                    </div>
-                    <div class="header-actions">
-                        <a href="#" class="header-icon" title="Notifications">
-                            <i class="fas fa-bell"></i>
-                            <span class="badge">3</span>
-                        </a>
-                        <a href="#" class="header-icon" title="Messages">
-                            <i class="fas fa-envelope"></i>
-                            <span class="badge">5</span>
-                        </a>
-                        <?php
-                        // Récupérer les informations de l'utilisateur connecté
-                        $userId = $_SESSION['user_id'] ?? 0;
-                        $userInfo = null;
+        <!-- Utiliser le template de sidebar -->
+        <?php 
+        // Définir la racine relative pour les liens dans la sidebar
+        $admin_root = '';
+        include 'templates/sidebar.php'; 
+        ?>
 
-                        if ($userId > 0) {
-                            try {
-                                $userStmt = $pdo->prepare("SELECT nom, prenom, email, photo, role FROM utilisateurs WHERE id = ?");
-                                $userStmt->execute([$userId]);
-                                $userInfo = $userStmt->fetch();
-                            } catch (PDOException $e) {
-                                // Gérer silencieusement l'erreur
-                            }
-                        }
-                        ?>
-                        <div class="user-dropdown">
-                            <?php if ($userInfo && !empty($userInfo['photo'])): ?>
-                                <!-- Utiliser la photo de la base de données si elle existe -->
-                                <img src="../uploads/users/<?= htmlspecialchars($userInfo['photo']) ?>" alt="<?= htmlspecialchars($userInfo['prenom']) ?>" class="avatar">
-                            <?php else: ?>
-                                <!-- Image par défaut basée sur le rôle -->
-                                <?php $defaultImage = ($userInfo && $userInfo['role'] == 'admin') ? 'user-default.png' : 'user-default.png'; ?>
-                                <img src="../assets/img/avatars/<?= $defaultImage ?>" alt="Avatar" class="avatar">
-                            <?php endif; ?>
-                            <span class="username"><?= $userInfo ? htmlspecialchars($userInfo['prenom']) : 'Utilisateur' ?></span>
-                            <i class="fas fa-chevron-down"></i>
-                            <div class="dropdown-menu">
-                                <a href="profile.php"><i class="fas fa-user"></i> Profil</a>
-                                <a href="settings.php"><i class="fas fa-cog"></i> Paramètres</a>
-                                <a href="../pages/auth/logout.php" class="logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
+        <main class="main-content">
+            <!-- Intégration du template header -->
+            <?php 
+            // Définir la racine relative pour les liens dans le header
+            $admin_root = '';
+            
+            // Personnaliser la recherche pour la page des journaux
+            $search_placeholder = "Rechercher dans les journaux...";
+            $search_action = "system-logs.php";
+            $search_param = "search";
+            $search_value = isset($_GET['search']) ? $_GET['search'] : '';
+            
+            include 'templates/header.php'; 
+            ?>
             
             <div class="dashboard">
                 <h1><i class="fas fa-shield-alt"></i> Journaux système</h1>
@@ -1217,11 +804,12 @@ try {
                 
                 <!-- Filtres avancés -->
                 <div class="filter-form">
+                    <h3>Filtres de recherche</h3>
                     <form method="GET" action="system-logs.php">
                         <div class="filter-row">
                             <div class="filter-group">
                                 <label for="search">Recherche</label>
-                                <input type="text" id="search" name="search" placeholder="Rechercher..." value="<?= $_GET['search'] ?? '' ?>">
+                                <input type="text" id="search" name="search" placeholder="Rechercher..." value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
                             </div>
                             
                             <div class="filter-group">
@@ -1229,8 +817,8 @@ try {
                                 <select id="level" name="level">
                                     <option value="">Tous les niveaux</option>
                                     <?php foreach ($levels as $level): ?>
-                                        <option value="<?= $level ?>" <?= (isset($_GET['level']) && $_GET['level'] == $level) ? 'selected' : '' ?>>
-                                            <?= ucfirst($level) ?>
+                                        <option value="<?= htmlspecialchars($level) ?>" <?= (isset($_GET['level']) && $_GET['level'] == $level) ? 'selected' : '' ?>>
+                                            <?= ucfirst(htmlspecialchars($level)) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -1241,8 +829,8 @@ try {
                                 <select id="category" name="category">
                                     <option value="">Toutes les catégories</option>
                                     <?php foreach ($categories as $category): ?>
-                                        <option value="<?= $category ?>" <?= (isset($_GET['category']) && $_GET['category'] == $category) ? 'selected' : '' ?>>
-                                            <?= ucfirst($category) ?>
+                                        <option value="<?= htmlspecialchars($category) ?>" <?= (isset($_GET['category']) && $_GET['category'] == $category) ? 'selected' : '' ?>>
+                                            <?= ucfirst(htmlspecialchars($category)) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -1253,8 +841,8 @@ try {
                                 <select id="action" name="action">
                                     <option value="">Toutes les actions</option>
                                     <?php foreach ($actions as $action): ?>
-                                        <option value="<?= $action ?>" <?= (isset($_GET['action']) && $_GET['action'] == $action) ? 'selected' : '' ?>>
-                                            <?= ucfirst(str_replace('_', ' ', $action)) ?>
+                                        <option value="<?= htmlspecialchars($action) ?>" <?= (isset($_GET['action']) && $_GET['action'] == $action) ? 'selected' : '' ?>>
+                                            <?= ucfirst(str_replace('_', ' ', htmlspecialchars($action))) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -1265,8 +853,8 @@ try {
                                 <select id="user_type" name="user_type">
                                     <option value="">Tous les types</option>
                                     <?php foreach ($userTypes as $type): ?>
-                                        <option value="<?= $type ?>" <?= (isset($_GET['user_type']) && $_GET['user_type'] == $type) ? 'selected' : '' ?>>
-                                            <?= ucfirst($type) ?>
+                                        <option value="<?= htmlspecialchars($type) ?>" <?= (isset($_GET['user_type']) && $_GET['user_type'] == $type) ? 'selected' : '' ?>>
+                                            <?= ucfirst(htmlspecialchars($type)) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -1274,12 +862,12 @@ try {
                             
                             <div class="filter-group">
                                 <label for="date_start">Date début</label>
-                                <input type="date" id="date_start" name="date_start" value="<?= $_GET['date_start'] ?? '' ?>">
+                                <input type="date" id="date_start" name="date_start" value="<?= htmlspecialchars($_GET['date_start'] ?? '') ?>">
                             </div>
                             
                             <div class="filter-group">
                                 <label for="date_end">Date fin</label>
-                                <input type="date" id="date_end" name="date_end" value="<?= $_GET['date_end'] ?? '' ?>">
+                                <input type="date" id="date_end" name="date_end" value="<?= htmlspecialchars($_GET['date_end'] ?? '') ?>">
                             </div>
                         </div>
                         
@@ -1289,8 +877,8 @@ try {
                                 <select id="entity_type" name="entity_type">
                                     <option value="">Toutes les entités</option>
                                     <?php foreach ($entityTypes as $type): ?>
-                                        <option value="<?= $type ?>" <?= (isset($_GET['entity_type']) && $_GET['entity_type'] == $type) ? 'selected' : '' ?>>
-                                            <?= ucfirst($type) ?>
+                                        <option value="<?= htmlspecialchars($type) ?>" <?= (isset($_GET['entity_type']) && $_GET['entity_type'] == $type) ? 'selected' : '' ?>>
+                                            <?= ucfirst(htmlspecialchars($type)) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -1298,12 +886,12 @@ try {
                             
                             <div class="filter-group">
                                 <label for="entity_id">ID de l'entité</label>
-                                <input type="text" id="entity_id" name="entity_id" value="<?= $_GET['entity_id'] ?? '' ?>">
+                                <input type="text" id="entity_id" name="entity_id" value="<?= htmlspecialchars($_GET['entity_id'] ?? '') ?>">
                             </div>
                             
                             <div class="filter-group">
                                 <label for="ip_address">Adresse IP</label>
-                                <input type="text" id="ip_address" name="ip_address" value="<?= $_GET['ip_address'] ?? '' ?>">
+                                <input type="text" id="ip_address" name="ip_address" value="<?= htmlspecialchars($_GET['ip_address'] ?? '') ?>">
                             </div>
                         </div>
                         
@@ -1336,54 +924,54 @@ try {
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($logs as $log): ?>
-                                <tr>
-                                    <td><?= date('d/m/Y H:i:s', strtotime($log['created_at'])) ?></td>
-                                    <td>
-                                        <span class="level-badge level-<?= $log['level'] ?>">
-                                            <?= $log['level'] ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <?php if ($log['user_id']): ?>
-                                            <span class="entity-pill user-type-<?= $log['user_type'] ?>">
-                                                <?= $log['user_type'] ?>
-                                            </span>
-                                            <?= htmlspecialchars($log['user_firstname'] . ' ' . $log['user_lastname']) ?>
-                                        <?php else: ?>
-                                            <span class="entity-pill user-type-<?= $log['user_type'] ?>">
-                                                <?= ucfirst($log['user_type']) ?>
-                                            </span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <strong><?= htmlspecialchars(ucfirst($log['category'])) ?></strong> / 
-                                        <?= htmlspecialchars(str_replace('_', ' ', $log['action'])) ?>
-                                    </td>
-                                    <td>
-                                        <?php if ($log['entity_type']): ?>
-                                            <span class="entity-pill">
-                                                <?= htmlspecialchars(ucfirst($log['entity_type'])) ?> #<?= htmlspecialchars($log['entity_id']) ?>
-                                            </span>
-                                        <?php else: ?>
-                                            -
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="log-details">
-                                        <?= htmlspecialchars($log['details'] ?? '-') ?>
-                                    </td>
-                                    <td>
-                                        <button class="btn-icon view-log" data-id="<?= $log['id'] ?>" title="Voir les détails">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                            
                             <?php if (empty($logs)): ?>
                                 <tr>
                                     <td colspan="7" class="empty-table">Aucun log trouvé</td>
                                 </tr>
+                            <?php else: ?>
+                                <?php foreach ($logs as $log): ?>
+                                    <tr>
+                                        <td><?= date('d/m/Y H:i:s', strtotime($log['created_at'])) ?></td>
+                                        <td>
+                                            <span class="level-badge level-<?= htmlspecialchars($log['level']) ?>">
+                                                <?= htmlspecialchars($log['level']) ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <?php if ($log['user_id']): ?>
+                                                <span class="entity-pill user-type-<?= htmlspecialchars($log['user_type']) ?>">
+                                                    <?= htmlspecialchars($log['user_type']) ?>
+                                                </span>
+                                                <?= htmlspecialchars($log['user_firstname'] . ' ' . $log['user_lastname']) ?>
+                                            <?php else: ?>
+                                                <span class="entity-pill user-type-<?= htmlspecialchars($log['user_type']) ?>">
+                                                    <?= ucfirst(htmlspecialchars($log['user_type'])) ?>
+                                                </span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <strong><?= htmlspecialchars(ucfirst($log['category'])) ?></strong> / 
+                                            <?= htmlspecialchars(str_replace('_', ' ', $log['action'])) ?>
+                                        </td>
+                                        <td>
+                                            <?php if ($log['entity_type']): ?>
+                                                <span class="entity-pill">
+                                                    <?= htmlspecialchars(ucfirst($log['entity_type'])) ?> #<?= htmlspecialchars($log['entity_id']) ?>
+                                                </span>
+                                            <?php else: ?>
+                                                -
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="log-details">
+                                            <?= htmlspecialchars(mb_substr($log['details'] ?? '-', 0, 80)) . (mb_strlen($log['details'] ?? '') > 80 ? '...' : '') ?>
+                                        </td>
+                                        <td>
+                                            <button class="btn-icon view-log" data-id="<?= $log['id'] ?>" title="Voir les détails">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -1524,9 +1112,18 @@ try {
             const advancedIcon = document.getElementById('advanced-icon');
             
             if (toggleBtn && advancedFilters) {
+                // Vérifier si des filtres avancés sont déjà appliqués
+                const hasAdvancedFilters = <?= (isset($_GET['entity_type']) || isset($_GET['entity_id']) || isset($_GET['ip_address'])) ? 'true' : 'false' ?>;
+                
+                if (hasAdvancedFilters) {
+                    advancedFilters.style.display = 'grid';
+                    advancedText.textContent = 'Masquer les filtres avancés';
+                    advancedIcon.className = 'fas fa-chevron-up';
+                }
+                
                 toggleBtn.addEventListener('click', function() {
                     const isVisible = advancedFilters.style.display !== 'none';
-                    advancedFilters.style.display = isVisible ? 'none' : 'flex';
+                    advancedFilters.style.display = isVisible ? 'none' : 'grid';
                     advancedText.textContent = isVisible ? 
                         'Afficher les filtres avancés' : 'Masquer les filtres avancés';
                     advancedIcon.className = isVisible ? 
@@ -1680,6 +1277,9 @@ try {
                             document.getElementById('modal-user-agent').textContent = data.user_agent || '-';
                             document.getElementById('modal-execution-time').textContent = 
                                 data.execution_time ? `${(data.execution_time * 1000).toFixed(2)} ms` : '-';
+                                
+                            // Appliquer la coloration syntaxique après avoir rempli le contenu
+                            applySyntaxHighlighting();
                         })
                         .catch(error => {
                             console.error('Erreur:', error);
@@ -1713,18 +1313,19 @@ try {
                 return String(value);
             }
             
-            // Syntaxe highlighting pour JSON
-            document.querySelectorAll('.json-viewer').forEach(viewer => {
-                const content = viewer.textContent;
-                if (content && content !== 'Aucune donnée') {
-                    try {
-                        const json = JSON.parse(content);
-                        viewer.innerHTML = syntaxHighlight(JSON.stringify(json, null, 2));
-                    } catch (e) {
-                        console.error('Error parsing JSON:', e);
+            function applySyntaxHighlighting() {
+                document.querySelectorAll('.json-viewer').forEach(viewer => {
+                    const content = viewer.textContent;
+                    if (content && content !== 'Aucune donnée' && content !== 'Aucun contexte disponible') {
+                        try {
+                            const json = JSON.parse(content);
+                            viewer.innerHTML = syntaxHighlight(JSON.stringify(json, null, 2));
+                        } catch (e) {
+                            console.error('Error parsing JSON:', e);
+                        }
                     }
-                }
-            });
+                });
+            }
             
             function syntaxHighlight(json) {
                 json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -1752,40 +1353,6 @@ try {
                     };
                     
                     return `<span style="color:${colors[cls]};">${match}</span>`;
-                });
-            }
-        });
-
-        // Ajouter ce code avant la fin du script existant
-        document.addEventListener('DOMContentLoaded', function() {
-            // Gestion du menu déroulant de profil utilisateur
-            const userDropdown = document.querySelector('.user-dropdown');
-            const dropdownMenu = userDropdown.querySelector('.dropdown-menu');
-            
-            if (userDropdown && dropdownMenu) {
-                userDropdown.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
-                    
-                    // Animation
-                    if (dropdownMenu.style.display === 'block') {
-                        setTimeout(() => {
-                            dropdownMenu.style.opacity = '1';
-                            dropdownMenu.style.transform = 'translateY(0)';
-                        }, 10);
-                    } else {
-                        dropdownMenu.style.opacity = '0';
-                        dropdownMenu.style.transform = 'translateY(-10px)';
-                    }
-                });
-                
-                // Fermer le menu quand on clique ailleurs
-                document.addEventListener('click', function(e) {
-                    if (!userDropdown.contains(e.target)) {
-                        dropdownMenu.style.display = 'none';
-                        dropdownMenu.style.opacity = '0';
-                        dropdownMenu.style.transform = 'translateY(-10px)';
-                    }
                 });
             }
         });

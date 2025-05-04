@@ -1,0 +1,345 @@
+/* Styles pour la page d'accueil */
+
+/* Video Background */
+.video-background {
+    position: relative;
+    height: 100vh;
+    min-height: 600px;
+    overflow: hidden;
+}
+
+.video-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translateX(-50%) translateY(-50%);
+    z-index: -2;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%);
+    z-index: -1;
+}
+
+/* Hero Section */
+.hero {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    min-height: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+}
+
+.hero-content {
+    max-width: 800px;
+    padding: 0 20px;
+    z-index: 1;
+}
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.btn-secondary {
+    display: inline-block;
+    padding: 12px 30px;
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: rgba(255,255,255,0.1);
+    transform: translateY(-3px);
+}
+
+/* Featured Collections */
+.featured-collections {
+    padding: 80px 0;
+    background-color: #fff;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    color: #333;
+    font-family: "Playfair Display", serif;
+    margin-bottom: 15px;
+}
+
+.section-header p {
+    font-size: 1.1rem;
+    color: #666;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.collections-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.collection-card {
+    flex: 1 1 300px;
+    max-width: 350px;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.collection-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+.collection-image {
+    height: 200px;
+    overflow: hidden;
+}
+
+.collection-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.collection-card:hover .collection-image img {
+    transform: scale(1.1);
+}
+
+.collection-info {
+    padding: 20px;
+    text-align: center;
+}
+
+.collection-info h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #333;
+    font-family: "Playfair Display", serif;
+}
+
+.collection-info p {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.price-range {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #d4af37;
+    margin-bottom: 20px;
+}
+
+.explore-button {
+    display: inline-block;
+    padding: 8px 20px;
+    background-color: #333;
+    color: white;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.explore-button:hover {
+    background-color: #d4af37;
+    transform: translateY(-3px);
+}
+
+/* Features Section */
+.features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    padding: 60px 20px;
+    background-color: #f8f8f8;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    flex: 1 1 220px;
+    max-width: 280px;
+    text-align: center;
+    padding: 30px 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+}
+
+.feature-icon {
+    color: #d4af37;
+    margin-bottom: 20px;
+}
+
+.feature-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.feature-card p {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* Newsletter Section */
+.newsletter {
+    padding: 80px 0;
+    background-image: url('../img/layout/newsletter-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    color: white;
+    text-align: center;
+}
+
+.newsletter:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+}
+
+.newsletter-content {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.newsletter h2 {
+    font-size: 2.2rem;
+    margin-bottom: 20px;
+    font-family: "Playfair Display", serif;
+}
+
+.newsletter p {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.newsletter-form {
+    display: flex;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.newsletter-form input {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+    font-size: 1rem;
+}
+
+.newsletter-form button {
+    padding: 12px 25px;
+    background-color: #d4af37;
+    color: white;
+    border: none;
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.newsletter-form button:hover {
+    background-color: #c09c2c;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .section-header h2 {
+        font-size: 2rem;
+    }
+    
+    .newsletter h2 {
+        font-size: 1.8rem;
+    }
+    
+    .newsletter-form {
+        flex-direction: column;
+    }
+    
+    .newsletter-form input {
+        border-radius: 30px;
+        margin-bottom: 15px;
+    }
+    
+    .newsletter-form button {
+        border-radius: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-buttons {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .btn-primary, .btn-secondary {
+        width: 100%;
+    }
+}

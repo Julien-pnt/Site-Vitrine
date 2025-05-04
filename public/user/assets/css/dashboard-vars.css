@@ -1,0 +1,59 @@
+:root {
+    --primary-color: #d4af37;
+    --primary-light: rgba(212, 175, 55, 0.1);
+    --primary-dark: #b8973a;
+    --secondary-color: #1a1a1a;
+    --secondary-light: #2a2a2a;
+    --light-color: #fff;
+    --light-gray: #f9f9f9;
+    --medium-gray: #888;
+    --dark-gray: #333;
+    --border-color: rgba(0, 0, 0, 0.08);
+    --success-color: #4caf50;
+    --warning-color: #ff9800;
+    --danger-color: #f44336;
+    --info-color: #2196F3;
+    --shadow-xs: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-sm: 0 2px 6px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 12px 28px rgba(0,0,0,0.12);
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --font-primary: 'Playfair Display', serif;
+    --font-secondary: 'Raleway', sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.5rem;
+    --font-size-2xl: 2rem;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-secondary);
+    background-color: var(--light-gray);
+    color: var(--dark-gray);
+    line-height: 1.6;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+}
+
+/* Layout dashboard */
+.dashboard-layout {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+}

@@ -180,6 +180,12 @@ try {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Ajoutez cette ligne dans la section <head>, avant les autres scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <!-- Dans la section <head>, ajoutez: -->
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/header.css">
+    <script src="js/header.js" defer></script>
+
+
     
     <style>
         /* Styles pour les notifications */
@@ -516,64 +522,27 @@ try {
 <body>
     <div class="admin-container">
         <aside class="sidebar">
-            <div class="sidebar-brand">
-                <a href="index.php">
-                    <!-- Ajouter une classe spécifique avec contrainte de taille -->
-                    <img src="../assets/img/layout/logo.png" alt="Logo" class="sidebar-logo">
-                    <span>Elixir du Temps</span>
-                </a>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <div class="nav-section">
-                    <h3 class="nav-heading">Navigation</h3>
-                    <ul>
-                        <li class="active"><a href="index.php"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
-                        <li><a href="products.php"><i class="fas fa-box"></i> Produits</a></li>
-                        <li><a href="categories.php"><i class="fas fa-tags"></i> Catégories</a></li>
-                        <li><a href="collections.php"><i class="fas fa-layer-group"></i> Collections</a></li>
-                        <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Commandes</a></li>
-                        <li><a href="users/index.php"><i class="fas fa-users"></i> Utilisateurs</a></li>
-                        <li><a href="reviews.php"><i class="fas fa-star"></i> Avis Clients</a></li>
-                        <li><a href="promotions.php"><i class="fas fa-percent"></i> Promotions</a></li>
-                        <li><a href="pages.php"><i class="fas fa-file-alt"></i> Pages</a></li>
-                        <li><a href="export.php"><i class="fas fa-file-export"></i> Exportation</a></li>
-                        <li><a href="system-logs.php"><i class="fas fa-history"></i> Historique</a></li>
-                    </ul>
-                </div>
-            </nav>
-            <div class="sidebar-footer">
-                <a href="../pages/Accueil.html" target="_blank"><i class="fas fa-external-link-alt"></i> Voir le site</a>
-                <a href="../../php/api/auth/logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
-            </div>
+            <?php 
+            // Définit la racine relative pour les liens dans la sidebar
+            $admin_root = '';
+            include 'templates/sidebar.php'; 
+            ?>
         </aside>
 
         <main class="main-content">
-            <header class="main-header">
-                <div class="header-search">
-                    <form action="search-results.php" method="GET">
-                        <input type="search" name="q" placeholder="Rechercher..." aria-label="Recherche globale">
-                        <button type="submit"><i class="fas fa-search"></i></button>
-                    </form>
-                </div>
-                <div class="user-dropdown" id="userProfileDropdown">
-                    <?php if ($userInfo && !empty($userInfo['photo'])): ?>
-                        <!-- Utiliser la photo de la base de données si elle existe -->
-                        <img src="../uploads/users/<?= htmlspecialchars($userInfo['photo']) ?>" alt="<?= htmlspecialchars($userInfo['prenom']) ?>" class="avatar">
-                    <?php else: ?>
-                        <!-- Image par défaut basée sur le rôle -->
-                        <?php $defaultImage = ($userInfo && $userInfo['role'] == 'admin') ? 'user-default.png' : 'user-default.png'; ?>
-                        <img src="../assets/img/avatars/<?= $defaultImage ?>" alt="Avatar" class="avatar">
-                    <?php endif; ?>
-                    <span class="username"><?= $userInfo ? htmlspecialchars($userInfo['prenom']) : 'Admin' ?></span>
-                    <i class="fas fa-chevron-down dropdown-arrow"></i>
-                    <div class="dropdown-menu" id="userDropdownMenu">
-                        <a href="profile.php"><i class="fas fa-user"></i> Profil</a>
-                        <a href="settings.php"><i class="fas fa-cog"></i> Paramètres</a>
-                        <a href="../../php/api/auth/logout.php" class="logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
-                    </div>
-                </div>
-            </header>
+            <!-- Intégration du template header -->
+            <?php 
+            // Définir la racine relative pour les liens dans le header
+            $admin_root = '';
+            
+            // Personnaliser la recherche pour la page dashboard
+            $search_placeholder = "Rechercher...";
+            $search_action = "search-results.php";
+            $search_param = "q";
+            $search_value = isset($_GET['q']) ? $_GET['q'] : '';
+            
+            include 'templates/header.php'; 
+            ?>
 
             <div class="dashboard">
                 <h1>Tableau de bord</h1>
@@ -909,66 +878,63 @@ try {
         });
     });
     
-    // Placer ce code dans votre balise <script> existante
-    document.addEventListener('DOMContentLoaded', function() {
-        // Menu déroulant utilisateur amélioré
-        const userDropdown = document.getElementById('userProfileDropdown');
-        const dropdownMenu = document.getElementById('userDropdownMenu');
-        const dropdownArrow = document.querySelector('.dropdown-arrow');
+    // Menu déroulant utilisateur amélioré
+    const userDropdown = document.getElementById('userProfileDropdown');
+    const dropdownMenu = document.getElementById('userDropdownMenu');
+    const dropdownArrow = document.querySelector('.dropdown-arrow');
+    
+    if (userDropdown && dropdownMenu) {
+        // Fermer le menu au chargement
+        dropdownMenu.style.display = 'none';
+        dropdownMenu.style.opacity = '0';
+        dropdownMenu.style.transform = 'translateY(-10px)';
         
-        if (userDropdown && dropdownMenu) {
-            // Fermer le menu au chargement
-            dropdownMenu.style.display = 'none';
-            dropdownMenu.style.opacity = '0';
-            dropdownMenu.style.transform = 'translateY(-10px)';
+        // Toggle le menu au clic
+        userDropdown.addEventListener('click', function(e) {
+            e.stopPropagation(); // Empêche la propagation au document
             
-            // Toggle le menu au clic
-            userDropdown.addEventListener('click', function(e) {
-                e.stopPropagation(); // Empêche la propagation au document
+            const isOpen = dropdownMenu.style.display === 'block';
+            
+            if (isOpen) {
+                // Fermer le menu
+                dropdownArrow.style.transform = 'rotate(0deg)';
+                dropdownMenu.style.opacity = '0';
+                dropdownMenu.style.transform = 'translateY(-10px)';
                 
-                const isOpen = dropdownMenu.style.display === 'block';
+                setTimeout(() => {
+                    dropdownMenu.style.display = 'none';
+                }, 200); // Délai correspondant à la transition
+            } else {
+                // Ouvrir le menu
+                dropdownMenu.style.display = 'block';
+                dropdownArrow.style.transform = 'rotate(180deg)';
                 
-                if (isOpen) {
-                    // Fermer le menu
-                    dropdownArrow.style.transform = 'rotate(0deg)';
-                    dropdownMenu.style.opacity = '0';
-                    dropdownMenu.style.transform = 'translateY(-10px)';
-                    
-                    setTimeout(() => {
-                        dropdownMenu.style.display = 'none';
-                    }, 200); // Délai correspondant à la transition
-                } else {
-                    // Ouvrir le menu
-                    dropdownMenu.style.display = 'block';
-                    dropdownArrow.style.transform = 'rotate(180deg)';
-                    
-                    // Force reflow pour permettre la transition
-                    void dropdownMenu.offsetWidth;
-                    
-                    dropdownMenu.style.opacity = '1';
-                    dropdownMenu.style.transform = 'translateY(0)';
-                }
-            });
-            
-            // Fermer le menu quand on clique ailleurs
-            document.addEventListener('click', function(e) {
-                if (dropdownMenu.style.display === 'block') {
-                    dropdownArrow.style.transform = 'rotate(0deg)';
-                    dropdownMenu.style.opacity = '0';
-                    dropdownMenu.style.transform = 'translateY(-10px)';
-                    
-                    setTimeout(() => {
-                        dropdownMenu.style.display = 'none';
-                    }, 200);
-                }
-            });
-            
-            // Empêcher la fermeture lorsqu'on clique sur les éléments du menu
-            dropdownMenu.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-        }
-    });
+                // Force reflow pour permettre la transition
+                void dropdownMenu.offsetWidth;
+                
+                dropdownMenu.style.opacity = '1';
+                dropdownMenu.style.transform = 'translateY(0)';
+            }
+        });
+        
+        // Fermer le menu quand on clique ailleurs
+        document.addEventListener('click', function(e) {
+            if (dropdownMenu.style.display === 'block') {
+                dropdownArrow.style.transform = 'rotate(0deg)';
+                dropdownMenu.style.opacity = '0';
+                dropdownMenu.style.transform = 'translateY(-10px)';
+                
+                setTimeout(() => {
+                    dropdownMenu.style.display = 'none';
+                }, 200);
+            }
+        });
+        
+        // Empêcher la fermeture lorsqu'on clique sur les éléments du menu
+        dropdownMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
     </script>
 </body>
 </html>

@@ -1,66 +1,55 @@
 <?php
+// Vérifier que l'utilisateur est connecté
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ' . $relativePath . '/pages/auth/login.php');
+    exit;
+}
+
+// Définir quelle page est active
+$current_page = basename($_SERVER['PHP_SELF']);
+
 // Compter les favoris pour le badge
 $stmtWishlist = $conn->prepare("SELECT COUNT(*) FROM favoris WHERE utilisateur_id = ?");
 $stmtWishlist->execute([$userId]);
 $wishlistCount = $stmtWishlist->fetchColumn();
 ?>
 
+<!-- Sidebar -->
 <aside class="dashboard-sidebar">
     <div class="sidebar-header">
-        <div class="sidebar-user">
-            <div class="user-info">
-                <h3><?php echo htmlspecialchars($user['prenom'] . ' ' . $user['nom']); ?></h3>
-                <p><?php echo htmlspecialchars($user['email']); ?></p>
-            </div>
-        </div>
+        <img src="<?php echo $relativePath; ?>/assets/img/layout/logo.png" alt="Elixir du Temps" class="sidebar-logo">
     </div>
     
-    <ul class="sidebar-menu">
-        <li>
-            <a href="index.php" <?php echo ($pageTitle === "Tableau de bord") ? 'class="active"' : ''; ?>>
-                <i class="fas fa-tachometer-alt"></i>
-                <span>Tableau de bord</span>
-            </a>
-        </li>
-        <li>
-            <a href="profile.php" <?php echo ($pageTitle === "Mon profil") ? 'class="active"' : ''; ?>>
-                <i class="fas fa-user"></i>
-                <span>Mon profil</span>
-            </a>
-        </li>
-        <li>
-            <a href="orders.php" <?php echo ($pageTitle === "Mes commandes") ? 'class="active"' : ''; ?>>
-                <i class="fas fa-shopping-bag"></i>
-                <span>Mes commandes</span>
-            </a>
-        </li>
-        <li>
-            <a href="addresses.php" <?php echo ($pageTitle === "Mes adresses") ? 'class="active"' : ''; ?>>
-                <i class="fas fa-map-marker-alt"></i>
-                <span>Mes adresses</span>
-            </a>
-        </li>
-        <li>
-            <a href="wishlist.php" <?php echo ($pageTitle === "Mes favoris") ? 'class="active"' : ''; ?>>
-                <i class="fas fa-heart"></i>
-                <span>Mes favoris</span>
-                <?php if ($wishlistCount > 0): ?>
-                <span class="wishlist-count"><?php echo $wishlistCount; ?></span>
-                <?php endif; ?>
-            </a>
-        </li>
-        <li>
-            <a href="../pages/products/panier.php" <?php echo ($pageTitle === "Mon panier") ? 'class="active"' : ''; ?>>
-                <i class="fas fa-shopping-cart"></i>
-                <span>Mon panier</span>
-            </a>
-        </li>
-        <li class="separator"></li>
-        <li>
-            <a href="../php/api/auth/logout.php">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Déconnexion</span>
-            </a>
-        </li>
-    </ul>
+    <nav class="sidebar-nav">
+        <a href="index.php" class="sidebar-nav-item <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Tableau de bord</span>
+        </a>
+        <a href="orders.php" class="sidebar-nav-item <?php echo ($current_page == 'orders.php') ? 'active' : ''; ?>">
+            <i class="fas fa-shopping-bag"></i>
+            <span>Mes commandes</span>
+        </a>
+        <a href="profile.php" class="sidebar-nav-item <?php echo ($current_page == 'profile.php') ? 'active' : ''; ?>">
+            <i class="fas fa-user"></i>
+            <span>Mon profil</span>
+        </a>
+        <a href="addresses.php" class="sidebar-nav-item <?php echo ($current_page == 'addresses.php') ? 'active' : ''; ?>">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Mes adresses</span>
+        </a>
+        <a href="wishlist.php" class="sidebar-nav-item <?php echo ($current_page == 'wishlist.php') ? 'active' : ''; ?>">
+            <i class="fas fa-heart"></i>
+            <span>Mes favoris</span>
+            <?php if ($wishlistCount > 0): ?>
+            <span class="wishlist-count"><?php echo $wishlistCount; ?></span>
+            <?php endif; ?>
+        </a>
+    </nav>
+    
+    <div class="sidebar-footer">
+        <a href="<?php echo $relativePath; ?>/php/api/auth/logout.php" class="btn-logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Déconnexion</span>
+        </a>
+    </div>
 </aside>

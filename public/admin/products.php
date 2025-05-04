@@ -1,78 +1,112 @@
 <?php
-// Initialisation de la session et vérification d'authentification admin
-session_start();
+// Correction du chemin d'accès à la base de données
 require_once '../../php/config/database.php';
-require_once '../../php/utils/auth.php';
+require_once '../../php/functions/security.php';
 
-// Redirection si l'utilisateur n'est pas connecté en tant qu'admin
-if (!isLoggedIn() || !isAdmin()) {
-    header('Location: ../pages/auth/login.html?error=unauthorized&redirect=admin');
-    exit;
+// Vérifier si l'utilisateur est connecté et est administrateur
+session_start();
+if(!isLoggedIn() || !isAdmin()) {
+    header('Location: ../../php/api/auth/login.php');
+    exit();
 }
 
-// Gestion des paramètres de filtrage et de pagination
+// Paramètres de pagination et filtrage
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
 $offset = ($page - 1) * $limit;
+$search = isset($_GET['search']) ? $_GET['search'] : '';
 $filter = isset($_GET['filter']) ? $_GET['filter'] : '';
 $categoryId = isset($_GET['category']) ? (int)$_GET['category'] : 0;
-$search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// Construire la requête SQL de base
-$query = "SELECT p.*, c.nom as categorie_nom FROM produits p 
-          LEFT JOIN categories c ON p.categorie_id = c.id WHERE 1=1";
-$countQuery = "SELECT COUNT(*) as count FROM produits WHERE 1=1";
+// Connexion à la base de données en utilisant la classe Database
+try {
+    $database = new Database();
+    $pdo = $database->getConnection();
+} catch(PDOException $e) {
+    die("Erreur de connexion à la base de données: " . $e->getMessage());
+}
+
+// Construction de la requête de base
+$query = "SELECT p.*, c.nom as categorie_nom
+          FROM produits p
+          LEFT JOIN categories c ON p.categorie_id = c.id
+          WHERE 1=1";
+$countQuery = "SELECT COUNT(*) FROM produits p WHERE 1=1";
 $params = [];
 
-// Ajouter les conditions de filtrage
-if ($filter === 'low-stock') {
-    $query .= " AND p.stock <= p.stock_alerte";
-    $countQuery .= " AND stock <= stock_alerte";
-} elseif ($filter === 'out-of-stock') {
-    $query .= " AND p.stock = 0";
-    $countQuery .= " AND stock = 0";
-} elseif ($filter === 'active') {
-    $query .= " AND p.visible = 1";
-    $countQuery .= " AND visible = 1";
-} elseif ($filter === 'inactive') {
-    $query .= " AND p.visible = 0";
-    $countQuery .= " AND visible = 0";
+// Appliquer les filtres
+if (!empty($search)) {
+    $query .= " AND (p.nom LIKE :search OR p.description LIKE :search OR p.reference LIKE :search)";
+    $countQuery .= " AND (p.nom LIKE :search OR p.description LIKE :search OR p.reference LIKE :search)";
+    $params[':search'] = "%$search%";
 }
 
 if ($categoryId > 0) {
-    $query .= " AND p.categorie_id = ?";
-    $countQuery .= " AND categorie_id = ?";
-    $params[] = $categoryId;
+    $query .= " AND p.categorie_id = :category_id";
+    $countQuery .= " AND p.categorie_id = :category_id";
+    $params[':category_id'] = $categoryId;
 }
 
-if (!empty($search)) {
-    $query .= " AND (p.nom LIKE ? OR p.reference LIKE ?)";
-    $countQuery .= " AND (nom LIKE ? OR reference LIKE ?)";
-    $searchParam = "%{$search}%";
-    $params[] = $searchParam;
-    $params[] = $searchParam;
+switch ($filter) {
+    case 'low-stock':
+        $query .= " AND p.stock <= p.stock_alerte AND p.stock > 0";
+        $countQuery .= " AND p.stock <= p.stock_alerte AND p.stock > 0";
+        break;
+    case 'out-of-stock':
+        $query .= " AND p.stock = 0";
+        $countQuery .= " AND p.stock = 0";
+        break;
+    case 'active':
+        $query .= " AND p.visible = 1";
+        $countQuery .= " AND p.visible = 1";
+        break;
+    case 'inactive':
+        $query .= " AND p.visible = 0";
+        $countQuery .= " AND p.visible = 0";
+        break;
 }
 
-// Finaliser la requête avec tri et pagination
-$query .= " ORDER BY p.id DESC LIMIT ? OFFSET ?";
-$params[] = $limit;
-$params[] = $offset;
+// Ajouter tri et pagination
+$query .= " ORDER BY p.date_creation DESC LIMIT :limit OFFSET :offset";
+$params[':limit'] = $limit;
+$params[':offset'] = $offset;
 
 // Exécuter les requêtes
-$stmt = $pdo->prepare($query);
-$stmt->execute($params);
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+try {
+    // Récupérer les produits
+    $stmt = $pdo->prepare($query);
+    foreach ($params as $key => $value) {
+        if ($key == ':limit' || $key == ':offset') {
+            $stmt->bindValue($key, $value, PDO::PARAM_INT);
+        } else {
+            $stmt->bindValue($key, $value, PDO::PARAM_STR);
+        }
+    }
+    $stmt->execute();
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Récupérer le nombre total de produits
+    $countStmt = $pdo->prepare($countQuery);
+    foreach ($params as $key => $value) {
+        if ($key != ':limit' && $key != ':offset') {
+            $countStmt->bindValue($key, $value, PDO::PARAM_STR);
+        }
+    }
+    $countStmt->execute();
+    $totalProducts = $countStmt->fetchColumn();
+    $totalPages = ceil($totalProducts / $limit);
+    
+    // Récupérer toutes les catégories pour le filtre
+    $categoriesStmt = $pdo->query("SELECT id, nom FROM categories ORDER BY nom");
+    $categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
+} catch(PDOException $e) {
+    die("Erreur lors de la récupération des données: " . $e->getMessage());
+}
 
-// Compter le nombre total de produits correspondant aux critères
-$countParams = array_slice($params, 0, -2); // Exclure limit et offset
-$countStmt = $pdo->prepare($countQuery);
-$countStmt->execute($countParams);
-$totalProducts = $countStmt->fetch(PDO::FETCH_ASSOC)['count'];
-$totalPages = ceil($totalProducts / $limit);
-
-// Récupérer la liste des catégories pour le filtre
-$categoriesStmt = $pdo->query("SELECT id, nom FROM categories ORDER BY nom");
-$categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
+// S'assurer que $products est au moins un tableau vide si aucun résultat
+if ($products === false) {
+    $products = [];
+}
 ?>
 
 <!DOCTYPE html>
@@ -84,60 +118,36 @@ $categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="icon" href="../assets/img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/tables.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/header.css">
     <!-- FontAwesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="js/header.js" defer></script>
 </head>
 <body>
     <div class="admin-container">
-        <!-- Sidebar de navigation (même code que dans index.php) -->
-        <aside class="sidebar">
-            <div class="sidebar-brand">
-                <a href="index.php">
-                    <!-- Utilisez la classe sidebar-logo pour contraindre la taille -->
-                    <img src="../assets/img/layout/logo.png" alt="Elixir du Temps" class="sidebar-logo">
-                    <span>Administration</span>
-                </a>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <div class="nav-section">
-                    <h3 class="nav-heading">Navigation</h3>
-                    <ul>
-                        <li><a href="index.php"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
-                        <li class="active"><a href="products.php"><i class="fas fa-watch"></i> Produits</a></li>
-                        <li><a href="categories.php"><i class="fas fa-tags"></i> Catégories</a></li>
-                        <li><a href="collections.php"><i class="fas fa-layer-group"></i> Collections</a></li>
-                        <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Commandes</a></li>
-                        <li><a href="users/index.php"><i class="fas fa-users"></i> Utilisateurs</a></li>
-                        <li><a href="reviews.php"><i class="fas fa-star"></i> Avis Clients</a></li>
-                        <li><a href="pages.php"><i class="fas fa-file-alt"></i> Pages</a></li>
-                        <li><a href="settings.php"><i class="fas fa-cog"></i> Paramètres</a></li>
-                    </ul>
-                </div>
-            </nav>
-            
-            <div class="sidebar-footer">
-                <a href="../pages/Accueil.html" target="_blank"><i class="fas fa-external-link-alt"></i> Voir le site</a>
-                <a href="../../php/api/auth/logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
-            </div>
-        </aside>
+        <!-- Utiliser le template de sidebar -->
+        <?php 
+        // Définit la racine relative pour les liens dans la sidebar
+        $admin_root = '';
+        include 'templates/sidebar.php'; 
+        ?>
 
         <!-- Contenu principal -->
         <main class="main-content">
-            <header class="main-header">
-                <div class="header-search">
-                    <form action="products.php" method="GET">
-                        <input type="search" name="search" placeholder="Rechercher un produit..." value="<?= htmlspecialchars($search) ?>">
-                        <button type="submit"><i class="fas fa-search"></i></button>
-                    </form>
-                </div>
-                <div class="header-user">
-                    <span>Gestion des produits</span>
-                    <div class="user-avatar">
-                        <i class="fas fa-user-circle"></i>
-                    </div>
-                </div>
-            </header>
+            <!-- Intégration du template header -->
+            <?php 
+            // Définir la racine relative pour les liens dans le header
+            $admin_root = '';
+            
+            // Personnaliser la recherche pour la page produits
+            $search_placeholder = "Rechercher un produit...";
+            $search_action = "products.php";
+            $search_param = "search";
+            $search_value = $search;
+            
+            include 'templates/header.php'; 
+            ?>
 
             <div class="content-wrapper">
                 <div class="content-header">
@@ -282,6 +292,9 @@ $categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
         </main>
     </div>
 
+    <!-- Container pour les notifications toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <!-- Scripts -->
     <script>
         function applyFilters() {
@@ -309,14 +322,17 @@ $categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.location.reload();
+                        showToast('Succès', newStatus ? 'Le produit a été activé' : 'Le produit a été désactivé', 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
                     } else {
-                        alert('Erreur: ' + data.message);
+                        showToast('Erreur', data.message, 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Erreur:', error);
-                    alert('Une erreur est survenue. Veuillez réessayer.');
+                    showToast('Erreur', 'Une erreur est survenue. Veuillez réessayer.', 'error');
                 });
             }
         }
@@ -333,17 +349,76 @@ $categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.location.reload();
+                        showToast('Succès', 'Le produit a été supprimé', 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
                     } else {
-                        alert('Erreur: ' + data.message);
+                        showToast('Erreur', data.message, 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Erreur:', error);
-                    alert('Une erreur est survenue. Veuillez réessayer.');
+                    showToast('Erreur', 'Une erreur est survenue. Veuillez réessayer.', 'error');
                 });
             }
         }
+
+        // Fonction pour afficher des notifications toast
+        function showToast(title, message, type = 'success') {
+            const toastContainer = document.getElementById('toastContainer');
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas ${icon}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <div class="toast-close" onclick="dismissToast(this)">
+                    <i class="fas fa-times"></i>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                dismissToast(toast.querySelector('.toast-close'));
+            }, 5000);
+        }
+        
+        function dismissToast(closeButton) {
+            const toast = closeButton.closest('.toast');
+            toast.style.animation = 'slideOut 0.3s ease forwards';
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }
+        
+        // Vérifier s'il y a un message dans l'URL (pour les redirections)
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const message = urlParams.get('message');
+            const status = urlParams.get('status');
+            
+            if (message) {
+                showToast(status === 'error' ? 'Erreur' : 'Succès', message, status || 'success');
+                
+                // Nettoyer l'URL
+                const url = new URL(window.location);
+                url.searchParams.delete('message');
+                url.searchParams.delete('status');
+                window.history.replaceState({}, '', url);
+            }
+        });
     </script>
 </body>
 </html>

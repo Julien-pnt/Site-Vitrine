@@ -196,75 +196,615 @@ function getPaginationUrl($newPage) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des avis clients - Elixir du Temps</title>
-    <link rel="icon" href="../assets/img/layout/jb3.jpg" type="image/x-icon">
+    <link rel="icon" href="../assets/img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/reviews.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/header.css">
+    
     <!-- FontAwesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="js/header.js" defer></script>
+    <style>
+        /* Améliorations visuelles pour la gestion des avis */
+        .content-wrapper {
+            padding: 25px;
+            background: #f8f9fa;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .content-header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .content-header h1 {
+            font-size: 1.8rem;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .content-header h1 i {
+            color: #d4af37;
+        }
+        
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+        
+        .card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            background: linear-gradient(to right, #f8f9fa, #ffffff);
+            padding: 18px 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-header h2 {
+            font-size: 1.3rem;
+            margin: 0;
+            color: #495057;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-header h2 i {
+            color: #d4af37;
+            font-size: 1.1rem;
+        }
+        
+        .card-content {
+            padding: 20px;
+        }
+        
+        .review-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+            outline: none;
+        }
+        
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            margin-top: auto;
+        }
+        
+        .primary-button, .secondary-button, .danger-button {
+            padding: 10px 18px;
+            border-radius: 5px;
+            border: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .primary-button {
+            background: linear-gradient(45deg, #d4af37, #e6c863);
+            color: white;
+            box-shadow: 0 4px 8px rgba(212, 175, 55, 0.15);
+        }
+        
+        .primary-button:hover:not(:disabled) {
+            background: linear-gradient(45deg, #c4a030, #d6b853);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(212, 175, 55, 0.2);
+        }
+        
+        .secondary-button {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #ced4da;
+        }
+        
+        .secondary-button:hover:not(:disabled) {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .danger-button {
+            background: linear-gradient(45deg, #dc3545, #e05d6a);
+            color: white;
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.15);
+        }
+        
+        .danger-button:hover:not(:disabled) {
+            background: linear-gradient(45deg, #c82333, #d04356);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(220, 53, 69, 0.2);
+        }
+        
+        .primary-button:disabled, .secondary-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .icon-button {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #495057;
+        }
+        
+        .icon-button:hover {
+            background-color: rgba(0,0,0,0.05);
+            transform: translateY(-2px);
+        }
+        
+        .icon-button.success {
+            color: #28a745;
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+        
+        .icon-button.success:hover {
+            background-color: rgba(40, 167, 69, 0.15);
+        }
+        
+        .icon-button.danger {
+            color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+        
+        .icon-button.danger:hover {
+            background-color: rgba(220, 53, 69, 0.15);
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+        
+        .data-table th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            text-align: left;
+            padding: 15px;
+            border-bottom: 2px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+        }
+        
+        .data-table tbody tr {
+            transition: all 0.2s ease;
+        }
+        
+        .data-table tbody tr:hover {
+            background-color: rgba(212, 175, 55, 0.04);
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+            max-width: 100%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .d-inline {
+            display: inline-block;
+        }
+        
+        .star-rating {
+            color: #ffc107;
+            display: flex;
+        }
+        
+        .review-status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+        
+        .status-approved {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .status-rejected {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: fadeInDown 0.4s ease;
+        }
+        
+        .alert i {
+            font-size: 1.2rem;
+        }
+        
+        .alert-success {
+            background-color: rgba(40, 167, 69, 0.1);
+            border-left: 4px solid #28a745;
+            color: #28a745;
+        }
+        
+        .alert-error {
+            background-color: rgba(220, 53, 69, 0.1);
+            border-left: 4px solid #dc3545;
+            color: #dc3545;
+        }
+        
+        .alert-info {
+            background-color: rgba(13, 110, 253, 0.1);
+            border-left: 4px solid #0d6efd;
+            color: #0d6efd;
+        }
+        
+        .bulk-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #e9ecef;
+        }
+        
+        .custom-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        .custom-checkbox input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .checkbox-mark {
+            position: relative;
+            height: 20px;
+            width: 20px;
+            background-color: #f8f9fa;
+            border: 2px solid #ced4da;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        
+        .custom-checkbox:hover .checkbox-mark {
+            border-color: #d4af37;
+        }
+        
+        .custom-checkbox input:checked ~ .checkbox-mark {
+            background-color: #d4af37;
+            border-color: #d4af37;
+        }
+        
+        .checkbox-mark:after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        .custom-checkbox input:checked ~ .checkbox-mark:after {
+            display: block;
+        }
+        
+        .review-content {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 25px;
+        }
+        
+        .pagination a, .pagination span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 35px;
+            height: 35px;
+            padding: 0 8px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+        
+        .pagination a {
+            background: white;
+            border: 1px solid #dee2e6;
+            color: #495057;
+        }
+        
+        .pagination a:hover {
+            background: #f8f9fa;
+            border-color: #d4af37;
+            transform: translateY(-2px);
+        }
+        
+        .pagination span.current {
+            background: #d4af37;
+            color: white;
+            border: 1px solid #d4af37;
+        }
+        
+        .review-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            padding: 25px;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+        }
+        
+        .modal-content.fade-in {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #adb5bd;
+            transition: all 0.2s ease;
+        }
+        
+        .close-modal:hover {
+            color: #495057;
+            transform: rotate(90deg);
+        }
+        
+        .review-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .detail-comment {
+            grid-column: 1 / 3;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #d4af37;
+            white-space: pre-line;
+            margin-top: 10px;
+        }
+        
+        .detail-heading {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            margin-bottom: 15px;
+        }
+        
+        .static-stars {
+            color: #ffc107;
+            font-size: 1.2rem;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            border-top: 1px solid #e9ecef;
+            padding-top: 20px;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .review-filters {
+                flex-direction: column;
+            }
+            
+            .filter-actions {
+                margin-top: 15px;
+                width: 100%;
+            }
+            
+            .review-detail-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail-comment {
+                grid-column: 1;
+            }
+            
+            .modal-actions {
+                flex-wrap: wrap;
+            }
+            
+            .data-table th:nth-child(1),
+            .data-table td:nth-child(1),
+            .data-table th:nth-child(6),
+            .data-table td:nth-child(6) {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .bulk-actions {
+                flex-wrap: wrap;
+            }
+            
+            .header-actions {
+                margin-top: 10px;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="admin-container">
-        <aside class="sidebar">
-            <div class="sidebar-brand">
-                <a href="index.php">
-                    <img src="../assets/img/layout/logo.png" alt="Logo" class="sidebar-logo">
-                    <span>Elixir du Temps</span>
-                </a>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <div class="nav-section">
-                    <h3 class="nav-heading">Navigation</h3>
-                    <ul>
-                        <li><a href="index.php"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
-                        <li><a href="products.php"><i class="fas fa-box"></i> Produits</a></li>
-                        <li><a href="categories.php"><i class="fas fa-tags"></i> Catégories</a></li>
-                        <li><a href="collections.php"><i class="fas fa-layer-group"></i> Collections</a></li>
-                        <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Commandes</a></li>
-                        <li><a href="users/index.php"><i class="fas fa-users"></i> Utilisateurs</a></li>
-                        <li class="active"><a href="reviews.php"><i class="fas fa-star"></i> Avis Clients</a></li>
-                        <li><a href="promotions.php"><i class="fas fa-percent"></i> Promotions</a></li>
-                        <li><a href="pages.php"><i class="fas fa-file-alt"></i> Pages</a></li>
-                        <li><a href="export.php"><i class="fas fa-file-export"></i> Exportation</a></li>
-                        <li><a href="system-logs.php"><i class="fas fa-history"></i> Historique</a></li>
-                    </ul>
-                </div>
-            </nav>
-            <div class="sidebar-footer">
-                <a href="../pages/Accueil.html" target="_blank"><i class="fas fa-external-link-alt"></i> Voir le site</a>
-                <a href="../../php/api/auth/logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
-            </div>
-        </aside>
+        <!-- Intégration du template de sidebar -->
+        <?php 
+        $admin_root = '';
+        include 'templates/sidebar.php'; 
+        ?>
 
         <main class="main-content">
-            <header class="main-header">
-                <div class="header-search">
-                    <form action="search-results.php" method="GET">
-                        <input type="search" name="q" placeholder="Rechercher..." aria-label="Recherche globale">
-                        <button type="submit"><i class="fas fa-search"></i></button>
-                    </form>
-                </div>
-                <div class="user-dropdown" id="userProfileDropdown">
-                    <?php if ($userInfo && !empty($userInfo['photo'])): ?>
-                        <img src="../uploads/users/<?= htmlspecialchars($userInfo['photo']) ?>" alt="<?= htmlspecialchars($userInfo['prenom']) ?>" class="avatar">
-                    <?php else: ?>
-                        <?php $defaultImage = ($userInfo && $userInfo['role'] == 'admin') ? 'user-default.png' : 'user-default.png'; ?>
-                        <img src="../assets/img/avatars/<?= $defaultImage ?>" alt="Avatar" class="avatar">
-                    <?php endif; ?>
-                    <span class="username"><?= $userInfo ? htmlspecialchars($userInfo['prenom']) : 'Admin' ?></span>
-                    <i class="fas fa-chevron-down dropdown-arrow"></i>
-                    <div class="dropdown-menu" id="userDropdownMenu">
-                        <a href="profile.php"><i class="fas fa-user"></i> Profil</a>
-                        <a href="settings.php"><i class="fas fa-cog"></i> Paramètres</a>
-                        <a href="../../php/api/auth/logout.php" class="logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
-                    </div>
-                </div>
-            </header>
+            <!-- Intégration du template header -->
+            <?php 
+            // Définir la racine relative pour les liens dans le header
+            $admin_root = '';
+            
+            // Personnaliser la recherche pour la page avis
+            $search_placeholder = "Rechercher un avis...";
+            $search_action = "reviews.php";
+            $search_param = "keyword";
+            $search_value = isset($_GET['keyword']) ? $_GET['keyword'] : '';
+            
+            include 'templates/header.php'; 
+            ?>
 
             <div class="content-wrapper">
                 <div class="content-header">
-                    <h1>Gestion des avis clients</h1>
+                    <h1><i class="fas fa-star"></i> Gestion des avis clients</h1>
                     <div class="header-actions">
                         <a href="export.php?type=reviews" class="secondary-button"><i class="fas fa-file-export"></i> Exporter</a>
                     </div>
@@ -287,7 +827,7 @@ function getPaginationUrl($newPage) {
                 <!-- Filtres -->
                 <div class="card">
                     <div class="card-header">
-                        <h2>Filtres</h2>
+                        <h2><i class="fas fa-filter"></i> Filtres</h2>
                         <button type="button" id="toggleFilters" class="icon-button"><i class="fas fa-filter"></i></button>
                     </div>
                     <div class="card-content" id="filtersContent">
@@ -365,6 +905,10 @@ function getPaginationUrl($newPage) {
                 
                 <!-- Liste des avis -->
                 <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-comments"></i> Liste des avis</h2>
+                        <span class="badge"><?= number_format($totalReviews) ?> avis</span>
+                    </div>
                     <div class="card-content">
                         <div class="table-responsive">
                             <table class="data-table">
@@ -544,7 +1088,7 @@ function getPaginationUrl($newPage) {
     
     <!-- Modal de détail -->
     <div class="review-detail-modal" id="reviewDetailModal">
-        <div class="modal-content fade-in">
+        <div class="modal-content">
             <span class="close-modal" id="closeModal"><i class="fas fa-times"></i></span>
             <h2>Détail de l'avis</h2>
             
@@ -698,7 +1242,7 @@ function getPaginationUrl($newPage) {
                 });
                 
                 // Afficher le modal
-                modal.style.display = 'block';
+                modal.style.display = 'flex';
                 
                 // Ajouter la classe pour l'animation
                 setTimeout(() => {
@@ -709,13 +1253,19 @@ function getPaginationUrl($newPage) {
         
         // Fermer le modal
         closeModal.addEventListener('click', function() {
-            modal.style.display = 'none';
+            document.querySelector('#reviewDetailModal .modal-content').classList.remove('fade-in');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
         });
         
         // Fermer le modal en cliquant en dehors
         window.addEventListener('click', function(event) {
             if (event.target === modal) {
-                modal.style.display = 'none';
+                document.querySelector('#reviewDetailModal .modal-content').classList.remove('fade-in');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
             }
         });
         
@@ -787,60 +1337,18 @@ function getPaginationUrl($newPage) {
             }
         });
         
-        // Menu déroulant utilisateur
-        const userDropdown = document.getElementById('userProfileDropdown');
-        const dropdownMenu = document.getElementById('userDropdownMenu');
-        const dropdownArrow = document.querySelector('.dropdown-arrow');
-        
-        if (userDropdown && dropdownMenu) {
-            // Fermer le menu au chargement
-            dropdownMenu.style.display = 'none';
-            dropdownMenu.style.opacity = '0';
-            dropdownMenu.style.transform = 'translateY(-10px)';
+        // Animation d'entrée pour les lignes du tableau
+        const tableRows = document.querySelectorAll('.data-table tbody tr');
+        tableRows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(10px)';
+            row.style.transition = `all 0.3s ease ${index * 0.05}s`;
             
-            // Toggle le menu au clic
-            userDropdown.addEventListener('click', function(e) {
-                e.stopPropagation();
-                
-                const isOpen = dropdownMenu.style.display === 'block';
-                
-                if (isOpen) {
-                    dropdownArrow.style.transform = 'rotate(0deg)';
-                    dropdownMenu.style.opacity = '0';
-                    dropdownMenu.style.transform = 'translateY(-10px)';
-                    
-                    setTimeout(() => {
-                        dropdownMenu.style.display = 'none';
-                    }, 200);
-                } else {
-                    dropdownMenu.style.display = 'block';
-                    dropdownArrow.style.transform = 'rotate(180deg)';
-                    
-                    void dropdownMenu.offsetWidth;
-                    
-                    dropdownMenu.style.opacity = '1';
-                    dropdownMenu.style.transform = 'translateY(0)';
-                }
-            });
-            
-            // Fermer le menu quand on clique ailleurs
-            document.addEventListener('click', function(e) {
-                if (dropdownMenu.style.display === 'block') {
-                    dropdownArrow.style.transform = 'rotate(0deg)';
-                    dropdownMenu.style.opacity = '0';
-                    dropdownMenu.style.transform = 'translateY(-10px)';
-                    
-                    setTimeout(() => {
-                        dropdownMenu.style.display = 'none';
-                    }, 200);
-                }
-            });
-            
-            // Empêcher la fermeture quand on clique sur les éléments du menu
-            dropdownMenu.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-        }
+            setTimeout(() => {
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            }, 100);
+        });
     });
     </script>
 </body>

@@ -190,21 +190,32 @@ try {
     <link rel="icon" href="../assets/img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/tables.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Flatpickr pour les sélecteurs de date -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
+    <script src="js/header.js" defer></script>
     
     <style>
-        /* Styles modernisés pour la gestion des promotions */
+        /* Styles modernisés pour la gestion des promotions - harmonisés avec sidebar.css */
         :root {
-            --primary-color: #d4af37;
+            /* Variables principales de sidebar.css - COULEUR EXACTE */
+            --dark-bg: #212529; /* Couleur exacte de sidebar.css */
+            --light-text: #f8f9fa;
+            --gray-text: #adb5bd;
+            --gold-color: #d4af37;
+            
+            /* Renommage des variables pour cohérence */
+            --primary-color: var(--gold-color);
             --primary-hover: #c4a030;
-            --dark-bg: #1a1a1a;
-            --dark-card: #222222;
-            --text-light: #ffffff;
-            --text-muted: #aaaaaa;
+            --dark-card: #2c3034; /* Légèrement plus clair que le fond pour le contraste */
+            --text-light: var(--light-text);
+            --text-muted: var(--gray-text);
+            
+            /* Autres variables inchangées */
             --success: #28a745;
             --danger: #dc3545;
             --warning: #ffc107;
@@ -223,6 +234,23 @@ try {
         @keyframes slideIn {
             from { transform: translateX(-20px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .dashboard {
+            padding: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .dashboard h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--text-light);
+        }
+        
+        .dashboard p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
         }
         
         /* Conteneur du formulaire avec effet de profondeur */
@@ -732,58 +760,88 @@ try {
         .flatpickr-current-month input.cur-year {
             color: var(--text-light) !important;
         }
+        
+        /* Ripple effect for buttons */
+        .ripple {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+            width: 100px;
+            height: 100px;
+            transform: translate(-50%, -50%) scale(0);
+            animation: rippleEffect 0.6s linear;
+        }
+        
+        @keyframes rippleEffect {
+            to {
+                transform: translate(-50%, -50%) scale(4);
+                opacity: 0;
+            }
+        }
+        
+        /* Responsive improvements */
+        @media (max-width: 992px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .actions button {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                padding: 15px;
+            }
+            
+            .promotion-form {
+                padding: 20px;
+            }
+            
+            .data-table th, .data-table td {
+                padding: 10px;
+            }
+            
+            /* Simplify tables on mobile */
+            .data-table th:nth-child(4),
+            .data-table td:nth-child(4),
+            .data-table th:nth-child(5),
+            .data-table td:nth-child(5) {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="admin-container">
-        <!-- Sidebar (même code que dans index.php) -->
-        <aside class="sidebar">
-    <div class="sidebar-brand">
-        <a href="index.php">
-            <!-- Utiliser la classe sidebar-logo au lieu de logo -->
-            <img src="../assets/img/layout/logo.png" alt="Elixir du Temps" class="sidebar-logo">
-            <span>Administration</span>
-        </a>
-    </div>
-    
-    <nav class="sidebar-nav">
-        <div class="nav-section">
-            <h3 class="nav-heading">Navigation</h3>
-            <ul>
-                <li><a href="index.php"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
-                <li><a href="products.php"><i class="fas fa-watch"></i> Produits</a></li>
-                <li><a href="categories.php"><i class="fas fa-tags"></i> Catégories</a></li>
-                <li><a href="collections.php"><i class="fas fa-layer-group"></i> Collections</a></li>
-                <li><a href="orders.php"><i class="fas fa-shopping-cart"></i> Commandes</a></li>
-                <li><a href="users/index.php"><i class="fas fa-users"></i> Utilisateurs</a></li>
-                <li class="active"><a href="promotions.php"><i class="fas fa-percent"></i> Promotions</a></li>
-                <li><a href="reviews.php"><i class="fas fa-star"></i> Avis Clients</a></li>
-                <li><a href="pages.php"><i class="fas fa-file-alt"></i> Pages</a></li>
-                <li><a href="settings.php"><i class="fas fa-cog"></i> Paramètres</a></li>
-            </ul>
-        </div>
-    </nav>
-    
-    <div class="sidebar-footer">
-        <a href="../pages/Accueil.html" target="_blank"><i class="fas fa-external-link-alt"></i> Voir le site</a>
-        <a href="../../php/api/auth/logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
-    </div>
-</aside>
+        <!-- Intégration du template de sidebar -->
+        <?php 
+        $admin_root = '';
+        include 'templates/sidebar.php'; 
+        ?>
 
         <!-- Contenu principal -->
         <main class="main-content">
-            <header class="main-header">
-                <div class="header-search">
-                    <input type="search" placeholder="Rechercher une promotion...">
-                    <button type="submit"><i class="fas fa-search"></i></button>
-                </div>
-                <div class="header-user">
-                    <span>Gestion des promotions</span>
-                    <div class="user-avatar">
-                        <i class="fas fa-user-circle"></i>
-                    </div>
-                </div>
-            </header>
+            <!-- Intégration du template header -->
+            <?php 
+            // Définir la racine relative pour les liens dans le header
+            $admin_root = '';
+            
+            // Personnaliser la recherche pour la page promotions
+            $search_placeholder = "Rechercher une promotion...";
+            $search_action = "promotions.php";
+            $search_param = "search";
+            $search_value = isset($_GET['search']) ? $_GET['search'] : '';
+            
+            include 'templates/header.php'; 
+            ?>
 
             <div class="dashboard">
                 <h1>Gestion des Promotions</h1>
@@ -1009,7 +1067,7 @@ try {
     </div>
 
     <!-- Modal de confirmation de suppression -->
-    <div id="deleteModal" class="modal" style="display: none;">
+    <div id="deleteModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Confirmer la suppression</h2>
@@ -1062,7 +1120,10 @@ try {
             
             // Fermer le modal
             function closeDeleteModal() {
-                deleteModal.style.display = 'none';
+                deleteModal.classList.remove('active');
+                setTimeout(() => {
+                    deleteModal.style.display = 'none';
+                }, 300);
             }
             
             cancelDelete.addEventListener('click', closeDeleteModal);
@@ -1078,42 +1139,118 @@ try {
             confirmDeleteBtn.addEventListener('click', function() {
                 deleteForm.submit();
             });
+            
+            // Animation des lignes du tableau lors du chargement
+            const tableRows = document.querySelectorAll('.data-table tbody tr');
+            tableRows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.animation = `fadeIn 0.3s ease forwards ${index * 0.1}s`;
+                setTimeout(() => {
+                    row.style.opacity = '1';
+                }, index * 100 + 300);
+            });
+            
+            // Dropdown menu toggle
+            const userDropdown = document.getElementById('userProfileDropdown');
+            if (userDropdown) {
+                const dropdownMenu = document.getElementById('userDropdownMenu');
+                
+                userDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('active');
+                });
+                
+                document.addEventListener('click', function() {
+                    dropdownMenu.classList.remove('active');
+                });
+                
+                dropdownMenu.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+            
+            // Animation de "ripple" pour les boutons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const x = e.clientX - e.target.getBoundingClientRect().left;
+                    const y = e.clientY - e.target.getBoundingClientRect().top;
+                    
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple');
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
         });
         
         // Fonctions pour l'édition et la suppression
         function editPromotion(button) {
-    const promoData = JSON.parse(button.closest('tr').dataset.promo);
-    
-    // Remplir le formulaire avec les données existantes
-    document.getElementById('promotionId').value = promoData.id;
-    document.getElementById('code').value = promoData.code;
-    document.getElementById('description').value = promoData.description || '';
-    document.getElementById('type').value = promoData.type;
-    document.getElementById('value').value = promoData.value; // Au lieu de valeur
-    document.getElementById('min_purchase').value = promoData.min_purchase || '';
-    document.getElementById('usage_limit').value = promoData.usage_limit || ''; // Au lieu de utilisation_max
-    document.getElementById('active').checked = promoData.active == 1;
-    
-    // Dates
-    if (promoData.start_date) { // Au lieu de date_debut
-        document.querySelector('#start_date')._flatpickr.setDate(promoData.start_date);
-    } else {
-        document.querySelector('#start_date')._flatpickr.clear();
-    }
-    
-    if (promoData.end_date) { // Au lieu de date_fin
-        document.querySelector('#end_date')._flatpickr.setDate(promoData.end_date);
-    } else {
-        document.querySelector('#end_date')._flatpickr.clear();
-    }
-    
-    // Le reste du code reste inchangé
-}
+            const promoData = JSON.parse(button.closest('tr').dataset.promo);
+            
+            // Remplir le formulaire avec les données existantes
+            document.getElementById('promotionId').value = promoData.id;
+            document.getElementById('code').value = promoData.code;
+            document.getElementById('description').value = promoData.description || '';
+            document.getElementById('type').value = promoData.type;
+            document.getElementById('value').value = promoData.value;
+            document.getElementById('min_purchase').value = promoData.min_purchase || '';
+            document.getElementById('usage_limit').value = promoData.usage_limit || '';
+            document.getElementById('active').checked = promoData.active == 1;
+            
+            // Dates
+            if (promoData.start_date) {
+                document.querySelector('#start_date')._flatpickr.setDate(promoData.start_date);
+            } else {
+                document.querySelector('#start_date')._flatpickr.clear();
+            }
+            
+            if (promoData.end_date) {
+                document.querySelector('#end_date')._flatpickr.setDate(promoData.end_date);
+            } else {
+                document.querySelector('#end_date')._flatpickr.clear();
+            }
+            
+            // Produits et collections (nécessitant Select2)
+            if (promoData.products) {
+                const productIds = promoData.products.split(',').map(id => id.trim());
+                // Si vous utilisez Select2, vous devez l'initialiser et le configurer ici
+            }
+            
+            if (promoData.collections) {
+                const collectionIds = promoData.collections.split(',').map(id => id.trim());
+                // Même chose pour les collections
+            }
+            
+            // Mettre à jour le formulaire en mode édition
+            document.getElementById('formTitle').textContent = 'Modifier la promotion';
+            document.getElementById('formAction').value = 'edit_promotion';
+            document.getElementById('submitText').textContent = 'Mettre à jour';
+            
+            // Afficher le formulaire et masquer le bouton d'ajout
+            document.getElementById('promotionForm').style.display = 'block';
+            document.getElementById('toggleForm').style.display = 'none';
+            
+            // Scroll jusqu'au formulaire
+            document.getElementById('promotionForm').scrollIntoView({ behavior: 'smooth' });
+        }
         
         function confirmDelete(id, code) {
+            const deleteModal = document.getElementById('deleteModal');
+            
             document.getElementById('deleteId').value = id;
             document.getElementById('deletePromoCode').textContent = code;
-            document.getElementById('deleteModal').style.display = 'block';
+            
+            deleteModal.style.display = 'flex';
+            setTimeout(() => {
+                deleteModal.classList.add('active');
+            }, 10);
         }
         
         function resetForm() {
@@ -1123,67 +1260,11 @@ try {
             // Réinitialiser flatpickr
             document.querySelector('#start_date')._flatpickr.clear();
             document.querySelector('#end_date')._flatpickr.clear();
+            
+            // Réinitialiser les sélecteurs multiples (si Select2 est utilisé)
+            // $('#products').val(null).trigger('change');
+            // $('#collections').val(null).trigger('change');
         }
     </script>
-    <script>
-    // Ajouter aux scripts existants
-    document.addEventListener('DOMContentLoaded', function() {
-        // Animation pour les boutons
-        const buttons = document.querySelectorAll('.btn');
-        buttons.forEach(button => {
-            button.addEventListener('mousedown', function(e) {
-                const x = e.clientX - e.target.getBoundingClientRect().left;
-                const y = e.clientY - e.target.getBoundingClientRect().top;
-                
-                const ripple = document.createElement('span');
-                ripple.classList.add('ripple');
-                ripple.style.left = `${x}px`;
-                ripple.style.top = `${y}px`;
-                
-                this.appendChild(ripple);
-                
-                setTimeout(() => {
-                    ripple.remove();
-                }, 600);
-            });
-        });
-        
-        // Améliorer l'affichage du modal
-        const deleteModal = document.getElementById('deleteModal');
-        const showModal = function() {
-            deleteModal.classList.add('active');
-        };
-        
-        const hideModal = function() {
-            deleteModal.classList.remove('active');
-        };
-        
-        // Remplacer les fonctions existantes
-        window.confirmDelete = function(id, code) {
-            document.getElementById('deleteId').value = id;
-            document.getElementById('deletePromoCode').textContent = code;
-            showModal();
-        }
-        
-        document.getElementById('cancelDelete').addEventListener('click', hideModal);
-        document.querySelector('.close').addEventListener('click', hideModal);
-        
-        window.onclick = function(event) {
-            if (event.target == deleteModal) {
-                hideModal();
-            }
-        };
-        
-        // Animation des lignes du tableau lors du chargement
-        const tableRows = document.querySelectorAll('.data-table tbody tr');
-        tableRows.forEach((row, index) => {
-            row.style.opacity = '0';
-            row.style.animation = `fadeIn 0.3s ease forwards ${index * 0.1}s`;
-            setTimeout(() => {
-                row.style.opacity = '1';
-            }, index * 100 + 300);
-        });
-    });
-</script>
 </body>
 </html>

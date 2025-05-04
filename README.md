@@ -92,73 +92,212 @@
 ## Structure du projet 📁
 
 ```plaintext
-└── julien-pnt-site-vitrine/
-   ├── README.md                        # Documentation du projet
-   ├── config/                          # Configuration et scripts SQL
-   │   ├── admin-login.php              # Page de connexion administrateur initiale
-   │   ├── config.php                   # Configuration principale
-   │   ├── create-admin.php             # Script pour créer un administrateur
-   │   ├── db.sql                       # Script de création de la base de données
-   │   └── schema-relationnel.md        # Schéma relationnel de la base de données
-   ├── php/                             # Code PHP principal
-   │   ├── config/                      # Fichiers de configuration PHP
-   │   │   └── database.php             # Configuration de la base de données
-   │   ├── models/                      # Modèles de données
-   │   │   └── User.php                 # Modèle utilisateur
-   │   └── utils/                       # Utilitaires
-   │       ├── auth.php                 # Fonctions d'authentification
-   │       ├── Logger.php               # Système de logs
-   │       ├── UserManager.php          # Gestion des utilisateurs
-   │       └── UserValidator.php        # Validation des données utilisateur
-   ├── public/                          # Fichiers accessibles publiquement
-   │   ├── .htaccess                    # Configuration Apache
-   │   ├── admin/                       # Administration
-   │   │   ├── activity-logs.php        # Journal d'activité
-   │   │   ├── dashboard-widgets.php    # Widgets du tableau de bord
-   │   │   ├── export.php               # Export de données
-   │   │   ├── index.php                # Accueil admin
-   │   │   ├── login.php                # Connexion admin
-   │   │   ├── products.php             # Gestion des produits
-   │   │   ├── promotions.php           # Gestion des promotions
-   │   │   ├── system-logs.php          # Logs système
-   │   │   ├── ajax/                    # Requêtes AJAX
-   │   │   ├── api/                     # API d'administration
-   │   │   ├── css/                     # Styles d'administration
-   │   │   ├── includes/                # Inclusions partielles
-   │   │   ├── js/                      # Scripts d'administration
-   │   │   └── users/                   # Gestion utilisateurs
-   │   ├── assets/                      # Ressources statiques
-   │   │   ├── css/                     # Styles CSS
-   │   │   │   ├── auth.css             # Styles d'authentification
-   │   │   │   ├── collections-list.css # Styles des listes de collections
-   │   │   │   ├── collections.css      # Styles des collections
-   │   │   │   ├── main.css             # Styles principaux
-   │   │   │   ├── base/                # Styles de base
-   │   │   │   ├── components/          # Composants CSS
-   │   │   │   ├── layout/              # Dispositions CSS
-   │   │   │   └── utilities/           # Utilitaires CSS
-   │   │   ├── Fiches-Postes/           # Fiches de poste
-   │   │   ├── img/                     # Images
-   │   │   │   ├── avatars/             # Photos de profil
-   │   │   │   ├── layout/              # Images de mise en page
-   │   │   │   └── products/            # Images de produits
-   │   │   ├── js/                      # Scripts JavaScript
-   │   │   └── video/                   # Vidéos
-   │   ├── pages/                       # Pages HTML
-   │   │   ├── Accueil.html             # Page d'accueil
-   │   │   ├── APropos.html             # Page À propos
-   │   │   ├── Organigramme.html        # Organigramme
-   │   │   ├── auth/                    # Pages d'authentification
-   │   │   ├── collections/             # Pages des collections
-   │   │   ├── legal/                   # Pages légales
-   │   │   └── products/                # Pages des produits
-   │   ├── php/                         # Scripts PHP publics
-   │   │   └── api/                     # API publique
-   │   └── uploads/                     # Fichiers téléchargés
-   │       └── users/                   # Photos utilisateurs
-   └── src/                             # Code source
-       └── Services/                    # Services métier
-           └── confirmation-commande.php # Service de confirmation
+└── elixir-du-temps/                   # Racine du projet
+    ├── README.md                      # Documentation principale
+    ├── config/                        # Configuration globale
+    │   ├── admin-login.php            # Interface de connexion admin initiale
+    │   ├── config.php                 # Configuration générale
+    │   ├── create-admin.php           # Script de création du compte administrateur
+    │   ├── db.sql                     # Structure de la base de données
+    │   ├── db_export.sql              # Exportation complète avec données
+    │   └── schema-relationnel.md      # Documentation du modèle de données
+    ├── php/                           # Logique métier principale
+    │   ├── api/                       # API backend
+    │   │   ├── auth/                  # Authentification API
+    │   │   │   └── check-status.php   # Vérification statut connexion
+    │   │   ├── reviews/               # API pour avis clients
+    │   │   │   └── add-review.php     # Ajout d'avis
+    │   │   └── wishlist/              # API liste de souhaits
+    │   │       ├── batch-check.php    # Vérification par lots
+    │   │       ├── count.php          # Comptage produits favoris
+    │   │       └── manage.php         # Gestion favoris
+    │   ├── config/                    # Configuration PHP
+    │   │   └── database.php           # Configuration base de données
+    │   ├── functions/                 # Fonctions utilitaires
+    │   │   └── security.php           # Sécurité et validation
+    │   ├── models/                    # Modèles de données
+    │   │   ├── Collection.php         # Modèle collections
+    │   │   ├── Order.php              # Modèle commandes
+    │   │   └── User.php               # Modèle utilisateurs
+    │   └── utils/                     # Utilitaires avancés
+    │       ├── auth.php               # Authentification
+    │       ├── Logger.php             # Système de journalisation
+    │       ├── UserManager.php        # Gestion des utilisateurs
+    │       └── UserValidator.php      # Validation données utilisateur
+    ├── public/                        # Fichiers accessibles au public
+    │   ├── admin/                     # Interface d'administration
+    │   │   ├── activity-logs.php      # Journaux d'activité
+    │   │   ├── categories.php         # Gestion des catégories
+    │   │   ├── clear-cache.php        # Nettoyage du cache
+    │   │   ├── collections.php        # Gestion des collections
+    │   │   ├── dashboard-widgets.php  # Widgets tableau de bord
+    │   │   ├── export.php             # Export de données
+    │   │   ├── index.php              # Tableau de bord principal
+    │   │   ├── orders.php             # Gestion des commandes
+    │   │   ├── products.php           # Gestion des produits
+    │   │   ├── promotions.php         # Gestion des promotions
+    │   │   ├── reviews.php            # Gestion des avis clients
+    │   │   ├── system-logs.php        # Logs système
+    │   │   ├── ajax/                  # Requêtes AJAX
+    │   │   │   └── get-log.php        # Récupération logs
+    │   │   ├── api/                   # API admin
+    │   │   │   ├── clear-cache.php    # Nettoyage du cache
+    │   │   │   ├── get-order-details.php  # Détails commande
+    │   │   │   └── get-sales-chart-data.php  # Données graphiques
+    │   │   ├── css/                   # Styles admin
+    │   │   │   ├── admin.css          # Style principal
+    │   │   │   ├── header.css         # Style entête
+    │   │   │   ├── orders.css         # Style commandes
+    │   │   │   ├── reviews.css        # Style avis
+    │   │   │   ├── sidebar.css        # Style menu latéral
+    │   │   │   ├── tables.css         # Style tableaux
+    │   │   │   └── users.css          # Style utilisateurs
+    │   │   ├── includes/              # Inclusions partielles
+    │   │   │   ├── header.php         # Entête
+    │   │   │   ├── sidebar.php        # Menu latéral
+    │   │   │   └── user-form.php      # Formulaire utilisateur
+    │   │   ├── js/                    # Scripts admin
+    │   │   │   ├── admin.js           # Script principal
+    │   │   │   ├── header.js          # Script entête
+    │   │   │   ├── orders.js          # Script commandes
+    │   │   │   └── users.js           # Script utilisateurs
+    │   │   ├── templates/             # Modèles de pages 
+    │   │   │   ├── header.php         # Modèle entête
+    │   │   │   └── sidebar.php        # Modèle menu latéral
+    │   │   └── users/                 # Gestion utilisateurs
+    │   │       ├── create.php         # Création
+    │   │       ├── edit.php           # Modification
+    │   │       ├── index.php          # Liste
+    │   │       └── view.php           # Détails
+    │   ├── assets/                    # Ressources statiques
+    │   │   ├── css/                   # Styles frontend
+    │   │   │   ├── auth.css           # Authentification
+    │   │   │   ├── cart.css           # Panier
+    │   │   │   ├── collections-list.css  # Listes collections
+    │   │   │   ├── collections.css    # Collections
+    │   │   │   ├── filters.css        # Filtres produits
+    │   │   │   ├── global-header.css  # Entête global
+    │   │   │   ├── header-dark.css    # Version sombre entête
+    │   │   │   ├── header.css         # Entête standard
+    │   │   │   ├── home.css           # Page d'accueil
+    │   │   │   ├── main.css           # Styles principaux
+    │   │   │   ├── Montres.css        # Page des montres
+    │   │   │   ├── product-detail.css # Détails produit
+    │   │   │   ├── products.css       # Produits
+    │   │   │   ├── quick-view.css     # Aperçu rapide
+    │   │   │   ├── stockIndicator.css # Indicateur stock
+    │   │   │   ├── video-background.css  # Arrière-plan vidéo
+    │   │   │   ├── whishlist.css      # Favoris 
+    │   │   │   ├── wishlist-button.css # Bouton favoris
+    │   │   │   ├── base/              # Styles fondamentaux
+    │   │   │   │   ├── reset.css      # Réinitialisation
+    │   │   │   │   ├── typography.css # Typographie
+    │   │   │   │   └── variables.css  # Variables CSS
+    │   │   │   ├── components/        # Composants UI
+    │   │   │   │   ├── buttons.css    # Boutons
+    │   │   │   │   ├── cart.css       # Panier
+    │   │   │   │   ├── collections.css # Collections
+    │   │   │   │   ├── features.css   # Caractéristiques
+    │   │   │   │   ├── footer.css     # Pied de page
+    │   │   │   │   ├── header.css     # Entête
+    │   │   │   │   ├── hero.css       # Bannière héro
+    │   │   │   │   ├── newsletter.css # Newsletter
+    │   │   │   │   ├── notif.css      # Notifications
+    │   │   │   │   ├── products.css   # Produits
+    │   │   │   │   ├── timeline.css   # Chronologie
+    │   │   │   │   ├── toast.css      # Messages toast
+    │   │   │   │   └── video-background.css # Vidéo background
+    │   │   │   ├── layout/            # Mise en page
+    │   │   │   │   └── grid.css       # Grille
+    │   │   │   └── utilities/         # Utilitaires CSS
+    │   │   │       └── responsive.css # Responsive design
+    │   │   ├── Fiches-Postes/         # Fiches de postes
+    │   │   ├── img/                   # Images
+    │   │   │   ├── avatars/           # Photos profil
+    │   │   │   ├── layout/            # Images d'interface
+    │   │   │   └── products/          # Photos produits
+    │   │   │       ├── collection-prestige.JPG  # Collection Prestige
+    │   │   │       ├── collection_classique.JPG # Collection Classique
+    │   │   │       └── Atrier/        # Images à trier
+    │   │   ├── js/                    # Scripts frontend
+    │   │   │   ├── cart.js            # Panier
+    │   │   │   ├── collection-sorting.js  # Tri collections
+    │   │   │   ├── gestion-cart.js    # Gestion panier
+    │   │   │   ├── header-functions.js # Fonctions entête
+    │   │   │   ├── main.js            # Script principal
+    │   │   │   ├── Montres.js         # Page montres
+    │   │   │   ├── product-detail.js  # Détail produit
+    │   │   │   ├── product-filters.js # Filtres produits
+    │   │   │   ├── quick-view.js      # Aperçu rapide
+    │   │   │   ├── video-background.js # Arrière-plan vidéo
+    │   │   │   └── wishlist-manager.js # Gestion favoris
+    │   │   ├── templates/             # Modèles HTML
+    │   │   │   ├── cart-dropdown.html # Menu déroulant panier
+    │   │   │   └── product-modal.html # Modal produit
+    │   │   └── video/                 # Fichiers vidéo
+    │   ├── Includes/                  # Inclusions PHP
+    │   │   ├── footer.php             # Pied de page
+    │   │   ├── header.php             # Entête
+    │   │   └── product-helpers.php    # Helpers produits
+    │   ├── pages/                     # Pages du site
+    │   │   ├── Accueil.php            # Accueil
+    │   │   ├── APropos.php            # À propos
+    │   │   ├── Organigramme.php       # Organigramme
+    │   │   ├── auth/                  # Authentification
+    │   │   │   ├── login.php          # Connexion
+    │   │   │   ├── logout.php         # Déconnexion
+    │   │   │   └── register.php       # Inscription
+    │   │   ├── collections/           # Pages collections
+    │   │   │   ├── Collection-Classic.php      # Collection Classique
+    │   │   │   ├── Collection-Limited-Edition.php  # Édition Limitée
+    │   │   │   ├── Collection-Prestige.php     # Collection Prestige
+    │   │   │   ├── Collection-Sport.php        # Collection Sport
+    │   │   │   └── Collections.php    # Toutes les collections
+    │   │   ├── legal/                 # Pages légales
+    │   │   │   └── PrivacyPolicy.php  # Politique confidentialité
+    │   │   └── products/              # Pages produits
+    │   │       ├── DescriptionProduits.php  # Descriptions
+    │   │       ├── Montres.php        # Catalogue montres
+    │   │       ├── panier.php         # Panier d'achat
+    │   │       └── product-detail.php # Détail produit
+    │   ├── php/                       # PHP frontend
+    │   │   ├── api/                   # API frontend
+    │   │   │   ├── auth/              # Auth API frontend
+    │   │   │   │   ├── AuthService.php # Service auth
+    │   │   │   │   ├── check.php      # Vérification statut
+    │   │   │   │   ├── login.php      # Connexion
+    │   │   │   │   ├── logout.php     # Déconnexion
+    │   │   │   │   ├── password-reset.php  # Réinitialisation
+    │   │   │   │   └── userCreation.php  # Création utilisateur
+    │   │   │   └── products/          # API produits
+    │   │   │       ├── check-stock.php  # Vérification stock
+    │   │   │       ├── comparer.php   # Comparaison
+    │   │   │       └── test-db.php    # Test connexion
+    │   │   └── models/                # Modèles frontend
+    │   │       └── Category.php       # Catégorie
+    │   ├── uploads/                   # Fichiers uploadés
+    │   │   └── users/                 # Photos utilisateurs
+    │   └── user/                      # Espace client
+    │       ├── addresses.php          # Adresses
+    │       ├── index.php              # Tableau de bord
+    │       ├── orders.php             # Commandes
+    │       ├── profile.php            # Profil
+    │       ├── wishlist.php           # Liste de souhaits
+    │       ├── assets/                # Assets espace client
+    │       │   ├── css/               # Styles client
+    │       │   │   ├── dashboard-vars.css  # Variables
+    │       │   │   ├── dashboard.css  # Dashboard
+    │       │   │   └── sidebar.css    # Menu latéral
+    │       │   └── js/                # Scripts client
+    │       │       ├── dashboard.js   # Dashboard
+    │       │       └── wishlist.js    # Liste souhaits
+    │       └── includes/              # Inclusions client
+    │           ├── footer.php         # Pied de page
+    │           ├── header.php         # Entête
+    │           └── sidebar.php        # Menu latéral
+    └── src/                           # Sources back-end
+        └── Services/                  # Services avancés
+            └── confirmation-commande.php  # Confirmation commande
 ```
 
 ## Instructions d'installation et d'utilisation 🛠️

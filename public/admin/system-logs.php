@@ -128,12 +128,39 @@ try {
     $stmt->execute($params);
     $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Récupérer les valeurs distinctes pour les filtres
-    $levels = $pdo->query("SELECT DISTINCT level FROM system_logs ORDER BY level")->fetchAll(PDO::FETCH_COLUMN);
-    $categories = $pdo->query("SELECT DISTINCT category FROM system_logs ORDER BY category")->fetchAll(PDO::FETCH_COLUMN);
-    $actions = $pdo->query("SELECT DISTINCT action FROM system_logs ORDER BY action")->fetchAll(PDO::FETCH_COLUMN);
-    $entityTypes = $pdo->query("SELECT DISTINCT entity_type FROM system_logs WHERE entity_type IS NOT NULL ORDER BY entity_type")->fetchAll(PDO::FETCH_COLUMN);
-    $userTypes = $pdo->query("SELECT DISTINCT user_type FROM system_logs ORDER BY user_type")->fetchAll(PDO::FETCH_COLUMN);
+    // Mise en cache des données statiques
+    $cacheFile = '../cache/log_filters_' . md5(serialize($params)) . '.cache';
+    $cacheExpiry = 3600; // 1 heure
+
+    if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < $cacheExpiry)) {
+        $cachedData = unserialize(file_get_contents($cacheFile));
+        $levels = $cachedData['levels'];
+        $categories = $cachedData['categories'];
+        $actions = $cachedData['actions'];
+        $entityTypes = $cachedData['entityTypes'];
+        $userTypes = $cachedData['userTypes'];
+    } else {
+        // Utiliser des requêtes préparées avec LIMIT pour optimiser les performances
+        $levels = $pdo->query("SELECT DISTINCT level FROM system_logs ORDER BY level LIMIT 20")->fetchAll(PDO::FETCH_COLUMN);
+        $categories = $pdo->query("SELECT DISTINCT category FROM system_logs ORDER BY category LIMIT 50")->fetchAll(PDO::FETCH_COLUMN);
+        $actions = $pdo->query("SELECT DISTINCT action FROM system_logs ORDER BY action LIMIT 100")->fetchAll(PDO::FETCH_COLUMN);
+        $entityTypes = $pdo->query("SELECT DISTINCT entity_type FROM system_logs WHERE entity_type IS NOT NULL ORDER BY entity_type LIMIT 30")->fetchAll(PDO::FETCH_COLUMN);
+        $userTypes = $pdo->query("SELECT DISTINCT user_type FROM system_logs ORDER BY user_type LIMIT 10")->fetchAll(PDO::FETCH_COLUMN);
+        
+        // Créer le répertoire de cache si nécessaire
+        if (!is_dir('../cache')) {
+            mkdir('../cache', 0755, true);
+        }
+        
+        // Sauvegarder dans le cache
+        file_put_contents($cacheFile, serialize([
+            'levels' => $levels,
+            'categories' => $categories,
+            'actions' => $actions,
+            'entityTypes' => $entityTypes,
+            'userTypes' => $userTypes
+        ]));
+    }
     
 } catch (PDOException $e) {
     $error = "Erreur lors de la récupération des logs: " . $e->getMessage();
@@ -153,7 +180,470 @@ try {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="js/header.js" defer></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Vérifier la préférence utilisateur enregistrée
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    
+    // Ajouter le bouton de basculement au menu
+    const headerActions = document.querySelector('.header-actions');
+    if (headerActions) {
+        const themeToggle = document.createElement('button');
+        themeToggle.classList.add('btn-icon', 'theme-toggle');
+        themeToggle.innerHTML = currentTheme === 'dark' 
+            ? '<i class="fas fa-sun" title="Passer en mode clair"></i>' 
+            : '<i class="fas fa-moon" title="Passer en mode sombre"></i>';
+        
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            this.innerHTML = newTheme === 'dark' 
+                ? '<i class="fas fa-sun" title="Passer en mode clair"></i>' 
+                : '<i class="fas fa-moon" title="Passer en mode sombre"></i>';
+        });
+        
+        headerActions.prepend(themeToggle);
+    }
+});
+
+// Ajouter à la fin du script JavaScript existant
+document.addEventListener('keydown', function(event) {
+    // Alt+F pour focus sur la recherche
+    if (event.altKey && event.key === 'f') {
+        event.preventDefault();
+        document.getElementById('search').focus();
+    }
+    
+    // Alt+N pour page suivante
+    if (event.altKey && event.key === 'n') {
+        const nextPageLink = document.querySelector('.pagination a:last-child');
+        if (nextPageLink && !nextPageLink.classList.contains('active')) {
+            nextPageLink.click();
+        }
+    }
+    
+    // Alt+P pour page précédente
+    if (event.altKey && event.key === 'p') {
+        const prevPageLink = document.querySelector('.pagination a:first-child');
+        if (prevPageLink && !prevPageLink.classList.contains('active')) {
+            prevPageLink.click();
+        }
+    }
+    
+    // Alt+E pour exporter
+    if (event.altKey && event.key === 'e') {
+        event.preventDefault();
+        document.querySelector('.export-csv').click();
+    }
+    
+    // Alt+R pour réinitialiser les filtres
+    if (event.altKey && event.key === 'r') {
+        event.preventDefault();
+        window.location = 'system-logs.php';
+    }
+});
+
+// Ajouter des informations d'accessibilité
+document.querySelectorAll('button, a').forEach(el => {
+    if (!el.getAttribute('aria-label') && el.title) {
+        el.setAttribute('aria-label', el.title);
+    }
+});
+
+// Ajouter une notification pour les raccourcis clavier
+const dashboardEl = document.querySelector('.dashboard');
+if (dashboardEl) {
+    const keyboardHelpBtn = document.createElement('button');
+    keyboardHelpBtn.className = 'btn-icon keyboard-help';
+    keyboardHelpBtn.innerHTML = '<i class="fas fa-keyboard" title="Raccourcis clavier"></i>';
+    keyboardHelpBtn.setAttribute('aria-label', 'Afficher les raccourcis clavier');
+    
+    keyboardHelpBtn.addEventListener('click', function() {
+        const helpModal = document.createElement('div');
+        helpModal.className = 'log-modal';
+        helpModal.style.display = 'block';
+        
+        helpModal.innerHTML = `
+            <div class="log-modal-content" style="max-width: 600px;">
+                <div class="log-modal-header">
+                    <h2>Raccourcis clavier</h2>
+                    <span class="log-modal-close">&times;</span>
+                </div>
+                <div style="padding: 1rem;">
+                    <table class="modal-details-table">
+                        <tr><th>Alt + F</th><td>Focus sur la recherche</td></tr>
+                        <tr><th>Alt + N</th><td>Page suivante</td></tr>
+                        <tr><th>Alt + P</th><td>Page précédente</td></tr>
+                        <tr><th>Alt + E</th><td>Exporter les données</td></tr>
+                        <tr><th>Alt + R</th><td>Réinitialiser les filtres</td></tr>
+                        <tr><th>Echap</th><td>Fermer la fenêtre modale</td></tr>
+                    </table>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(helpModal);
+        
+        setTimeout(() => {
+            helpModal.classList.add('show');
+        }, 10);
+        
+        const closeBtn = helpModal.querySelector('.log-modal-close');
+        closeBtn.addEventListener('click', function() {
+            helpModal.classList.remove('show');
+            setTimeout(() => {
+                helpModal.remove();
+            }, 300);
+        });
+        
+        helpModal.addEventListener('click', function(e) {
+            if (e.target === helpModal) {
+                helpModal.classList.remove('show');
+                setTimeout(() => {
+                    helpModal.remove();
+                }, 300);
+            }
+        });
+    });
+    
+    document.querySelector('.dashboard h1').appendChild(keyboardHelpBtn);
+}
+</script>
+
+<!-- Ajouter dans le header -->
+<div id="notifications-container" style="position: fixed; top: 70px; right: 20px; width: 350px; z-index: 9999;"></div>
+
+<script>
+// Script de notification en temps réel
+document.addEventListener('DOMContentLoaded', function() {
+    const notificationsContainer = document.getElementById('notifications-container');
+    
+    // Vérifier les nouvelles alertes toutes les 30 secondes
+    function checkForAlerts() {
+        fetch('api/check-alerts.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.alerts && data.alerts.length > 0) {
+                    data.alerts.forEach(alert => {
+                        showNotification(alert.level, alert.message, alert.details);
+                    });
+                }
+            })
+            .catch(error => console.error('Erreur lors de la vérification des alertes:', error));
+    }
+    
+    // Première vérification après 10 secondes
+    setTimeout(checkForAlerts, 10000);
+    
+    // Puis toutes les 30 secondes
+    setInterval(checkForAlerts, 30000);
+    
+    // Fonction pour afficher une notification
+    function showNotification(level, message, details = '') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${level}`;
+        notification.style.cssText = `
+            background-color: var(--bg-card);
+            border-left: 4px solid ${getColorForLevel(level)};
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            animation: slideIn 0.3s forwards;
+            position: relative;
+            overflow: hidden;
+        `;
+        
+        notification.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <span class="level-badge level-${level}" style="margin-bottom: 0.5rem;">
+                        ${level}
+                    </span>
+                    <h4 style="margin: 0.5rem 0; font-size: 1rem;">${message}</h4>
+                    ${details ? `<p style="margin: 0.5rem 0 0; font-size: 0.9rem; color: var(--text-light);">${details}</p>` : ''}
+                </div>
+                <button class="close-notification" style="background: none; border: none; color: var(--text-light); cursor: pointer; font-size: 1.25rem;">&times;</button>
+            </div>
+            <div class="progress-bar" style="position: absolute; bottom: 0; left: 0; height: 3px; width: 100%; background-color: ${getColorForLevel(level)}; transform: scaleX(1); transform-origin: left; transition: transform 5s linear;"></div>
+        `;
+        
+        notificationsContainer.appendChild(notification);
+        
+        // Animation de la barre de progression
+        setTimeout(() => {
+            notification.querySelector('.progress-bar').style.transform = 'scaleX(0)';
+        }, 100);
+        
+        // Auto-fermeture après 5 secondes
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s forwards';
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 5000);
+        
+        // Fermeture manuelle
+        notification.querySelector('.close-notification').addEventListener('click', function() {
+            notification.style.animation = 'slideOut 0.3s forwards';
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        });
+    }
+    
+    function getColorForLevel(level) {
+        const colors = {
+            'debug': '#6c757d',
+            'info': '#17a2b8',
+            'notice': '#20c997',
+            'warning': '#ffc107',
+            'error': '#dc3545',
+            'critical': '#dc3545',
+            'alert': '#dc3545',
+            'emergency': '#901C1C'
+        };
+        
+        return colors[level] || '#6c757d';
+    }
+    
+    // Styles pour les animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+});
+
+// Stocker les références aux graphiques pour pouvoir les détruire lors d'un redimensionnement
+let levelChart = null;
+let activityChart = null;
+
+// Récupérer les statistiques via AJAX
+function loadCharts() {
+    fetch('api/get-log-stats.php')
+        .then(response => response.json())
+        .then(data => {
+            // Détruire les graphiques existants s'il y en a
+            if (levelChart) levelChart.destroy();
+            if (activityChart) activityChart.destroy();
+            
+            // Graphique de distribution par niveau
+            const levelCtx = document.getElementById('levelChart').getContext('2d');
+            levelChart = new Chart(levelCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.levels.map(l => l.level),
+                    datasets: [{
+                        data: data.levels.map(l => l.count),
+                        backgroundColor: [
+                            '#17a2b8', // info
+                            '#20c997', // notice
+                            '#ffc107', // warning
+                            '#dc3545', // error
+                            '#901C1C', // emergency
+                            '#6c757d'  // autres
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 1.5,
+                    layout: {
+                        padding: 20
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                boxWidth: 15,
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Graphique d'activité sur 30 jours
+            const activityCtx = document.getElementById('activityChart').getContext('2d');
+            activityChart = new Chart(activityCtx, {
+                type: 'line',
+                data: {
+                    labels: data.activity.map(a => a.date),
+                    datasets: [{
+                        label: 'Nombre de logs',
+                        data: data.activity.map(a => a.count),
+                        borderColor: '#d4af37',
+                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0,
+                                maxTicksLimit: 5
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                maxTicksLimit: 10,
+                                maxRotation: 45,
+                                minRotation: 0
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+        });
+}
+
+// Ajouter ce code pour le bouton de rechargement
+document.addEventListener('DOMContentLoaded', function() {
+    const refreshButton = document.getElementById('refresh-charts');
+    if (refreshButton) {
+        refreshButton.addEventListener('click', function() {
+            loadCharts();
+            this.classList.add('rotating');
+            setTimeout(() => {
+                this.classList.remove('rotating');
+            }, 1000);
+        });
+    }
+});
+
+// Charger les graphiques au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    loadCharts();
+    
+    // Recharger les graphiques lors du redimensionnement de la fenêtre
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            loadCharts();
+        }, 250);
+    });
+});
+</script>
+
     <style>
+        /* Variables pour le thème clair (par défaut) */
+        :root {
+            --primary-color: #d4af37;
+            --primary-light: rgba(212, 175, 55, 0.1);
+            --primary-dark: #b39130;
+            --text-color: #333;
+            --text-light: #6c757d;
+            --bg-light: #f8f9fa;
+            --bg-dark: #212529;
+            --bg-main: #f5f5f7;
+            --bg-card: #ffffff;
+            --border-color: #e9ecef;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+        }
+        
+        /* Variables pour le thème sombre */
+        [data-theme="dark"] {
+            --primary-color: #ffd966;
+            --primary-light: rgba(255, 217, 102, 0.15);
+            --primary-dark: #e6c25a;
+            --text-color: #e9ecef;
+            --text-light: #adb5bd;
+            --bg-light: #2c3034;
+            --bg-dark: #1a1d20;
+            --bg-main: #1c1e22;
+            --bg-card: #212529;
+            --border-color: #343a40;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-color);
+        }
+        
+        .filter-form, .table-container, .log-modal-content {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+        
+        .data-table thead th {
+            background-color: var(--bg-light);
+            color: var(--text-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table tbody td {
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .theme-toggle {
+            margin-right: 10px;
+        }
+        
+        /* Transition fluide entre les thèmes */
+        body, .filter-form, .table-container, .btn, .pagination a, .log-modal-content, 
+        .data-table, .data-table thead th, .data-table tbody td {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
         :root {
             --primary-color: #d4af37;
             --primary-light: rgba(212, 175, 55, 0.1);
@@ -769,6 +1259,47 @@ try {
                 flex-wrap: wrap;
             }
         }
+
+        /* Styles pour les graphiques */
+        .stats-container {
+            transition: all 0.3s ease;
+        }
+
+        .stats-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .stats-card h4 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        .chart-container {
+            margin: 0 auto;
+            max-width: 100%;
+        }
+
+        /* Assurer que les graphiques s'adaptent aux thèmes */
+        [data-theme="dark"] .chart-container canvas {
+            filter: brightness(0.95);
+        }
+
+        /* Ajouter ce style pour l'animation du bouton de rechargement */
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .rotating i {
+            animation: rotate 1s linear;
+        }
     </style>
 </head>
 <body>
@@ -805,6 +1336,27 @@ try {
                 <!-- Filtres avancés -->
                 <div class="filter-form">
                     <h3>Filtres de recherche</h3>
+                    
+                    <!-- Ajouter en haut du formulaire de filtres -->
+                    <div class="saved-filters" style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <select id="saved-filter-select" class="form-control" style="max-width: 250px;">
+                            <option value="">Mes filtres enregistrés</option>
+                            <!-- Options chargées dynamiquement -->
+                        </select>
+                        
+                        <button type="button" id="load-filter" class="btn secondary" style="min-width: 100px;">
+                            <i class="fas fa-folder-open"></i> Charger
+                        </button>
+                        
+                        <button type="button" id="save-filter" class="btn secondary" style="min-width: 100px;">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                        
+                        <button type="button" id="delete-filter" class="btn secondary" style="min-width: 100px;">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                    </div>
+
                     <form method="GET" action="system-logs.php">
                         <div class="filter-row">
                             <div class="filter-group">
@@ -902,9 +1454,22 @@ try {
                             </button>
                             <button type="reset" class="reset-filters" onclick="window.location='system-logs.php'">Réinitialiser</button>
                             <button type="submit" class="apply-filters">Appliquer les filtres</button>
-                            <a href="export.php?type=system_logs<?= !empty($_GET) ? '&' . http_build_query($_GET) : '' ?>" class="export-csv">
-                                <i class="fas fa-file-csv"></i> Exporter CSV
-                            </a>
+                            <div class="dropdown export-dropdown" style="position: relative; display: inline-block;">
+                                <button class="export-csv" style="cursor: pointer;">
+                                    <i class="fas fa-file-export"></i> Exporter
+                                </button>
+                                <div class="dropdown-menu" style="display: none; position: absolute; right: 0; min-width: 160px; background-color: var(--bg-card); box-shadow: var(--shadow); border-radius: var(--radius); z-index: 100; margin-top: 5px;">
+                                    <a href="export.php?type=system_logs&format=csv<?= !empty($_GET) ? '&' . http_build_query($_GET) : '' ?>" class="dropdown-item">
+                                        <i class="fas fa-file-csv"></i> Export CSV
+                                    </a>
+                                    <a href="export.php?type=system_logs&format=excel<?= !empty($_GET) ? '&' . http_build_query($_GET) : '' ?>" class="dropdown-item">
+                                        <i class="fas fa-file-excel"></i> Export Excel
+                                    </a>
+                                    <a href="export.php?type=system_logs&format=pdf<?= !empty($_GET) ? '&' . http_build_query($_GET) : '' ?>" class="dropdown-item">
+                                        <i class="fas fa-file-pdf"></i> Export PDF
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -977,6 +1542,32 @@ try {
                     </table>
                 </div>
                 
+                <!-- Remplacer la section des stats existante par celle-ci -->
+                <div class="stats-container" style="background-color: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.5rem; margin-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3><i class="fas fa-chart-pie"></i> Analyse des journaux</h3>
+                        <button id="refresh-charts" class="btn secondary" style="padding: 0.4rem 0.75rem; font-size: 0.9rem;">
+                            <i class="fas fa-sync-alt"></i> Actualiser
+                        </button>
+                    </div>
+                    
+                    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                        <div class="stats-card" style="height: 300px; position: relative;">
+                            <h4>Distribution par niveau</h4>
+                            <div class="chart-container" style="position: relative; height: 250px; width: 100%;">
+                                <canvas id="levelChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-card" style="height: 300px; position: relative;">
+                            <h4>Activité récente (30 jours)</h4>
+                            <div class="chart-container" style="position: relative; height: 250px; width: 100%;">
+                                <canvas id="activityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Pagination -->
                 <?php if ($totalPages > 1): ?>
                     <div class="pagination">
@@ -1103,6 +1694,7 @@ try {
         </main>
     </div>
     
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Toggle filtres avancés
@@ -1355,6 +1947,144 @@ try {
                     return `<span style="color:${colors[cls]};">${match}</span>`;
                 });
             }
+
+            // Gestion des filtres enregistrés
+            const savedFilterSelect = document.getElementById('saved-filter-select');
+            const loadFilterBtn = document.getElementById('load-filter');
+            const saveFilterBtn = document.getElementById('save-filter');
+            const deleteFilterBtn = document.getElementById('delete-filter');
+            
+            // Charger les filtres sauvegardés
+            function loadSavedFilters() {
+                const savedFilters = JSON.parse(localStorage.getItem('systemLogFilters') || '{}');
+                
+                // Vider le select
+                savedFilterSelect.innerHTML = '<option value="">Mes filtres enregistrés</option>';
+                
+                // Ajouter les options
+                Object.keys(savedFilters).forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    savedFilterSelect.appendChild(option);
+                });
+                
+                // Désactiver les boutons si aucun filtre
+                const hasFilters = Object.keys(savedFilters).length > 0;
+                loadFilterBtn.disabled = !hasFilters;
+                deleteFilterBtn.disabled = !hasFilters;
+            }
+            
+            // Charger les filtres au chargement
+            loadSavedFilters();
+            
+            // Événement pour charger un filtre
+            loadFilterBtn.addEventListener('click', function() {
+                const filterName = savedFilterSelect.value;
+                if (!filterName) return;
+                
+                const savedFilters = JSON.parse(localStorage.getItem('systemLogFilters') || '{}');
+                const filterData = savedFilters[filterName];
+                
+                if (filterData) {
+                    // Appliquer les valeurs aux champs du formulaire
+                    Object.keys(filterData).forEach(key => {
+                        const field = document.querySelector(`[name="${key}"]`);
+                        if (field) {
+                            field.value = filterData[key];
+                        }
+                    });
+                    
+                    // Soumettre le formulaire
+                    document.querySelector('.filter-form form').submit();
+                }
+            });
+            
+            // Événement pour sauvegarder un filtre
+            saveFilterBtn.addEventListener('click', function() {
+                // Demander un nom pour le filtre
+                const filterName = prompt('Nom du filtre:');
+                if (!filterName) return;
+                
+                // Récupérer les valeurs actuelles du formulaire
+                const form = document.querySelector('.filter-form form');
+                const formData = new FormData(form);
+                const filterData = {};
+                
+                for (const [key, value] of formData.entries()) {
+                    if (value) {
+                        filterData[key] = value;
+                    }
+                }
+                
+                // Sauvegarder dans localStorage
+                const savedFilters = JSON.parse(localStorage.getItem('systemLogFilters') || '{}');
+                savedFilters[filterName] = filterData;
+                localStorage.setItem('systemLogFilters', JSON.stringify(savedFilters));
+                
+                // Recharger la liste
+                loadSavedFilters();
+                
+                // Sélectionner le nouveau filtre
+                savedFilterSelect.value = filterName;
+            });
+            
+            // Événement pour supprimer un filtre
+            deleteFilterBtn.addEventListener('click', function() {
+                const filterName = savedFilterSelect.value;
+                if (!filterName) return;
+                
+                if (confirm(`Êtes-vous sûr de vouloir supprimer le filtre "${filterName}" ?`)) {
+                    const savedFilters = JSON.parse(localStorage.getItem('systemLogFilters') || '{}');
+                    delete savedFilters[filterName];
+                    localStorage.setItem('systemLogFilters', JSON.stringify(savedFilters));
+                    
+                    // Recharger la liste
+                    loadSavedFilters();
+                }
+            });
+
+            // Ajouter le JavaScript pour le dropdown
+            const exportBtn = document.querySelector('.export-csv');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            
+            if (exportBtn && dropdownMenu) {
+                exportBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+                });
+                
+                document.addEventListener('click', function(e) {
+                    if (!exportBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                        dropdownMenu.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Styles CSS pour le dropdown
+            const style = document.createElement('style');
+            style.textContent = `
+                .dropdown-item {
+                    display: flex;
+                    align-items: center;
+                    padding: 0.75rem 1rem;
+                    color: var(--text-color);
+                    text-decoration: none;
+                    transition: background-color 0.15s ease;
+                }
+                
+                .dropdown-item:hover {
+                    background-color: var(--primary-light);
+                    color: var(--primary-color);
+                }
+                
+                .dropdown-item i {
+                    margin-right: 0.5rem;
+                    width: 16px;
+                    text-align: center;
+                }
+            `;
+            document.head.appendChild(style);
         });
     </script>
 </body>

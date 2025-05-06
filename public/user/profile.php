@@ -12,6 +12,14 @@ require_once '../../php/config/database.php';
 $db = new Database();
 $conn = $db->getConnection();
 
+// Définir le répertoire d'upload correct
+$uploadDir = "../uploads/users/";
+
+// Vérifier s'il existe
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0755, true);
+}
+
 // Récupérer les informations de l'utilisateur
 $userId = $_SESSION['user_id'];
 $stmt = $conn->prepare("SELECT * FROM utilisateurs WHERE id = ?");
@@ -403,12 +411,12 @@ $relativePath = "..";
             
             <div class="user-profile-photo">
                 <div class="profile-avatar">
-                    <?php if (!empty($user['photo'])): ?>
-                        <img src="<?php echo $relativePath; ?>/uploads/profiles/<?php echo htmlspecialchars($user['photo']); ?>" 
+                    <?php if (!empty($user['photo']) && file_exists($relativePath . "/uploads/users/" . $user['photo'])): ?>
+                        <img src="<?php echo $relativePath; ?>/uploads/users/<?php echo htmlspecialchars($user['photo']); ?>" 
                              alt="<?php echo htmlspecialchars($user['prenom']); ?>">
                     <?php else: ?>
                         <?php 
-                        $initials = strtoupper(substr($user['prenom'], 0, 1) . substr($user['nom'], 0, 1));
+                        $initials = strtoupper(substr($user['prenom'] ?? '', 0, 1) . substr($user['nom'] ?? '', 0, 1));
                         echo $initials;
                         ?>
                     <?php endif; ?>

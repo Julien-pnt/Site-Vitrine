@@ -1,0 +1,1 @@
+a:5:{s:6:"levels";a:1:{i:0;s:4:"info";}s:10:"categories";a:3:{i:0;s:5:"admin";i:1;s:4:"user";i:2;s:11:"utilisateur";}s:7:"actions";a:5:{i:0;s:17:"access_users_list";i:1;s:18:"access_user_create";i:2;s:16:"access_user_edit";i:3;s:6:"update";i:4;s:9:"view_user";}s:11:"entityTypes";a:2:{i:0;s:4:"user";i:1;s:11:"utilisateur";}s:9:"userTypes";a:1:{i:0;s:5:"admin";}}

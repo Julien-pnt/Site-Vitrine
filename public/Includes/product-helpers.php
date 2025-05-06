@@ -181,4 +181,37 @@ function getProductsInfoBatch($productIds) {
 function formatPrice($price) {
     return number_format($price, 0, ',', ' ') . ' €';
 }
+
+/**
+ * Récupère les produits associés à une page spécifique ou tous les produits
+ * @param string $page_code Le code de la page ou 'all' pour tous les produits
+ * @param int $limit Nombre maximum de produits à récupérer
+ * @return array Liste des produits
+ */
+function getProductsByPage($page_code, $limit = 50) {
+    global $pdo;
+    
+    // Cas spécial pour récupérer tous les produits
+    if ($page_code === 'all') {
+        $sql = "SELECT * FROM produits 
+                WHERE visible = 1 
+                ORDER BY nouveaute DESC, date_creation DESC 
+                LIMIT ?";
+                
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$limit]);
+    } else {
+        // Comportement original pour les pages spécifiques
+        $sql = "SELECT p.* FROM produits p 
+                INNER JOIN produit_pages pp ON p.id = pp.produit_id 
+                WHERE pp.page_code = ? AND p.visible = 1 
+                ORDER BY p.nouveaute DESC, p.date_creation DESC 
+                LIMIT ?";
+                
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$page_code, $limit]);
+    }
+    
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>

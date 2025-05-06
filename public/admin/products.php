@@ -199,7 +199,7 @@ if ($products === false) {
                                     <tr>
                                         <td class="product-image">
                                             <?php if ($product['image']): ?>
-                                                <img src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['nom']) ?>">
+                                                <img src="../uploads/products/<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['nom']) ?>">
                                             <?php else: ?>
                                                 <div class="no-image"><i class="fas fa-image"></i></div>
                                             <?php endif; ?>

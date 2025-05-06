@@ -1,6 +1,57 @@
 <?php
 // Démarrer la session
 session_start();
+require_once '../../../php/config/database.php';
+
+/**
+ * Génère un jeton unique pour l'authentification "Se souvenir de moi"
+ *
+ * @return string Le jeton généré
+ */
+function generateRememberToken() {
+    return bin2hex(random_bytes(32)); // 64 caractères hexadécimaux
+}
+
+// Vérifier si un cookie de connexion existe
+if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_token'])) {
+    // Tenter de connecter l'utilisateur avec le token
+    $token = $_COOKIE['remember_token'];
+    
+    try {
+        $db = new Database();
+        $conn = $db->getConnection();
+        
+        // Récupérer le token valide et non expiré
+        $stmt = $conn->prepare("
+            SELECT t.user_id, u.email, u.role, u.nom, u.prenom, u.actif 
+            FROM auth_tokens t 
+            JOIN utilisateurs u ON t.user_id = u.id 
+            WHERE t.token = ? AND t.expires_at > NOW()
+        ");
+        $stmt->execute([$token]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result && $result['actif']) {
+            // Connexion automatique réussie
+            $_SESSION['user_id'] = $result['user_id'];
+            $_SESSION['user_email'] = $result['email'];
+            $_SESSION['user_role'] = $result['role'];
+            $_SESSION['user_name'] = $result['prenom'] . ' ' . $result['nom'];
+            $_SESSION['logged_in_time'] = time();
+            
+            // Prolonger le token
+            $newExpiryDate = date('Y-m-d H:i:s', strtotime('+30 days'));
+            $updateStmt = $conn->prepare("UPDATE auth_tokens SET expires_at = ? WHERE token = ?");
+            $updateStmt->execute([$newExpiryDate, $token]);
+            
+            // Prolonger le cookie
+            setcookie('remember_token', $token, time() + (30 * 24 * 60 * 60), '/', '', true, true);
+        }
+    } catch (PDOException $e) {
+        // Échec silencieux, l'utilisateur devra se connecter normalement
+        error_log('Erreur lors de la vérification du token: ' . $e->getMessage());
+    }
+}
 
 // Rediriger si l'utilisateur est déjà connecté
 if (isset($_SESSION['user_id'])) {
@@ -20,8 +71,6 @@ $redirect = isset($_GET['redirect']) ? htmlspecialchars($_GET['redirect']) : '';
 
 // Traitement du formulaire de connexion
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require_once '../../../php/config/database.php';
-    
     // Récupérer et nettoyer les entrées
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
     $password = $_POST['password'] ?? '';
@@ -47,6 +96,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_role'] = $user['role'];
                 $_SESSION['user_name'] = $user['prenom'] . ' ' . $user['nom'];
                 $_SESSION['logged_in_time'] = time();
+                
+                // Traiter l'option "Se souvenir de moi"
+                if (isset($_POST['remember_me']) && $_POST['remember_me'] === 'on') {
+                    // Générer un token unique
+                    $token = generateRememberToken();
+                    
+                    // Calculer la date d'expiration (30 jours)
+                    $expiryDate = date('Y-m-d H:i:s', strtotime('+30 days'));
+                    
+                    // Stocker le token dans la base de données
+                    $stmtToken = $conn->prepare("INSERT INTO auth_tokens (user_id, token, expires_at) VALUES (?, ?, ?)");
+                    $stmtToken->execute([$user['id'], $token, $expiryDate]);
+                    
+                    // Stocker le token dans un cookie (sécurisé et httpOnly)
+                    setcookie('remember_token', $token, time() + (30 * 24 * 60 * 60), '/', '', true, true);
+                }
                 
                 // Rediriger selon le rôle
                 if ($user['role'] === 'admin' || $user['role'] === 'manager') {
@@ -240,9 +305,73 @@ require_once "../../Includes/header.php";
         width: 100%;
     }
     
+    .remember-me-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .remember-me-label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: #666;
+        user-select: none;
+    }
+
+    .remember-me-label input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+    .checkmark {
+        position: relative;
+        display: inline-block;
+        height: 18px;
+        width: 18px;
+        background-color: #f8f8f8;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        margin-right: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .remember-me-label:hover input ~ .checkmark {
+        background-color: #f0f0f0;
+        border-color: #ccc;
+    }
+
+    .remember-me-label input:checked ~ .checkmark {
+        background-color: #d4af37;
+        border-color: #d4af37;
+    }
+
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+    }
+
+    .remember-me-label input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    .remember-me-label .checkmark:after {
+        left: 6px;
+        top: 2px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+    
     .forgot-password {
         text-align: right;
-        margin-bottom: 25px;
     }
     
     .forgot-password a {
@@ -369,6 +498,14 @@ require_once "../../Includes/header.php";
                 <input type="password" id="password" name="password" required>
                 <label for="password">Mot de passe</label>
                 <div class="form-border"></div>
+            </div>
+            
+            <div class="remember-me-container">
+                <label class="remember-me-label">
+                    <input type="checkbox" name="remember_me" id="remember_me">
+                    <span class="checkmark"></span>
+                    Se souvenir de moi
+                </label>
             </div>
             
             <div class="forgot-password">

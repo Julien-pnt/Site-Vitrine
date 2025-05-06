@@ -332,6 +332,14 @@ CREATE TABLE favoris (
 ) ENGINE=InnoDB;
 
 
+CREATE TABLE produit_pages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    produit_id INT NOT NULL,
+    page_code VARCHAR(50) NOT NULL,
+    FOREIGN KEY (produit_id) REFERENCES produits(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_produit_page (produit_id, page_code)
+) ENGINE=InnoDB;
+
 -- Insertion des catégories de produits (à placer AVANT les insertions de produits)
 INSERT INTO categories (id, nom, slug, description, image, position) VALUES
 (1, 'Montres Homme', 'montres-homme', 'Notre collection exclusive de montres pour homme combine élégance intemporelle et précision technique exceptionnelle.', '/assets/img/categories/montres-homme.jpg', 10),

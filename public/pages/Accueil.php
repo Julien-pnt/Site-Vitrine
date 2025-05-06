@@ -1,6 +1,19 @@
 <?php
 $currentPage = 'Accueil.php';
 $relativePath = '/Site-Vitrine/public';
+
+// Inclure les helpers pour les produits
+require_once($_SERVER['DOCUMENT_ROOT'] . '/Site-Vitrine/public/includes/product-helpers.php');
+
+// Récupérer les produits associés à la page d'accueil
+$featuredProducts = getProductsByPage('accueil');
+
+// Pré-charger les stocks pour optimiser les performances
+$productIds = array_map(function($product) { 
+    return $product['id']; 
+}, $featuredProducts);
+
+$productsStock = loadProductsStockBatch($productIds);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -11,6 +24,7 @@ $relativePath = '/Site-Vitrine/public';
   <meta name="description" content="Découvrez l'univers Elixir du Temps, montres de luxe et haute horlogerie suisse.">
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="shortcut icon" href="../assets/img/layout/icon2.png" type="image/x-icon">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
   <link rel="stylesheet" href="<?= $relativePath ?>/assets/css/header.css">
@@ -445,6 +459,248 @@ $relativePath = '/Site-Vitrine/public';
       transform: translateY(0);
     }
 
+    /* Styles pour la section Produits populaires */
+    .featured-products-section {
+      background-color: #fff;
+      padding: 100px 0;
+    }
+    
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        margin-top: 50px;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    @media (max-width: 992px) {
+        .products-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .products-grid {
+            grid-template-columns: repeat(1, 1fr);
+            max-width: 400px;
+        }
+    }
+    
+    .product-card {
+      background-color: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      transition: all 0.4s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .product-image-container {
+      height: 280px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .product-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    
+    .product-card:hover .product-image {
+      transform: scale(1.1);
+    }
+    
+    .product-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    
+    .product-card:hover .product-overlay {
+      opacity: 1;
+    }
+    
+    .quick-view-btn {
+      background-color: #fff;
+      color: #333;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .quick-view-btn:hover {
+      background-color: #d4af37;
+      color: #fff;
+    }
+    
+    .product-info {
+      padding: 25px 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .product-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    
+    .product-price {
+      color: #d4af37;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    
+    .price-old {
+      text-decoration: line-through;
+      color: #999;
+      font-size: 1rem;
+      margin-right: 10px;
+    }
+    
+    .product-actions {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .add-to-cart-btn {
+      background-color: #d4af37;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex-grow: 1;
+      margin-right: 10px;
+    }
+    
+    .add-to-cart-btn:hover {
+      background-color: #c49b27;
+    }
+    
+    .add-to-wishlist-btn {
+      background-color: transparent;
+      border: 1px solid #d4af37;
+      color: #d4af37;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .add-to-wishlist-btn:hover {
+      background-color: #d4af37;
+      color: white;
+    }
+    
+    .product-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+      z-index: 2;
+    }
+    
+    .new {
+      background-color: #28a745;
+    }
+    
+    .sale {
+      background-color: #dc3545;
+    }
+    
+    /* Style pour l'affichage des images manquantes */
+    .no-image {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f8f9fa;
+    }
+    
+    .no-image i {
+      font-size: 3rem;
+      color: #dee2e6;
+    }
+    
+    /* Styles stock indicator */
+    .stock-indicator {
+      margin: 10px 0;
+      padding: 5px 10px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+    
+    .stock-indicator i {
+      margin-right: 6px;
+    }
+    
+    .in-stock {
+      background-color: rgba(40, 167, 69, 0.1);
+      color: #28a745;
+    }
+    
+    .low-stock {
+      background-color: rgba(255, 193, 7, 0.1);
+      color: #ffc107;
+    }
+    
+    .out-of-stock {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+    }
+    
+    .add-to-cart-btn.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background-color: #6c757d;
+    }
+    
+    /* Responsive ajustements */
+    @media (max-width: 768px) {
+      .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      }
+    }
+
     /* Responsive adjustments */
     @media (max-width: 992px) {
       .hero-title {
@@ -597,6 +853,76 @@ $relativePath = '/Site-Vitrine/public';
   </div>
 </section>
 
+<!-- Nouvelle section Produits populaires - limité à 3 montres -->
+<section class="section featured-products-section">
+  <div class="container">
+    <h2 class="section-title animated-element">Nos montres populaires</h2>
+    <p class="section-subtitle animated-element">Découvrez nos modèles les plus prisés, reflets de notre savoir-faire horloger d'exception</p>
+    
+    <div class="products-grid">
+      <?php 
+      // Limiter à seulement 3 produits
+      $limitedProducts = array_slice($featuredProducts, 0, 3);
+      foreach($limitedProducts as $product): 
+      ?>
+      <div class="product-card animated-element" data-product-id="<?php echo $product['id']; ?>">
+        <div class="product-image-container">
+          <?php if (!empty($product['image'])): ?>
+            <img src="<?php echo $relativePath; ?>/uploads/products/<?php echo htmlspecialchars(basename($product['image'])); ?>" 
+                 alt="<?php echo htmlspecialchars($product['nom']); ?>" 
+                 class="product-image" 
+                 loading="lazy">
+          <?php else: ?>
+            <div class="no-image"><i class="fas fa-image"></i></div>
+          <?php endif; ?>
+          <div class="product-overlay">
+            <button class="quick-view-btn" data-product-id="<?php echo $product['id']; ?>">Aperçu rapide</button>
+          </div>
+          <?php if ($product['nouveaute']): ?>
+            <div class="product-badge new">Nouveau</div>
+          <?php endif; ?>
+          <?php if (!empty($product['prix_promo'])): ?>
+            <div class="product-badge sale">-<?php echo round((1 - $product['prix_promo'] / $product['prix']) * 100); ?>%</div>
+          <?php endif; ?>
+        </div>
+        <div class="product-info">
+          <h3 class="product-title"><?php echo htmlspecialchars($product['nom']); ?></h3>
+          
+          <?php if (!empty($product['prix_promo'])): ?>
+            <p class="product-price">
+              <span class="price-old"><?php echo number_format($product['prix'], 0, ',', ' '); ?> €</span> 
+              <?php echo number_format($product['prix_promo'], 0, ',', ' '); ?> €
+            </p>
+          <?php else: ?>
+            <p class="product-price"><?php echo number_format($product['prix'], 0, ',', ' '); ?> €</p>
+          <?php endif; ?>
+          
+          <?php echo generateStockIndicator($product['id']); ?>
+          
+          <div class="product-actions">
+            <?php if (isProductAvailable($product['id'])): ?>
+              <button class="add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">Ajouter au panier</button>
+            <?php else: ?>
+              <button class="add-to-cart-btn disabled" data-product-id="<?php echo $product['id']; ?>" disabled>Indisponible</button>
+            <?php endif; ?>
+            
+            <button class="add-to-wishlist-btn" data-product-id="<?php echo $product['id']; ?>" aria-label="Ajouter aux favoris">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <?php endforeach; ?>
+    </div>
+    
+    <div class="text-center" style="margin-top: 50px;">
+      <a href="<?= $relativePath ?>/pages/Montres.php" class="btn-primary">Voir toute la collection</a>
+    </div>
+  </div>
+</section>
+
 <!-- Features Section -->
 <section class="section features-section">
   <div class="container">
@@ -684,6 +1010,43 @@ $relativePath = '/Site-Vitrine/public';
     // Vérifier aussi au chargement
     checkIfInView();
   });
+</script>
+
+<!-- Ajouter ce script pour la redirection vers product-detail.php -->
+<script>
+    // Redirection depuis les boutons d'aperçu rapide vers les pages de détail
+    document.addEventListener('DOMContentLoaded', function() {
+        const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+        
+        if (quickViewButtons.length) {
+            quickViewButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const productId = this.getAttribute('data-product-id');
+                    
+                    // Vérifier si le produit existe avant de rediriger
+                    fetch('/Site-Vitrine/public/php/api/products/check-product.php?id=' + productId)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.exists) {
+                                // Le produit existe, rediriger vers sa page détaillée
+                                window.location.href = '/Site-Vitrine/public/pages/products/product-detail.php?id=' + productId;
+                            } else {
+                                // Le produit n'existe pas, rediriger vers la page des montres
+                                window.location.href = '/Site-Vitrine/public/pages/products/Montres.php';
+                                // Optionnel : afficher un message d'erreur
+                                // alert('Produit introuvable. Redirection vers la liste des montres.');
+                            }
+                        })
+                        .catch(error => {
+                            // En cas d'erreur, rediriger vers la page des montres
+                            console.error('Erreur lors de la vérification du produit:', error);
+                            window.location.href = '/Site-Vitrine/public/pages/products/Montres.php';
+                        });
+                });
+            });
+        }
+    });
 </script>
 
 <!-- Importation des fichiers JS modulaires (une seule fois chacun) -->

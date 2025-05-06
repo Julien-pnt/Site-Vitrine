@@ -47,7 +47,7 @@ $wishlistCount = $stmtWishlist->fetchColumn();
     </nav>
     
     <div class="sidebar-footer">
-        <a href="<?php echo $relativePath; ?>/php/api/auth/logout.php" class="btn-logout">
+        <a href="<?php echo $relativePath; ?>/pages/auth/logout.php" class="btn-logout">
             <i class="fas fa-sign-out-alt"></i>
             <span>Déconnexion</span>
         </a>

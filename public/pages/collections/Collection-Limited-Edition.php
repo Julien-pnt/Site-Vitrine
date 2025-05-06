@@ -7,12 +7,34 @@ $pageDescription = "Des créations exceptionnelles et rares, chacune numérotée
 // Inclure les helpers pour les produits
 require_once($relativePath . '/includes/product-helpers.php');
 
+// Récupérer tous les produits associés à la collection Limited Edition
+$products = getProductsByPage('collection_limited');
+
+// Séparer les produits homme et femme
+$hommeProducts = [];
+$femmeProducts = [];
+
+foreach ($products as $product) {
+    if ($product['categorie_id'] == 5) { // ID 5 = catégorie femme
+        $femmeProducts[] = $product;
+    } else {
+        $hommeProducts[] = $product;
+    }
+}
+
+// Récupérer les IDs de tous les produits pour précharger les stocks
+$productIds = array_map(function($product) { 
+    return $product['id']; 
+}, $products);
+
 // Pré-charger tous les stocks pour optimiser les performances
-$productIds = [401, 402, 403, 404, 405, 406, 407, 408]; // IDs des produits édition limitée
 $productsStock = loadProductsStockBatch($productIds);
 
 // Pré-charger les informations des produits
-$productsInfo = getProductsInfoBatch($productIds);
+$productsInfo = [];
+foreach ($products as $product) {
+    $productsInfo[$product['id']] = $product;
+}
 
 // CSS spécifique à cette page
 $additionalCss = '
@@ -60,6 +82,27 @@ $additionalCss = '
         font-style: italic;
         font-size: 0.8rem;
     }
+
+    /* Style pour l\'affichage des images manquantes */
+    .no-image {
+        width: 100%;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .no-image i {
+        font-size: 3rem;
+        color: #dee2e6;
+    }
+
+    .recommendation-item .no-image {
+        height: 150px;
+}
+
 </style>
 ';
 
@@ -127,42 +170,49 @@ include($relativePath . '/includes/header.php');
     <div class="container">
         <!-- Section pour Homme products -->
         <div id="homme-products" class="product-grid active">
-            <!-- Premier produit - Chronos Édition Limitée -->
-            <div class="product-card" data-product-id="401">
+            <?php foreach($hommeProducts as $product): ?>
+            <div class="product-card" data-product-id="<?php echo $product['id']; ?>">
                 <div class="product-image-container">
-                    <img src="../../assets/img/products/Chronos-edition-limited.png" alt="<?php echo htmlspecialchars($productsInfo[401]['nom'] ?? 'Chronos Édition Limitée'); ?>" class="product-image" loading="lazy">
+                    <?php if (!empty($product['image'])): ?>
+                        <img src="<?php echo $relativePath; ?>/uploads/products/<?php echo htmlspecialchars(basename($product['image'])); ?>" 
+                             alt="<?php echo htmlspecialchars($product['nom']); ?>" 
+                             class="product-image" 
+                             loading="lazy">
+                    <?php else: ?>
+                        <div class="no-image"><i class="fas fa-image"></i></div>
+                    <?php endif; ?>
                     <div class="product-overlay">
-                        <button class="quick-view-btn" data-product-id="401">Aperçu rapide</button>
+                        <button class="quick-view-btn" data-product-id="<?php echo $product['id']; ?>">Aperçu rapide</button>
                     </div>
-                    <?php if (isset($productsInfo[401]) && $productsInfo[401]['nouveaute']): ?>
+                    <?php if ($product['nouveaute']): ?>
                         <div class="product-badge new">Nouveau</div>
                     <?php endif; ?>
-                    <?php if (isset($productsInfo[401]) && !empty($productsInfo[401]['prix_promo'])): ?>
-                        <div class="product-badge sale">-<?php echo round((1 - $productsInfo[401]['prix_promo'] / $productsInfo[401]['prix']) * 100); ?>%</div>
+                    <?php if (!empty($product['prix_promo'])): ?>
+                        <div class="product-badge sale">-<?php echo round((1 - $product['prix_promo'] / $product['prix']) * 100); ?>%</div>
                     <?php endif; ?>
                 </div>
                 <div class="product-info">
-                    <h3 class="product-title"><?php echo htmlspecialchars($productsInfo[401]['nom'] ?? 'Chronos Édition Limitée'); ?></h3>
+                    <h3 class="product-title"><?php echo htmlspecialchars($product['nom']); ?></h3>
                     
-                    <?php if (isset($productsInfo[401]) && !empty($productsInfo[401]['prix_promo'])): ?>
+                    <?php if (!empty($product['prix_promo'])): ?>
                         <p class="product-price">
-                            <span class="price-old"><?php echo number_format($productsInfo[401]['prix'], 0, ',', ' '); ?> €</span> 
-                            <?php echo number_format($productsInfo[401]['prix_promo'], 0, ',', ' '); ?> €
+                            <span class="price-old"><?php echo number_format($product['prix'], 0, ',', ' '); ?> €</span> 
+                            <?php echo number_format($product['prix_promo'], 0, ',', ' '); ?> €
                         </p>
                     <?php else: ?>
-                        <p class="product-price"><?php echo isset($productsInfo[401]) ? number_format($productsInfo[401]['prix'], 0, ',', ' ').' €' : '8 950 €'; ?></p>
+                        <p class="product-price"><?php echo number_format($product['prix'], 0, ',', ' '); ?> €</p>
                     <?php endif; ?>
                     
-                    <?php echo generateStockIndicator(401); ?>
+                    <?php echo generateStockIndicator($product['id']); ?>
                     
                     <div class="product-actions">
-                        <?php if (isProductAvailable(401)): ?>
-                            <button class="add-to-cart-btn" data-product-id="401">Ajouter au panier</button>
+                        <?php if (isProductAvailable($product['id'])): ?>
+                            <button class="add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">Ajouter au panier</button>
                         <?php else: ?>
-                            <button class="add-to-cart-btn disabled" data-product-id="401" disabled>Indisponible</button>
+                            <button class="add-to-cart-btn disabled" data-product-id="<?php echo $product['id']; ?>" disabled>Indisponible</button>
                         <?php endif; ?>
                         
-                        <button class="add-to-wishlist-btn" data-product-id="401" aria-label="Ajouter aux favoris">
+                        <button class="add-to-wishlist-btn" data-product-id="<?php echo $product['id']; ?>" aria-label="Ajouter aux favoris">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                             </svg>
@@ -170,178 +220,54 @@ include($relativePath . '/includes/header.php');
                     </div>
                 </div>
             </div>
-            
-            <!-- Deuxième produit - Prestige Unique -->
-            <div class="product-card" data-product-id="402">
-                <div class="product-image-container">
-                    <img src="../../assets/img/products/Prestige-unique-edition-limited.png" alt="<?php echo htmlspecialchars($productsInfo[402]['nom'] ?? 'Prestige Unique'); ?>" class="product-image" loading="lazy">
-                    <div class="product-overlay">
-                        <button class="quick-view-btn" data-product-id="402">Aperçu rapide</button>
-                    </div>
-                    <?php if (isset($productsInfo[402]) && $productsInfo[402]['nouveaute']): ?>
-                        <div class="product-badge new">Nouveau</div>
-                    <?php endif; ?>
-                    <?php if (isset($productsInfo[402]) && !empty($productsInfo[402]['prix_promo'])): ?>
-                        <div class="product-badge sale">-<?php echo round((1 - $productsInfo[402]['prix_promo'] / $productsInfo[402]['prix']) * 100); ?>%</div>
-                    <?php endif; ?>
-                </div>
-                <div class="product-info">
-                    <h3 class="product-title"><?php echo htmlspecialchars($productsInfo[402]['nom'] ?? 'Prestige Unique'); ?></h3>
-                    
-                    <?php if (isset($productsInfo[402]) && !empty($productsInfo[402]['prix_promo'])): ?>
-                        <p class="product-price">
-                            <span class="price-old"><?php echo number_format($productsInfo[402]['prix'], 0, ',', ' '); ?> €</span> 
-                            <?php echo number_format($productsInfo[402]['prix_promo'], 0, ',', ' '); ?> €
-                        </p>
-                    <?php else: ?>
-                        <p class="product-price"><?php echo isset($productsInfo[402]) ? number_format($productsInfo[402]['prix'], 0, ',', ' ').' €' : '4 750 €'; ?></p>
-                    <?php endif; ?>
-                    
-                    <?php echo generateStockIndicator(402); ?>
-                    
-                    <div class="product-actions">
-                        <?php if (isProductAvailable(402)): ?>
-                            <button class="add-to-cart-btn" data-product-id="402">Ajouter au panier</button>
-                        <?php else: ?>
-                            <button class="add-to-cart-btn disabled" data-product-id="402" disabled>Indisponible</button>
-                        <?php endif; ?>
-                        
-                        <button class="add-to-wishlist-btn" data-product-id="402" aria-label="Ajouter aux favoris">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Troisième produit - Héritage Exclusif -->
-            <div class="product-card" data-product-id="403">
-                <div class="product-image-container">
-                    <img src="../../assets/img/products/HeritageUnique-edition-limited.png" alt="<?php echo htmlspecialchars($productsInfo[403]['nom'] ?? 'Héritage Exclusif'); ?>" class="product-image" loading="lazy">
-                    <div class="product-overlay">
-                        <button class="quick-view-btn" data-product-id="403">Aperçu rapide</button>
-                    </div>
-                    <?php if (isset($productsInfo[403]) && $productsInfo[403]['nouveaute']): ?>
-                        <div class="product-badge new">Nouveau</div>
-                    <?php endif; ?>
-                    <?php if (isset($productsInfo[403]) && !empty($productsInfo[403]['prix_promo'])): ?>
-                        <div class="product-badge sale">-<?php echo round((1 - $productsInfo[403]['prix_promo'] / $productsInfo[403]['prix']) * 100); ?>%</div>
-                    <?php endif; ?>
-                </div>
-                <div class="product-info">
-                    <h3 class="product-title"><?php echo htmlspecialchars($productsInfo[403]['nom'] ?? 'Héritage Exclusif'); ?></h3>
-                    
-                    <?php if (isset($productsInfo[403]) && !empty($productsInfo[403]['prix_promo'])): ?>
-                        <p class="product-price">
-                            <span class="price-old"><?php echo number_format($productsInfo[403]['prix'], 0, ',', ' '); ?> €</span> 
-                            <?php echo number_format($productsInfo[403]['prix_promo'], 0, ',', ' '); ?> €
-                        </p>
-                    <?php else: ?>
-                        <p class="product-price"><?php echo isset($productsInfo[403]) ? number_format($productsInfo[403]['prix'], 0, ',', ' ').' €' : '12 800 €'; ?></p>
-                    <?php endif; ?>
-                    
-                    <?php echo generateStockIndicator(403); ?>
-                    
-                    <div class="product-actions">
-                        <?php if (isProductAvailable(403)): ?>
-                            <button class="add-to-cart-btn" data-product-id="403">Ajouter au panier</button>
-                        <?php else: ?>
-                            <button class="add-to-cart-btn disabled" data-product-id="403" disabled>Indisponible</button>
-                        <?php endif; ?>
-                        
-                        <button class="add-to-wishlist-btn" data-product-id="403" aria-label="Ajouter aux favoris">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Quatrième produit - Souveraineté Singulière -->
-            <div class="product-card" data-product-id="404">
-                <div class="product-image-container">
-                    <img src="../../assets/img/products/SouvraineteSinguliere-edition-limited.png" alt="<?php echo htmlspecialchars($productsInfo[404]['nom'] ?? 'Souveraineté Singulière'); ?>" class="product-image" loading="lazy">
-                    <div class="product-overlay">
-                        <button class="quick-view-btn" data-product-id="404">Aperçu rapide</button>
-                    </div>
-                    <?php if (isset($productsInfo[404]) && $productsInfo[404]['nouveaute']): ?>
-                        <div class="product-badge new">Nouveau</div>
-                    <?php endif; ?>
-                    <?php if (isset($productsInfo[404]) && !empty($productsInfo[404]['prix_promo'])): ?>
-                        <div class="product-badge sale">-<?php echo round((1 - $productsInfo[404]['prix_promo'] / $productsInfo[404]['prix']) * 100); ?>%</div>
-                    <?php endif; ?>
-                </div>
-                <div class="product-info">
-                    <h3 class="product-title"><?php echo htmlspecialchars($productsInfo[404]['nom'] ?? 'Souveraineté Singulière'); ?></h3>
-                    
-                    <?php if (isset($productsInfo[404]) && !empty($productsInfo[404]['prix_promo'])): ?>
-                        <p class="product-price">
-                            <span class="price-old"><?php echo number_format($productsInfo[404]['prix'], 0, ',', ' '); ?> €</span> 
-                            <?php echo number_format($productsInfo[404]['prix_promo'], 0, ',', ' '); ?> €
-                        </p>
-                    <?php else: ?>
-                        <p class="product-price"><?php echo isset($productsInfo[404]) ? number_format($productsInfo[404]['prix'], 0, ',', ' ').' €' : '7 500 €'; ?></p>
-                    <?php endif; ?>
-                    
-                    <?php echo generateStockIndicator(404); ?>
-                    
-                    <div class="product-actions">
-                        <?php if (isProductAvailable(404)): ?>
-                            <button class="add-to-cart-btn" data-product-id="404">Ajouter au panier</button>
-                        <?php else: ?>
-                            <button class="add-to-cart-btn disabled" data-product-id="404" disabled>Indisponible</button>
-                        <?php endif; ?>
-                        
-                        <button class="add-to-wishlist-btn" data-product-id="404" aria-label="Ajouter aux favoris">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
 
         <!-- Section pour Femme products -->
         <div id="femme-products" class="product-grid">
-            <!-- Premier produit femme - Élégance Rose -->
-            <div class="product-card" data-product-id="405">
+            <?php foreach($femmeProducts as $product): ?>
+            <div class="product-card" data-product-id="<?php echo $product['id']; ?>">
                 <div class="product-image-container">
-                    <img src="../../assets/img/products/EleganceRose-edition-limited.png" alt="<?php echo htmlspecialchars($productsInfo[405]['nom'] ?? 'Élégance Rose'); ?>" class="product-image" loading="lazy">
+                    <?php if (!empty($product['image'])): ?>
+                        <img src="<?php echo $relativePath; ?>/uploads/products/<?php echo htmlspecialchars(basename($product['image'])); ?>" 
+                             alt="<?php echo htmlspecialchars($product['nom']); ?>" 
+                             class="product-image" 
+                             loading="lazy">
+                    <?php else: ?>
+                        <div class="no-image"><i class="fas fa-image"></i></div>
+                    <?php endif; ?>
                     <div class="product-overlay">
-                        <button class="quick-view-btn" data-product-id="405">Aperçu rapide</button>
+                        <button class="quick-view-btn" data-product-id="<?php echo $product['id']; ?>">Aperçu rapide</button>
                     </div>
-                    <?php if (isset($productsInfo[405]) && $productsInfo[405]['nouveaute']): ?>
+                    <?php if ($product['nouveaute']): ?>
                         <div class="product-badge new">Nouveau</div>
                     <?php endif; ?>
-                    <?php if (isset($productsInfo[405]) && !empty($productsInfo[405]['prix_promo'])): ?>
-                        <div class="product-badge sale">-<?php echo round((1 - $productsInfo[405]['prix_promo'] / $productsInfo[405]['prix']) * 100); ?>%</div>
+                    <?php if (!empty($product['prix_promo'])): ?>
+                        <div class="product-badge sale">-<?php echo round((1 - $product['prix_promo'] / $product['prix']) * 100); ?>%</div>
                     <?php endif; ?>
                 </div>
                 <div class="product-info">
-                    <h3 class="product-title"><?php echo htmlspecialchars($productsInfo[405]['nom'] ?? 'Élégance Rose'); ?></h3>
+                    <h3 class="product-title"><?php echo htmlspecialchars($product['nom']); ?></h3>
                     
-                    <?php if (isset($productsInfo[405]) && !empty($productsInfo[405]['prix_promo'])): ?>
+                    <?php if (!empty($product['prix_promo'])): ?>
                         <p class="product-price">
-                            <span class="price-old"><?php echo number_format($productsInfo[405]['prix'], 0, ',', ' '); ?> €</span> 
-                            <?php echo number_format($productsInfo[405]['prix_promo'], 0, ',', ' '); ?> €
+                            <span class="price-old"><?php echo number_format($product['prix'], 0, ',', ' '); ?> €</span> 
+                            <?php echo number_format($product['prix_promo'], 0, ',', ' '); ?> €
                         </p>
                     <?php else: ?>
-                        <p class="product-price"><?php echo isset($productsInfo[405]) ? number_format($productsInfo[405]['prix'], 0, ',', ' ').' €' : '13 500 €'; ?></p>
+                        <p class="product-price"><?php echo number_format($product['prix'], 0, ',', ' '); ?> €</p>
                     <?php endif; ?>
                     
-                    <?php echo generateStockIndicator(405); ?>
+                    <?php echo generateStockIndicator($product['id']); ?>
                     
                     <div class="product-actions">
-                        <?php if (isProductAvailable(405)): ?>
-                            <button class="add-to-cart-btn" data-product-id="405">Ajouter au panier</button>
+                        <?php if (isProductAvailable($product['id'])): ?>
+                            <button class="add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">Ajouter au panier</button>
                         <?php else: ?>
-                            <button class="add-to-cart-btn disabled" data-product-id="405" disabled>Indisponible</button>
+                            <button class="add-to-cart-btn disabled" data-product-id="<?php echo $product['id']; ?>" disabled>Indisponible</button>
                         <?php endif; ?>
                         
-                        <button class="add-to-wishlist-btn" data-product-id="405" aria-label="Ajouter aux favoris">
+                        <button class="add-to-wishlist-btn" data-product-id="<?php echo $product['id']; ?>" aria-label="Ajouter aux favoris">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                             </svg>
@@ -349,138 +275,7 @@ include($relativePath . '/includes/header.php');
                     </div>
                 </div>
             </div>
-            
-            <!-- Deuxième produit femme - Grâce Limitée -->
-            <div class="product-card" data-product-id="406">
-                <div class="product-image-container">
-                    <img src="../../assets/img/products/GraceLimitee-edition-limited.png" alt="<?php echo htmlspecialchars($productsInfo[406]['nom'] ?? 'Grâce Limitée'); ?>" class="product-image" loading="lazy">
-                    <div class="product-overlay">
-                        <button class="quick-view-btn" data-product-id="406">Aperçu rapide</button>
-                    </div>
-                    <?php if (isset($productsInfo[406]) && $productsInfo[406]['nouveaute']): ?>
-                        <div class="product-badge new">Nouveau</div>
-                    <?php endif; ?>
-                    <?php if (isset($productsInfo[406]) && !empty($productsInfo[406]['prix_promo'])): ?>
-                        <div class="product-badge sale">-<?php echo round((1 - $productsInfo[406]['prix_promo'] / $productsInfo[406]['prix']) * 100); ?>%</div>
-                    <?php endif; ?>
-                </div>
-                <div class="product-info">
-                    <h3 class="product-title"><?php echo htmlspecialchars($productsInfo[406]['nom'] ?? 'Grâce Limitée'); ?></h3>
-                    
-                    <?php if (isset($productsInfo[406]) && !empty($productsInfo[406]['prix_promo'])): ?>
-                        <p class="product-price">
-                            <span class="price-old"><?php echo number_format($productsInfo[406]['prix'], 0, ',', ' '); ?> €</span> 
-                            <?php echo number_format($productsInfo[406]['prix_promo'], 0, ',', ' '); ?> €
-                        </p>
-                    <?php else: ?>
-                        <p class="product-price"><?php echo isset($productsInfo[406]) ? number_format($productsInfo[406]['prix'], 0, ',', ' ').' €' : '13 500 €'; ?></p>
-                    <?php endif; ?>
-                    
-                    <?php echo generateStockIndicator(406); ?>
-                    
-                    <div class="product-actions">
-                        <?php if (isProductAvailable(406)): ?>
-                            <button class="add-to-cart-btn" data-product-id="406">Ajouter au panier</button>
-                        <?php else: ?>
-                            <button class="add-to-cart-btn disabled" data-product-id="406" disabled>Indisponible</button>
-                        <?php endif; ?>
-                        
-                        <button class="add-to-wishlist-btn" data-product-id="406" aria-label="Ajouter aux favoris">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Troisième produit femme - Éclat Unique -->
-            <div class="product-card" data-product-id="407">
-                <div class="product-image-container">
-                    <img src="../../assets/img/products/EclatUnique-edition-limited.png" alt="<?php echo htmlspecialchars($productsInfo[407]['nom'] ?? 'Éclat Unique'); ?>" class="product-image" loading="lazy">
-                    <div class="product-overlay">
-                        <button class="quick-view-btn" data-product-id="407">Aperçu rapide</button>
-                    </div>
-                    <?php if (isset($productsInfo[407]) && $productsInfo[407]['nouveaute']): ?>
-                        <div class="product-badge new">Nouveau</div>
-                    <?php endif; ?>
-                    <?php if (isset($productsInfo[407]) && !empty($productsInfo[407]['prix_promo'])): ?>
-                        <div class="product-badge sale">-<?php echo round((1 - $productsInfo[407]['prix_promo'] / $productsInfo[407]['prix']) * 100); ?>%</div>
-                    <?php endif; ?>
-                </div>
-                <div class="product-info">
-                    <h3 class="product-title"><?php echo htmlspecialchars($productsInfo[407]['nom'] ?? 'Éclat Unique'); ?></h3>
-                    
-                    <?php if (isset($productsInfo[407]) && !empty($productsInfo[407]['prix_promo'])): ?>
-                        <p class="product-price">
-                            <span class="price-old"><?php echo number_format($productsInfo[407]['prix'], 0, ',', ' '); ?> €</span> 
-                            <?php echo number_format($productsInfo[407]['prix_promo'], 0, ',', ' '); ?> €
-                        </p>
-                    <?php else: ?>
-                        <p class="product-price"><?php echo isset($productsInfo[407]) ? number_format($productsInfo[407]['prix'], 0, ',', ' ').' €' : '13 500 €'; ?></p>
-                    <?php endif; ?>
-                    
-                    <?php echo generateStockIndicator(407); ?>
-                    
-                    <div class="product-actions">
-                        <?php if (isProductAvailable(407)): ?>
-                            <button class="add-to-cart-btn" data-product-id="407">Ajouter au panier</button>
-                        <?php else: ?>
-                            <button class="add-to-cart-btn disabled" data-product-id="407" disabled>Indisponible</button>
-                        <?php endif; ?>
-                        
-                        <button class="add-to-wishlist-btn" data-product-id="407" aria-label="Ajouter aux favoris">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Quatrième produit femme - Essence Précieuse -->
-            <div class="product-card" data-product-id="408">
-                <div class="product-image-container">
-                    <img src="../../assets/img/products/EssencePrecieuse-edition-limited.png" alt="<?php echo htmlspecialchars($productsInfo[408]['nom'] ?? 'Essence Précieuse'); ?>" class="product-image" loading="lazy">
-                    <div class="product-overlay">
-                        <button class="quick-view-btn" data-product-id="408">Aperçu rapide</button>
-                    </div>
-                    <?php if (isset($productsInfo[408]) && $productsInfo[408]['nouveaute']): ?>
-                        <div class="product-badge new">Nouveau</div>
-                    <?php endif; ?>
-                    <?php if (isset($productsInfo[408]) && !empty($productsInfo[408]['prix_promo'])): ?>
-                        <div class="product-badge sale">-<?php echo round((1 - $productsInfo[408]['prix_promo'] / $productsInfo[408]['prix']) * 100); ?>%</div>
-                    <?php endif; ?>
-                </div>
-                <div class="product-info">
-                    <h3 class="product-title"><?php echo htmlspecialchars($productsInfo[408]['nom'] ?? 'Essence Précieuse'); ?></h3>
-                    
-                    <?php if (isset($productsInfo[408]) && !empty($productsInfo[408]['prix_promo'])): ?>
-                        <p class="product-price">
-                            <span class="price-old"><?php echo number_format($productsInfo[408]['prix'], 0, ',', ' '); ?> €</span> 
-                            <?php echo number_format($productsInfo[408]['prix_promo'], 0, ',', ' '); ?> €
-                        </p>
-                    <?php else: ?>
-                        <p class="product-price"><?php echo isset($productsInfo[408]) ? number_format($productsInfo[408]['prix'], 0, ',', ' ').' €' : '12 900 €'; ?></p>
-                    <?php endif; ?>
-                    
-                    <?php echo generateStockIndicator(408); ?>
-                    
-                    <div class="product-actions">
-                        <?php if (isProductAvailable(408)): ?>
-                            <button class="add-to-cart-btn" data-product-id="408">Ajouter au panier</button>
-                        <?php else: ?>
-                            <button class="add-to-cart-btn disabled" data-product-id="408" disabled>Indisponible</button>
-                        <?php endif; ?>
-                        
-                        <button class="add-to-wishlist-btn" data-product-id="408" aria-label="Ajouter aux favoris">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
@@ -499,10 +294,16 @@ include($relativePath . '/includes/header.php');
                 if(isset($recommendedInfo[$recId])):
             ?>
             <div class="recommendation-item">
-                <img src="../../assets/img/products/<?php echo $recId; ?>.jpg" alt="<?php echo htmlspecialchars($recommendedInfo[$recId]['nom'] ?? ''); ?>" loading="lazy">
+                <?php if (!empty($recommendedInfo[$recId]['image'])): ?>
+                    <img src="<?php echo $relativePath; ?>/uploads/products/<?php echo htmlspecialchars(basename($recommendedInfo[$recId]['image'])); ?>" 
+                         alt="<?php echo htmlspecialchars($recommendedInfo[$recId]['nom']); ?>" 
+                         loading="lazy">
+                <?php else: ?>
+                    <div class="no-image"><i class="fas fa-image"></i></div>
+                <?php endif; ?>
                 <h3><?php echo htmlspecialchars($recommendedInfo[$recId]['nom'] ?? ''); ?></h3>
                 
-                <?php if (isset($recommendedInfo[$recId]) && !empty($recommendedInfo[$recId]['prix_promo'])): ?>
+                <?php if (!empty($recommendedInfo[$recId]['prix_promo'])): ?>
                     <p class="product-price">
                         <span class="price-old"><?php echo number_format($recommendedInfo[$recId]['prix'], 0, ',', ' '); ?> €</span> 
                         <?php echo number_format($recommendedInfo[$recId]['prix_promo'], 0, ',', ' '); ?> €
@@ -579,7 +380,6 @@ include($relativePath . '/includes/footer.php');
         }
     });
 </script>
-
 
 </body>
 </html>

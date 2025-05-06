@@ -72,8 +72,8 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         <nav aria-label="Navigation principale">
             <ul class="menu-bar">
                 <li><a href="<?php echo $relativePath; ?>/pages/Accueil.php" <?php if($currentPage == 'Accueil.php') echo 'class="active"'; ?>>Accueil</a></li>
-                <li><a href="<?php echo $relativePath; ?>/pages/Collections.php" <?php if($currentPage == 'Collections.php') echo 'class="active"'; ?>>Collections</a></li>
-                <li><a href="<?php echo $relativePath; ?>/pages/Montres.php" <?php if($currentPage == 'Montres.php') echo 'class="active"'; ?>>Montres</a></li>
+                <li><a href="<?php echo $relativePath; ?>/pages/collections/Collections.php" <?php if($currentPage == 'Collections.php') echo 'class="active"'; ?>>Collections</a></li>
+                <li><a href="<?php echo $relativePath; ?>/pages/products/Montres.php" <?php if($currentPage == 'Montres.php') echo 'class="active"'; ?>>Montres</a></li>
                 <li><a href="<?php echo $relativePath; ?>/pages/APropos.php" <?php if($currentPage == 'APropos.php') echo 'class="active"'; ?>>À propos</a></li>
                 <li><a href="<?php echo $relativePath; ?>/pages/Contact.php" <?php if($currentPage == 'Contact.php') echo 'class="active"'; ?>>Contact</a></li>
             </ul>
@@ -143,7 +143,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                     </div>
                     <div class="cart-dropdown-buttons">
                         <a href="<?php echo $relativePath; ?>/pages/products/panier.php" class="cart-dropdown-button secondary">Voir le panier</a>
-                        <a href="<?php echo $relativePath; ?>/pages/Montres.php" class="cart-dropdown-button primary">Découvrir nos montres</a>
+                        <a href="<?php echo $relativePath; ?>/pages/products/Montres.php" class="cart-dropdown-button primary">Découvrir nos montres</a>
                     </div>
                 </div>
             </div>

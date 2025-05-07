@@ -591,8 +591,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <input type="hidden" name="description" id="description" value="<?php echo htmlspecialchars($formData['description']); ?>">
                             <small class="form-text">Description détaillée avec formatage</small>
                         </div>
-                    </div>
-                    
+
                     <div class="form-container">
                         <h2 class="form-title">Prix et stock</h2>
                         
@@ -798,9 +797,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 quill.root.innerHTML = initialContent;
             }
             
-            // Mise à jour du champ caché lors de la modification
+            // Dans l'événement text-change
             quill.on('text-change', function() {
-                document.getElementById('description').value = quill.root.innerHTML;
+                // Au lieu de stocker le HTML, on stocke uniquement le texte
+                document.getElementById('description').value = quill.getText();
             });
             
             // Prévisualisation de l'image principale
@@ -899,8 +899,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 document.querySelector('.btn-submit').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement en cours...';
                 document.querySelector('.btn-submit').disabled = true;
                 
-                // Assurez-vous que le contenu de l'éditeur est bien enregistré
-                document.getElementById('description').value = quill.root.innerHTML;
+                // Stocker uniquement le texte brut sans balises HTML
+                document.getElementById('description').value = quill.getText();
             });
         });
     </script>

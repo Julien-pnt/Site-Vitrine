@@ -1,9 +1,11 @@
 /* Header et navigation styles - Structure en 3 parties */
 .header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 15px 40px;
+    justify-content: space-between;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 100;
     background-color: #1c1c1c;
     color: white;
     position: sticky;
@@ -12,11 +14,12 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     width: 100%;
     box-sizing: border-box;
+    height: 80px; /* Hauteur fixe pour le header */
 }
 
 /* 1. Logo à gauche */
 .logo-container {
-    flex: 0 0 auto;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
 }
@@ -31,15 +34,20 @@ nav {
     flex: 1;
     display: flex;
     justify-content: center;
+    height: 100%;
+    align-items: center;
 }
 
 .menu-bar {
     display: flex;
+    margin: 0 auto;
     list-style: none;
     margin: 0;
     padding: 0;
     gap: 40px;
     justify-content: center;
+    height: 100%;
+    align-items: center;
 }
 
 .menu-bar li a {
@@ -78,14 +86,27 @@ nav {
 .user-cart-container {
     display: flex;
     align-items: center;
-    gap: 25px;
-    flex: 0 0 auto;
+    gap: 20px;
     margin-left: auto;
+    flex: 0 0 auto;
+    position: relative;
+    z-index: 100;
+    height: 100%;
+    display: flex;
+    align-items: center;
 }
 
 /* Styles pour l'icône utilisateur */
 .user-menu-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
+    color: white;
+    height: 80px; /* Même hauteur que le header */
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
 }
 
 .user-icon-wrapper {
@@ -94,7 +115,7 @@ nav {
     cursor: pointer;
     padding: 5px;
     color: white;
-    transition: color 0.3s ease;
+    transition: color 0.2s ease;
 }
 
 .user-icon-wrapper:hover {
@@ -107,32 +128,92 @@ nav {
     transition: transform 0.3s ease;
 }
 
-/* Styles pour l'icône panier */
+/* ================ STYLE DU PANIER DROPDOWN ================ */
+/* Correction du badge pour qu'il reste cohérent sur toutes les pages */
 .cart-icon {
-    position: relative;
-    cursor: pointer;
-    padding: 8px;
-    color: white;
-    transition: color 0.3s ease;
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
-.cart-icon:hover {
-    color: #d4af37;
+.cart-icon svg {
+    width: 24px !important;
+    height: 24px !important;
+    position: relative !important;
+    z-index: 101 !important;
 }
 
 .cart-badge {
+    position: absolute !important;
+    top: 25% !important; /* Positionnement relatif en pourcentage */
+    right: 25% !important; /* Positionnement relatif en pourcentage */
+    min-width: 18px !important;
+    height: 18px !important;
+    background-color: #d4af37 !important;
+    color: white !important;
+    font-size: 10px !important;
+    font-weight: bold !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    padding: 2px !important;
+    z-index: 102 !important;
+    transform: translate(50%, -50%) !important; /* Ajustement précis */
+}
+
+.cart-dropdown {
+    position: absolute;
+    top: calc(100% + 10px); /* 10px de décalage sous l'icône */
+    right: -10px; /* Ajustez la position horizontale */
+    width: 320px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    
+    /* Importante correction: */
+    display: none;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-5px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+}
+
+/* Flèche du dropdown */
+.cart-dropdown:before {
+    content: '';
     position: absolute;
     top: -8px;
-    right: -8px;
-    background-color: #d4af37;
-    color: white;
-    font-size: 12px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    right: 18px;
+    width: 16px;
+    height: 16px;
+    background: white;
+    transform: rotate(45deg);
+    box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* État actif - La classe que JS ajoute */
+.cart-dropdown.show {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Pour debugging si besoin */
+.force-visible {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    border: 2px solid red !important;
+}
+
+/* Assurez-vous que le menu utilisateur est aussi au-dessus des autres éléments */
+.user-cart-container {
+    position: relative;
+    z-index: 100;
 }
 
 /* Styles pour le menu utilisateur déroulant */
@@ -198,44 +279,71 @@ nav {
 }
 
 /* Styles pour le dropdown du panier */
-.cart-dropdown {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: -10px;
-    width: 320px;
-    background-color: white;
-    border-radius: 4px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    padding: 1rem;
-    z-index: 1000;
-    /* Par défaut, le dropdown est masqué */
-    display: none;
-}
-
-/* La classe show est ajoutée par JavaScript */
-.cart-dropdown.show {
-    display: block;
-}
-
 .cart-dropdown-header {
-    border-bottom: 1px solid #eee;
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.cart-dropdown-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+.close-cart-dropdown {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.2s ease;
+}
+
+.close-cart-dropdown:hover {
+    color: var(--primary-color);
+}
+
+.cart-dropdown-empty {
+    padding: 30px 20px;
+    text-align: center;
+    color: #888;
+}
+
+.cart-dropdown-empty i {
+    font-size: 2.5rem;
+    color: #ddd;
+    margin-bottom: 10px;
+}
+
+.cart-dropdown-empty p {
+    margin: 0;
+}
+
+.cart-dropdown-items {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px 0;
 }
 
 .cart-item {
     display: flex;
-    align-items: center;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #f5f5f5;
+    padding: 10px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
 }
 
 .cart-item-image {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     overflow: hidden;
     border-radius: 4px;
-    margin-right: 0.75rem;
+    background-color: #f9f9f9;
+    margin-right: 15px;
+    flex-shrink: 0;
 }
 
 .cart-item-image img {
@@ -244,61 +352,149 @@ nav {
     object-fit: cover;
 }
 
-.cart-item-info {
+.cart-item-details {
     flex-grow: 1;
 }
 
-.cart-item-info h4 {
-    margin: 0;
+.cart-item-title {
+    margin: 0 0 5px;
     font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--secondary-color);
 }
 
 .cart-item-price {
-    font-size: 0.8rem;
-    color: #666;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    margin-bottom: 5px;
 }
 
-.cart-item-remove {
+.price-old {
+    text-decoration: line-through;
+    color: #888;
+    font-size: 0.8rem;
+    margin-left: 5px;
+}
+
+.cart-item-quantity {
+    display: flex;
+    align-items: center;
+}
+
+.quantity-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    background-color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.quantity-btn:hover {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.quantity-value {
+    margin: 0 8px;
+    font-size: 0.85rem;
+}
+
+.remove-cart-item {
+    position: absolute;
+    right: 15px;
+    top: 10px;
     background: none;
     border: none;
+    color: #ccc;
     cursor: pointer;
-    color: #999;
-    padding: 0.25rem;
+    transition: color 0.2s ease;
 }
 
-.cart-item-remove:hover {
-    color: #d4af37;
+.remove-cart-item:hover {
+    color: #dc3545;
 }
 
 .cart-dropdown-total {
     display: flex;
     justify-content: space-between;
-    font-weight: bold;
-    margin: 1rem 0;
+    padding: 15px 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    font-weight: 600;
 }
 
 .cart-dropdown-buttons {
     display: flex;
-    gap: 0.5rem;
+    padding: 0 20px 20px;
+    gap: 10px;
+}
+
+.cart-dropdown-buttons.single {
+    justify-content: center;
 }
 
 .cart-dropdown-button {
-    padding: 0.5rem 1rem;
-    text-decoration: none;
+    flex: 1;
+    padding: 10px;
     text-align: center;
+    text-decoration: none;
     border-radius: 4px;
-    flex-grow: 1;
-    font-size: 0.9rem;
-}
-
-.cart-dropdown-button.primary {
-    background: linear-gradient(to bottom, #d4af37, #c0992a);
-    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
 }
 
 .cart-dropdown-button.secondary {
-    background-color: #f5f5f5;
-    color: #333;
+    background-color: #f8f9fa;
+    color: #495057;
+    border: 1px solid #ddd;
+}
+
+.cart-dropdown-button.secondary:hover {
+    background-color: #e9ecef;
+}
+
+.cart-dropdown-button.primary {
+    background: linear-gradient(135deg, var(--primary-color), #c0a02c);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
+}
+
+.cart-dropdown-button.primary:hover {
+    background: linear-gradient(135deg, #d4b347, var(--primary-color));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3);
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+}
+
+.no-image i {
+    font-size: 1.5rem;
+    color: #dee2e6;
 }
 
 /* Notification styles */

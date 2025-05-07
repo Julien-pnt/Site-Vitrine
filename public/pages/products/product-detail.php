@@ -738,6 +738,338 @@ try {
                 margin-top: 0.5rem;
             }
         }
+
+        /* ================ STYLE DES AVIS CLIENTS ================ */
+        .product-reviews {
+            padding: 5rem 0;
+            background-color: #fcfcfc;
+            position: relative;
+        }
+
+        .product-reviews::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: var(--color-gold);
+        }
+
+        .reviews-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .reviews-title {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            position: relative;
+            padding-bottom: 0.8rem;
+        }
+
+        .reviews-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: var(--color-gold);
+        }
+
+        /* Section résumé des avis */
+        .reviews-summary {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .average-rating {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+            text-align: center;
+            min-width: 280px;
+            transition: transform 0.3s ease;
+        }
+
+        .average-rating:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .rating-number {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--color-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .rating-stars {
+            margin-bottom: 0.8rem;
+        }
+
+        .rating-stars i {
+            color: var(--color-gold);
+            font-size: 1.3rem;
+            margin: 0 2px;
+        }
+
+        .rating-count {
+            font-family: var(--font-primary);
+            font-size: 0.95rem;
+            color: var(--color-text-light);
+        }
+
+        /* Liste des avis */
+        .reviews-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .review-item {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1.8rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.04);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .review-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border-left-color: var(--color-gold);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+        }
+
+        .review-author {
+            font-weight: 600;
+            color: var(--color-dark);
+            font-size: 1.05rem;
+        }
+
+        .review-date {
+            color: var(--color-text-light);
+            font-size: 0.9rem;
+        }
+
+        .review-rating {
+            margin-bottom: 1rem;
+        }
+
+        .review-rating i {
+            color: var(--color-gold);
+            font-size: 1rem;
+            margin-right: 2px;
+        }
+
+        .review-content {
+            font-family: var(--font-primary);
+            color: var(--color-text);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        /* Message quand il n'y a pas d'avis */
+        .no-reviews {
+            text-align: center;
+            background-color: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.04);
+            margin-bottom: 3rem;
+        }
+
+        .no-reviews p {
+            color: var(--color-text-light);
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        /* Formulaire d'avis */
+        .review-form-container {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+            margin-top: 2rem;
+        }
+
+        .review-form-container h3 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--color-dark);
+            text-align: center;
+            position: relative;
+            padding-bottom: 0.8rem;
+        }
+
+        .review-form-container h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: var(--color-gold);
+        }
+
+        #review-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        #review-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--color-dark);
+            font-size: 0.95rem;
+        }
+
+        .rating-select {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .rating-star {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #ddd;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .rating-star:hover, .rating-star.active {
+            color: var(--color-gold);
+            transform: scale(1.15);
+        }
+
+        #review-form textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--color-gray-300);
+            border-radius: 8px;
+            resize: vertical;
+            font-family: var(--font-primary);
+            transition: border-color 0.3s ease;
+        }
+
+        #review-form textarea:focus {
+            outline: none;
+            border-color: var(--color-gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .submit-review-btn {
+            background: linear-gradient(135deg, #d4af37, #a17b10);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 0.8rem 2rem;
+            font-family: var(--font-primary);
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .submit-review-btn:hover {
+            background: linear-gradient(135deg, #e5c458, #d4af37);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Message pour se connecter */
+        .login-to-review {
+            text-align: center;
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.04);
+            margin-top: 2rem;
+        }
+
+        .login-to-review p {
+            font-size: 1.05rem;
+            color: var(--color-text);
+        }
+
+        .login-to-review a {
+            color: var(--color-gold);
+            font-weight: 600;
+            text-decoration: underline;
+            transition: color 0.2s ease;
+        }
+
+        .login-to-review a:hover {
+            color: var(--color-gold-dark);
+        }
+
+        /* Adaptations mobiles */
+        @media (max-width: 768px) {
+            .rating-number {
+                font-size: 2.5rem;
+            }
+            
+            .review-form-container {
+                padding: 1.5rem;
+            }
+            
+            .reviews-container {
+                padding: 0 1rem;
+            }
+            
+            .review-item {
+                padding: 1.2rem;
+            }
+            
+            .review-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .average-rating {
+                padding: 1.5rem;
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .rating-stars i {
+                font-size: 1.1rem;
+            }
+            
+            .rating-select {
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>

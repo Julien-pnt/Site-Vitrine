@@ -12,6 +12,41 @@ require_once '../../php/config/database.php';
 $db = new Database();
 $conn = $db->getConnection();
 
+// Fonction pour générer l'indicateur de stock
+function generateStockIndicator($productId) {
+    global $conn;
+    
+    $stmt = $conn->prepare("SELECT stock, stock_alerte FROM produits WHERE id = ?");
+    $stmt->execute([$productId]);
+    $stockInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$stockInfo) {
+        return '<div class="stock-indicator out-of-stock"><i class="fas fa-times-circle"></i> Indisponible</div>';
+    }
+    
+    $stock = $stockInfo['stock'];
+    $stockAlerte = $stockInfo['stock_alerte'];
+    
+    if ($stock <= 0) {
+        return '<div class="stock-indicator out-of-stock"><i class="fas fa-times-circle"></i> Rupture de stock</div>';
+    } elseif ($stock <= $stockAlerte) {
+        return '<div class="stock-indicator low-stock"><i class="fas fa-exclamation-circle"></i> Stock limité</div>';
+    } else {
+        return '<div class="stock-indicator in-stock"><i class="fas fa-check-circle"></i> En stock</div>';
+    }
+}
+
+// Fonction pour vérifier si un produit est disponible
+function isProductAvailable($productId) {
+    global $conn;
+    
+    $stmt = $conn->prepare("SELECT stock FROM produits WHERE id = ?");
+    $stmt->execute([$productId]);
+    $stock = $stmt->fetchColumn();
+    
+    return ($stock > 0);
+}
+
 // Récupérer les informations de l'utilisateur
 $userId = $_SESSION['user_id'];
 $stmt = $conn->prepare("SELECT * FROM utilisateurs WHERE id = ?");
@@ -87,448 +122,373 @@ $relativePath = "..";
             color: var(--medium-gray);
             font-size: var(--font-size-sm);
         }
-        
-        /* Actions en haut de la liste */
-        .wishlist-actions {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: var(--spacing-lg);
-        }
-        
-        .btn-secondary {
-            background-color: var(--light-gray);
-            color: var(--dark-gray);
-            border: 1px solid var(--border-color);
-            padding: var(--spacing-sm) var(--spacing-lg);
-            border-radius: var(--radius-sm);
-            text-decoration: none;
-            font-size: var(--font-size-sm);
-            transition: var(--transition);
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        
-        .btn-secondary i {
-            margin-right: var(--spacing-sm);
-        }
-        
-        .btn-secondary:hover {
-            background-color: var(--border-color);
-        }
-        
-        .btn-danger {
-            background-color: var(--danger-color);
-            color: var(--light-color);
-            border: none;
-            padding: var(--spacing-sm) var(--spacing-lg);
-            border-radius: var(--radius-sm);
-            font-size: var(--font-size-sm);
-            transition: var(--transition);
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        
-        .btn-danger:hover {
-            background-color: #d32f2f;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        /* Grille des favoris */
-        .wishlist-grid {
+
+        /* AMÉLIORATIONS DE LA LISTE DE SOUHAITS */
+
+        /* Style amélioré pour la liste avec produits */
+        .wishlist-items {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: var(--spacing-lg);
-            margin-bottom: var(--spacing-xl);
+            gap: 25px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease-out forwards;
         }
-        
+
+        /* Correction pour la section vide */
+        .wishlist-items {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 60vh;
+        }
+
+        /* Animation d'entrée progressive des éléments */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes floatAnimation {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* Style amélioré des cartes produit */
         .wishlist-item {
-            background-color: var(--light-color);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
             overflow: hidden;
-            border: 1px solid var(--border-color);
-            transition: var(--transition);
-            position: relative;
-            animation: fadeIn 0.5s ease forwards;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            margin-bottom: 20px;
         }
-        
+
         .wishlist-item:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-md);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
             border-color: rgba(212, 175, 55, 0.3);
         }
-        
+
         .wishlist-item-image {
             position: relative;
-            height: 220px;
+            height: 240px;
             overflow: hidden;
-            background-color: var(--light-gray);
+            background: linear-gradient(to right, #f9f9f9, #f1f1f1);
         }
-        
+
         .wishlist-item-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
+            transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
         }
-        
+
         .wishlist-item:hover .wishlist-item-image img {
-            transform: scale(1.05);
+            transform: scale(1.07);
         }
-        
-        .remove-from-wishlist {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.9);
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--dark-gray);
-            transition: var(--transition);
-            z-index: 1;
-        }
-        
-        .remove-from-wishlist:hover {
-            background-color: var(--danger-color);
-            color: var(--light-color);
-        }
-        
+
         .wishlist-item-details {
-            padding: var(--spacing-lg);
+            padding: 22px;
         }
-        
+
         .item-title {
             font-family: var(--font-primary);
-            font-size: var(--font-size-md);
-            margin-bottom: var(--spacing-sm);
+            font-size: 1.15rem;
+            margin-bottom: 15px;
             line-height: 1.4;
-            height: 2.8em;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
+            font-weight: 600;
         }
-        
+
         .item-title a {
             color: var(--secondary-color);
             text-decoration: none;
-            transition: var(--transition);
+            transition: color 0.2s ease;
         }
-        
+
         .item-title a:hover {
             color: var(--primary-color);
         }
-        
-        .item-reference {
-            font-size: var(--font-size-xs);
-            color: var(--medium-gray);
-            margin-bottom: var(--spacing-sm);
-        }
-        
+
         .item-price {
-            margin-bottom: var(--spacing-md);
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: var(--spacing-xs);
+            font-family: var(--font-primary);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 16px;
         }
-        
-        .old-price {
-            color: var(--medium-gray);
-            text-decoration: line-through;
-            font-size: var(--font-size-sm);
+
+        .item-meta {
+            margin-top: 15px;
+            margin-bottom: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
         }
-        
-        .current-price {
-            color: var(--secondary-color);
-            font-weight: 600;
-            font-size: var(--font-size-lg);
-        }
-        
-        .item-stock {
-            margin-bottom: var(--spacing-md);
-            font-size: var(--font-size-xs);
-        }
-        
-        .in-stock {
-            color: var(--success-color);
-            display: inline-flex;
-            align-items: center;
-        }
-        
-        .in-stock::before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: var(--success-color);
-            margin-right: var(--spacing-xs);
-        }
-        
-        .out-of-stock {
-            color: var(--danger-color);
-            display: inline-flex;
-            align-items: center;
-        }
-        
-        .out-of-stock::before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: var(--danger-color);
-            margin-right: var(--spacing-xs);
-        }
-        
-        .item-actions {
-            margin-bottom: var(--spacing-md);
-        }
-        
-        .add-to-cart, .notify-stock {
-            width: 100%;
-            padding: var(--spacing-sm) var(--spacing-md);
-            border-radius: var(--radius-sm);
-            font-size: var(--font-size-sm);
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-            gap: var(--spacing-xs);
-        }
-        
-        .add-to-cart {
-            background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
-            color: var(--light-color);
-        }
-        
-        .add-to-cart:hover {
-            background: linear-gradient(to right, var(--primary-dark), var(--secondary-color));
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .notify-stock {
-            background-color: var(--light-gray);
-            color: var(--dark-gray);
-            border: 1px solid var(--border-color);
-        }
-        
-        .notify-stock:hover {
-            background-color: var(--border-color);
-        }
-        
-        .item-date {
-            font-size: var(--font-size-xs);
-            color: var(--medium-gray);
+
+        .date-added {
+            font-size: 0.85rem;
+            color: #777;
             font-style: italic;
         }
-        
-        /* État vide */
-        .empty-state-container {
-            background-color: var(--light-color);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-        }
-        
-        .empty-state {
+
+        /* Amélioration de l'état vide */
+        .empty-wishlist {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: var(--spacing-xl) var(--spacing-xl);
+            justify-content: center;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            padding: 60px 30px;
             text-align: center;
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            border: 1px solid var(--border-color);
+            animation: fadeIn 0.8s ease-out forwards;
         }
-        
-        .empty-icon {
-            font-size: 4rem;
-            color: var(--light-gray);
-            margin-bottom: var(--spacing-lg);
-            opacity: 0.5;
+
+        .empty-wishlist i,
+        .empty-wishlist h2,
+        .empty-wishlist p,
+        .empty-wishlist a {
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
         }
-        
-        .empty-state h2 {
-            font-family: var(--font-primary);
-            font-size: var(--font-size-lg);
+
+        .empty-wishlist h2 {
+            text-align: center;
+            margin: 0 auto 15px;
             color: var(--secondary-color);
-            margin-bottom: var(--spacing-md);
+            font-family: var(--font-primary);
         }
-        
-        .empty-state p {
-            color: var(--medium-gray);
-            margin-bottom: var(--spacing-lg);
-            max-width: 500px;
+
+        .empty-wishlist p {
+            font-size: 1.2rem;
+            color: var(--dark-gray);
+            margin: 0 auto 30px;
+            line-height: 1.6;
+            text-align: center;
+            max-width: 90%;
         }
-        
-        .btn-primary {
-            background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
-            color: var(--light-color);
-            border: none;
-            padding: var(--spacing-md) var(--spacing-xl);
-            border-radius: var(--radius-sm);
+
+        .empty-wishlist i {
+            font-size: 5rem;
+            color: rgba(212, 175, 55, 0.3);
+            margin-bottom: 25px;
+            display: block;
+            animation: floatAnimation 3s ease-in-out infinite;
+        }
+
+        .empty-wishlist .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
             text-decoration: none;
-            font-size: var(--font-size-sm);
-            transition: var(--transition);
-            font-weight: 500;
-            box-shadow: var(--shadow-sm);
+            font-weight: 600;
             display: inline-flex;
             align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
         }
-        
-        .btn-primary:hover {
-            background: linear-gradient(to right, var(--primary-dark), var(--secondary-color));
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
+
+        .empty-wishlist .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
         }
-        
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: var(--spacing-xs);
-            margin-top: var(--spacing-xl);
+
+        .empty-wishlist .btn-primary i {
+            font-size: 1rem;
+            margin: 0;
+            animation: none;
         }
-        
-        .pagination-item {
+
+        /* Style pour les images manquantes */
+        .no-image {
+            width: 100%;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
-            background-color: var(--light-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            text-decoration: none;
-            font-size: var(--font-size-sm);
-            color: var(--dark-gray);
-            transition: var(--transition);
+            background: linear-gradient(135deg, #f5f5f5, #eeeeee);
         }
-        
-        .pagination-item:hover {
-            background-color: var(--light-gray);
-            border-color: var(--medium-gray);
+
+        .no-image i {
+            font-size: 3rem;
+            color: rgba(0, 0, 0, 0.1);
         }
-        
-        .pagination-item.active {
-            background-color: var(--primary-color);
-            color: var(--light-color);
-            border-color: var(--primary-color);
+
+        /* Actions pour la liste */
+        .wishlist-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
         }
-        
-        /* Modal de confirmation */
+
+        .wishlist-count {
+            font-size: 0.95rem;
+            color: var(--medium-gray);
+        }
+
+        .wishlist-count strong {
+            color: var(--secondary-color);
+        }
+
+        .wishlist-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ================ STYLE AMÉLIORÉ DE LA MODAL ================ */
         .modal {
             display: none;
             position: fixed;
-            z-index: 1050;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
             opacity: 0;
-            transition: opacity 0.3s ease;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
         }
-        
+
         .modal.show {
-            display: block;
+            display: flex;
             opacity: 1;
+            visibility: visible;
         }
-        
+
         .modal-content {
-            position: relative;
-            background-color: var(--light-color);
-            margin: 10% auto;
-            padding: var(--spacing-xl);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lg);
-            width: 100%;
+            background-color: white;
+            width: 90%;
             max-width: 500px;
-            transform: translateY(-50px);
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 0;
+            position: relative;
+            transform: translateY(20px);
             transition: transform 0.3s ease;
-            animation: modalFadeIn 0.3s forwards;
+            overflow: hidden;
         }
-        
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
+
         .modal.show .modal-content {
             transform: translateY(0);
         }
-        
-        .close-modal {
-            position: absolute;
-            top: var(--spacing-md);
-            right: var(--spacing-md);
-            font-size: var(--font-size-lg);
-            color: var(--medium-gray);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .close-modal:hover {
-            color: var(--dark-gray);
-        }
-        
-        .modal h3 {
+
+        .modal-content h3 {
+            padding: 20px 30px;
+            margin: 0;
             font-family: var(--font-primary);
+            background-color: #f8f8f8;
+            border-bottom: 1px solid #eaeaea;
             color: var(--secondary-color);
-            margin-bottom: var(--spacing-md);
-            font-size: var(--font-size-lg);
+            font-size: 1.4rem;
+            font-weight: 600;
         }
-        
-        .modal p {
-            margin-bottom: var(--spacing-lg);
+
+        .modal-content p {
+            padding: 30px;
+            margin: 0;
+            font-size: 1.1rem;
+            line-height: 1.6;
             color: var(--dark-gray);
         }
-        
+
         .modal-actions {
             display: flex;
             justify-content: flex-end;
-            gap: var(--spacing-md);
+            padding: 20px 30px;
+            background-color: #f8f8f8;
+            border-top: 1px solid #eaeaea;
+            gap: 15px;
         }
-        
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            color: #888;
+            cursor: pointer;
+            transition: color 0.2s ease;
         }
-        
-        /* Responsive */
-        @media (max-width: 992px) {
-            .wishlist-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+
+        .close-modal:hover {
+            color: var(--danger-color);
         }
-        
-        @media (max-width: 768px) {
-            .wishlist-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .wishlist-actions {
-                justify-content: center;
-            }
-            
+
+        /* ================ STYLE AMÉLIORÉ DES BOUTONS ================ */
+        .btn-danger {
+            background: linear-gradient(to bottom, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(231, 76, 60, 0.2);
+            font-size: 0.9rem;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(to bottom, #c0392b, #a93226);
+            box-shadow: 0 6px 10px rgba(231, 76, 60, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #ddd;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Force certains styles spécifiques pour corriger les problèmes */
+        #confirm-modal.modal {
+            display: none !important; /* Pour éviter les conflits de style */
+        }
+
+        #confirm-modal.modal.show {
+            display: flex !important;
+        }
+
+        /* Ajustement pour le responsive */
+        @media (max-width: 576px) {
             .modal-content {
-                width: 90%;
-                margin: 20% auto;
+                width: 95%;
+                margin: 10px;
             }
             
             .modal-actions {
@@ -537,7 +497,277 @@ $relativePath = "..";
             
             .modal-actions button {
                 width: 100%;
+                margin-bottom: 10px;
             }
+        }
+
+        /* Responsive fixes */
+        @media (max-width: 992px) {
+            .wishlist-items {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .wishlist-items {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .empty-wishlist {
+                padding: 40px 20px;
+            }
+            
+            .wishlist-actions {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .wishlist-buttons {
+                width: 100%;
+            }
+            
+            .wishlist-buttons button {
+                flex: 1;
+            }
+        }
+
+        /* Animation pour les cartes */
+        .wishlist-item {
+            animation: fadeIn 0.5s ease forwards;
+            animation-delay: calc(var(--order) * 0.1s);
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Indicateurs de stock */
+        .stock-indicator {
+            margin: 10px 0;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .stock-indicator i {
+            margin-right: 6px;
+        }
+
+        .in-stock {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .low-stock {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .out-of-stock {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .add-to-cart-btn.disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            background: linear-gradient(to bottom, #6c757d, #5a6268) !important;
+            box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2) !important;
+        }
+
+        .add-to-cart-btn.disabled:hover {
+            transform: none;
+            box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2) !important;
+        }
+
+        .stock-warning {
+            color: #ffc107;
+            font-style: italic;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        /* Amélioration du bouton Ajouter au panier */
+        .add-to-cart-btn {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-color), #c0a02c);
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .add-to-cart-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
+            transition: left 0.5s ease;
+            z-index: -1;
+        }
+
+        .add-to-cart-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.35);
+            background: linear-gradient(135deg, #d4b347, var(--primary-color));
+        }
+
+        .add-to-cart-btn:hover:before {
+            left: 100%;
+        }
+
+        .add-to-cart-btn:active {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .add-to-cart-btn i {
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .add-to-cart-btn:hover i {
+            transform: translateX(-3px);
+        }
+
+        /* Animation de succès */
+        .add-to-cart-btn.success-animation {
+            background: linear-gradient(135deg, #28a745, #1e7e34) !important;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25) !important;
+        }
+
+        /* Style pour le bouton pendant le chargement */
+        .add-to-cart-btn .fa-spinner {
+            animation: spin 1.2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Animation de vague pour l'effet d'ajout */
+        .add-to-cart-btn:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        .add-to-cart-btn:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+
+        /* Style amélioré pour le bouton de suppression */
+        .remove-from-wishlist {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(4px);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #dc3545;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10;
+            opacity: 0;
+            transform: scale(0.8) translateY(-5px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .wishlist-item:hover .remove-from-wishlist {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        .remove-from-wishlist i {
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .remove-from-wishlist:hover {
+            background-color: #dc3545;
+            color: white;
+            box-shadow: 0 5px 12px rgba(220, 53, 69, 0.3);
+            transform: scale(1.1);
+        }
+
+        .remove-from-wishlist:active {
+            transform: scale(0.95);
+        }
+
+        /* Animation de suppression améliorée */
+        @keyframes removeItem {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            20% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(30px);
+                height: 0;
+                margin: 0;
+                padding: 0;
+            }
+        }
+
+        .wishlist-item.removing {
+            animation: removeItem 0.5s ease forwards;
+            overflow: hidden;
         }
     </style>
 </head>
@@ -554,30 +784,34 @@ $relativePath = "..";
             <p>Les produits que vous avez ajoutés à votre liste de souhaits</p>
         </div>
         
-        <?php if (empty($wishlistItems)): ?>
-            <div class="empty-state-container">
-                <div class="empty-state">
-                    <i class="fas fa-heart empty-icon"></i>
-                    <h2>Aucun favori</h2>
-                    <p>Vous n'avez pas encore ajouté de produits à vos favoris. Parcourez notre collection de montres et ajoutez vos préférées à votre liste.</p>
-                    <a href="../pages/Montres.php" class="btn-primary">
-                        <i class="fas fa-shopping-bag"></i>&nbsp;Découvrir nos montres
-                    </a>
+        <?php if ($wishlistItems && count($wishlistItems) > 0): ?>
+            <div class="wishlist-actions">
+                <div class="wishlist-count">
+                    <strong><?php echo count($wishlistItems); ?></strong> article(s) dans votre liste de favoris
+                </div>
+                <div class="wishlist-buttons">
+                    <button id="clear-wishlist" class="btn-danger">
+                        <i class="fas fa-trash-alt"></i> Vider ma liste
+                    </button>
                 </div>
             </div>
-        <?php else: ?>
-            <div class="wishlist-actions">
-                <button id="clear-wishlist" class="btn-secondary">
-                    <i class="fas fa-trash-alt"></i> Vider ma liste
-                </button>
-            </div>
-            
-            <div class="wishlist-grid">
+        <?php endif; ?>
+
+        <div class="wishlist-items">
+            <?php if ($wishlistItems && count($wishlistItems) > 0): ?>
                 <?php foreach ($wishlistItems as $item): ?>
-                    <div class="wishlist-item" data-id="<?php echo $item['id']; ?>">
+                    <div class="wishlist-item" data-product-id="<?php echo $item['id']; ?>">
                         <div class="wishlist-item-image">
-                            <a href="../pages/product-details.php?id=<?php echo $item['id']; ?>">
-                                <img src="../assets/img/products/<?php echo htmlspecialchars($item['image']); ?>" alt="<?php echo htmlspecialchars($item['nom']); ?>">
+                            <a href="../pages/products/product-detail.php?id=<?php echo $item['id']; ?>">
+                                <?php if (!empty($item['image'])): ?>
+                                    <img src="../uploads/product/<?php echo htmlspecialchars(basename($item['image'])); ?>" 
+                                         alt="<?php echo htmlspecialchars($item['nom']); ?>" 
+                                         class="product-image" loading="lazy">
+                                <?php else: ?>
+                                    <div class="no-image">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                <?php endif; ?>
                             </a>
                             <button class="remove-from-wishlist" data-id="<?php echo $item['id']; ?>" aria-label="Supprimer des favoris">
                                 <i class="fas fa-times"></i>
@@ -586,76 +820,51 @@ $relativePath = "..";
                         
                         <div class="wishlist-item-details">
                             <h3 class="item-title">
-                                <a href="../pages/product-details.php?id=<?php echo $item['id']; ?>">
+                                <a href="../pages/products/product-detail.php?id=<?php echo $item['id']; ?>">
                                     <?php echo htmlspecialchars($item['nom']); ?>
                                 </a>
                             </h3>
                             
-                            <div class="item-reference">
-                                <?php if (!empty($item['reference'])): ?>
-                                    Réf: <?php echo htmlspecialchars($item['reference']); ?>
-                                <?php endif; ?>
-                            </div>
+                            <?php if (!empty($item['prix_promo'])): ?>
+                                <p class="item-price">
+                                    <span class="price-old"><?php echo number_format($item['prix'], 0, ',', ' '); ?> €</span> 
+                                    <?php echo number_format($item['prix_promo'], 0, ',', ' '); ?> €
+                                </p>
+                            <?php else: ?>
+                                <p class="item-price"><?php echo number_format($item['prix'], 0, ',', ' '); ?> €</p>
+                            <?php endif; ?>
                             
-                            <div class="item-price">
-                                <?php if (!empty($item['prix_promo']) && $item['prix_promo'] < $item['prix']): ?>
-                                    <span class="old-price"><?php echo number_format($item['prix'], 2, ',', ' '); ?> €</span>
-                                    <span class="current-price"><?php echo number_format($item['prix_promo'], 2, ',', ' '); ?> €</span>
-                                <?php else: ?>
-                                    <span class="current-price"><?php echo number_format($item['prix'], 2, ',', ' '); ?> €</span>
-                                <?php endif; ?>
+                            <div class="item-meta">
+                                <span class="date-added">Ajouté le <?php echo date('d/m/Y', strtotime($item['date_ajout'])); ?></span>
                             </div>
-                            
-                            <div class="item-stock">
-                                <?php if ($item['stock'] > 0): ?>
-                                    <span class="in-stock">En stock</span>
-                                <?php else: ?>
-                                    <span class="out-of-stock">Rupture de stock</span>
-                                <?php endif; ?>
-                            </div>
-                            
+
+                            <?php echo generateStockIndicator($item['id']); ?>
+
                             <div class="item-actions">
-                                <?php if ($item['stock'] > 0): ?>
-                                    <button class="add-to-cart" data-id="<?php echo $item['id']; ?>">
+                                <?php if (isProductAvailable($item['id'])): ?>
+                                    <button class="add-to-cart-btn" data-product-id="<?php echo $item['id']; ?>">
                                         <i class="fas fa-shopping-cart"></i> Ajouter au panier
                                     </button>
                                 <?php else: ?>
-                                    <button class="notify-stock" data-id="<?php echo $item['id']; ?>">
-                                        <i class="fas fa-bell"></i> M'alerter
+                                    <button class="add-to-cart-btn disabled" disabled>
+                                        <i class="fas fa-times-circle"></i> Indisponible
                                     </button>
                                 <?php endif; ?>
-                            </div>
-                            
-                            <div class="item-date">
-                                Ajouté le <?php echo date('d/m/Y', strtotime($item['date_ajout'])); ?>
                             </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
-            </div>
-            
-            <?php if ($totalPages > 1): ?>
-                <div class="pagination">
-                    <?php if ($page > 1): ?>
-                        <a href="?page=<?php echo $page - 1; ?>" class="pagination-item">
-                            <i class="fas fa-chevron-left"></i>
-                        </a>
-                    <?php endif; ?>
-                    
-                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                        <a href="?page=<?php echo $i; ?>" class="pagination-item <?php echo $i === $page ? 'active' : ''; ?>">
-                            <?php echo $i; ?>
-                        </a>
-                    <?php endfor; ?>
-                    
-                    <?php if ($page < $totalPages): ?>
-                        <a href="?page=<?php echo $page + 1; ?>" class="pagination-item">
-                            <i class="fas fa-chevron-right"></i>
-                        </a>
-                    <?php endif; ?>
+            <?php else: ?>
+                <div class="empty-wishlist">
+                    <i class="far fa-heart"></i>
+                    <h2>Votre liste de favoris est vide</h2>
+                    <p>Vous n'avez pas encore ajouté d'articles à votre liste de favoris. Parcourez notre catalogue et ajoutez vos coups de cœur !</p>
+                    <a href="../pages/products/Montres.php" class="btn-primary">
+                        <i class="fas fa-search"></i> Explorer nos montres
+                    </a>
                 </div>
             <?php endif; ?>
-        <?php endif; ?>
+        </div>
     </main>
 </div>
 
@@ -676,6 +885,14 @@ $relativePath = "..";
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Ajoutez un délai d'animation pour chaque élément de la liste
+    const wishlistItems = document.querySelectorAll('.wishlist-item');
+    if (wishlistItems) {
+        wishlistItems.forEach((item, index) => {
+            item.style.setProperty('--order', index);
+        });
+    }
+
     // Gestion du modal de confirmation
     const modal = document.getElementById('confirm-modal');
     const clearBtn = document.getElementById('clear-wishlist');
@@ -714,7 +931,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (confirmClearBtn) {
         confirmClearBtn.addEventListener('click', function() {
             // Envoyer la requête pour vider la liste
-            fetch('../php/api/wishlist/clear_wishlist.php', {
+            fetch('../../php/api/wishlist/clear_wishlist.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -746,7 +963,7 @@ document.addEventListener('DOMContentLoaded', function() {
             button.addEventListener('click', function() {
                 const productId = this.getAttribute('data-id');
                 
-                fetch('../php/api/wishlist/remove_from_wishlist.php', {
+                fetch('../../php/api/wishlist/remove_from_wishlist.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -761,7 +978,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (data.success) {
                         // Animer la suppression de l'élément
                         const wishlistItem = this.closest('.wishlist-item');
-                        wishlistItem.style.opacity = '0';
+                        wishlistItem.classList.add('removing');
+                        
                         setTimeout(() => {
                             wishlistItem.remove();
                             
@@ -769,7 +987,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (document.querySelectorAll('.wishlist-item').length === 0) {
                                 window.location.reload();
                             }
-                        }, 300);
+                        }, 500);
                     } else {
                         alert('Une erreur est survenue lors de la suppression du produit de vos favoris.');
                     }
@@ -783,13 +1001,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Ajouter un produit au panier
-    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn:not(.disabled)');
     if (addToCartButtons) {
         addToCartButtons.forEach(button => {
             button.addEventListener('click', function() {
-                const productId = this.getAttribute('data-id');
+                const productId = this.getAttribute('data-product-id');
                 
-                fetch('../php/api/cart/add_to_cart.php', {
+                // Ajouter une classe pour l'animation de chargement
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ajout en cours...';
+                this.disabled = true;
+                
+                fetch('../../php/api/cart/add_to_cart.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -802,21 +1024,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Changer le texte du bouton temporairement
-                        const originalText = this.innerHTML;
+                        // Animation de succès
                         this.innerHTML = '<i class="fas fa-check"></i> Ajouté au panier';
-                        this.disabled = true;
+                        this.classList.add('success-animation');
                         
                         setTimeout(() => {
-                            this.innerHTML = originalText;
+                            this.innerHTML = '<i class="fas fa-shopping-cart"></i> Ajouter au panier';
                             this.disabled = false;
+                            this.classList.remove('success-animation');
                         }, 2000);
                     } else {
+                        // Animation d'échec
+                        this.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erreur';
+                        
+                        setTimeout(() => {
+                            this.innerHTML = '<i class="fas fa-shopping-cart"></i> Ajouter au panier';
+                            this.disabled = false;
+                        }, 2000);
+                        
                         alert(data.message || 'Une erreur est survenue lors de l\'ajout au panier.');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    this.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erreur';
+                    
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-shopping-cart"></i> Ajouter au panier';
+                        this.disabled = false;
+                    }, 2000);
+                    
                     alert('Une erreur est survenue lors de l\'ajout au panier.');
                 });
             });

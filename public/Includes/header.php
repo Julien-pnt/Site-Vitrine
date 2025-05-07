@@ -53,6 +53,96 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <title><?php echo $pageTitle; ?></title>
     
     <?php if (isset($additionalHead)) echo $additionalHead; ?>
+    
+    <style>
+        /* RESET COMPLET du panier */
+        .cart-icon {
+            position: relative !important;
+            cursor: pointer;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #d4af37;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Supprimez toutes les anciennes règles */
+        .cart-dropdown {
+            /* Le style sera appliqué par JS */
+        }
+
+        /* Alignement correct des icônes */
+        .user-cart-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-left: auto;
+        }
+
+        .user-menu-container, .cart-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .user-icon-wrapper {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 5px);
+            right: -5px;
+            width: 220px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            z-index: 9998;
+            display: none;
+            padding: 10px 0;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(212, 175, 55, 0.1);
+        }
+
+        .dropdown-item i {
+            margin-right: 10px;
+            color: #d4af37;
+            width: 16px;
+            text-align: center;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #eee;
+            margin: 8px 0;
+        }
+    </style>
 </head>
 <body class="video-loaded">
     <!-- Loader -->
@@ -121,33 +211,82 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                 </div>
             </div>
             
+            <!-- Structure correcte pour l'icône du panier -->
             <div class="cart-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="9" cy="21" r="1"></circle>
                     <circle cx="20" cy="21" r="1"></circle>
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                 </svg>
-                <span class="cart-badge">0</span>
+                <span class="cart-badge"><?php echo isset($cartCount) ? $cartCount : 0; ?></span>
                 
-                <div class="cart-dropdown">
-                    <div class="cart-dropdown-header">
-                        <h3>Mon Panier</h3>
-                    </div>
-                    <div class="cart-dropdown-items">
-                        <!-- Le panier sera rempli dynamiquement via JavaScript -->
-                    </div>
-                    <div class="cart-dropdown-empty">Votre panier est vide</div>
-                    <div class="cart-dropdown-total">
-                        <span>Total:</span>
-                        <span class="cart-dropdown-total-value">0,00 €</span>
-                    </div>
-                    <div class="cart-dropdown-buttons">
-                        <a href="<?php echo $relativePath; ?>/pages/products/panier.php" class="cart-dropdown-button secondary">Voir le panier</a>
-                        <a href="<?php echo $relativePath; ?>/pages/products/Montres.php" class="cart-dropdown-button primary">Découvrir nos montres</a>
-                    </div>
-                </div>
+                <?php include_once(__DIR__ . '/cart-template.php'); ?>
             </div>
         </div>
     </header>
+
+    <!-- Solution extrême pour le panier -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Récupérer les éléments
+        const cartIcon = document.querySelector('.cart-icon');
+        const cartDropdown = document.querySelector('.cart-dropdown');
+        
+        if (cartIcon && cartDropdown) {
+            console.log("Script d'urgence activé pour le panier");
+            
+            // IMPORTANT: Ne PAS remplacer l'élément cartIcon car cela supprime le dropdown à l'intérieur
+            // const newCartIcon = cartIcon.cloneNode(true);
+            // cartIcon.parentNode.replaceChild(newCartIcon, cartIcon);
+            
+            // Au lieu de cela, supprimez simplement tous les écouteurs d'événements existants
+            const oldIcon = cartIcon.querySelector('svg');
+            const newIcon = oldIcon.cloneNode(true);
+            oldIcon.parentNode.replaceChild(newIcon, oldIcon);
+            
+            // RÉINITIALISER COMPLÈTEMENT LE DROPDOWN
+            Object.assign(cartDropdown.style, {
+                display: 'none',
+                position: 'absolute',
+                top: 'calc(100% + 5px)',
+                right: '-5px',
+                width: '320px',
+                backgroundColor: 'white', 
+                boxShadow: '0 5px 20px rgba(0,0,0,0.15)',
+                borderRadius: '8px',
+                zIndex: '9999',
+                // Force une couleur de texte visible
+                color: '#333'
+            });
+            
+            // Ajouter l'écouteur au SVG de l'icône
+            cartIcon.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                console.log("Clic sur panier détecté (script d'urgence)");
+                
+                // Basculer l'affichage directement
+                cartDropdown.style.display = 
+                    cartDropdown.style.display === 'block' ? 'none' : 'block';
+                
+                console.log("État du panier:", cartDropdown.style.display);
+            });
+            
+
+            
+            // Fermeture au clic extérieur
+            document.addEventListener('click', function(e) {
+                if (cartDropdown.style.display === 'block' && 
+                    !cartIcon.contains(e.target) && 
+                    !cartDropdown.contains(e.target)) {
+                    cartDropdown.style.display = 'none';
+                }
+            });
+        } else {
+            console.error("Éléments du panier introuvables");
+        }
+    });
+    </script>
 
     <!-- Le contenu spécifique de la page sera inséré ici -->

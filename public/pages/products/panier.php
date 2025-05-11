@@ -529,6 +529,28 @@ if ($isLoggedIn && isset($_POST['action'])) {
                 stroke-dashoffset: -124;
             }
         }
+
+        .loading-cell {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -601,6 +623,12 @@ if ($isLoggedIn && isset($_POST['action'])) {
     
     <!-- Main Cart Content -->
     <main class="cart-page">
+        <div style="margin-bottom: 20px; text-align: center;">
+            <button id="sync-cart-button" class="btn btn-secondary">
+                <i class="fas fa-sync"></i> Synchroniser le panier
+            </button>
+        </div>
+
         <div class="cart-page-header">
             <h1>Mon Panier</h1>
         </div>
@@ -612,7 +640,7 @@ if ($isLoggedIn && isset($_POST['action'])) {
         </div>
 
         <!-- Cart Content -->
-        <div class="cart-container">
+        <div class="cart-container" id="cart-container">
             <div class="cart-items">
                 <table class="cart-table">
                     <thead>
@@ -715,519 +743,320 @@ if ($isLoggedIn && isset($_POST['action'])) {
 
     <!-- Script de gestion du panier -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Récupérer les éléments du DOM
+        // Dans panier.php, vérifiez que vous utilisez le bon chemin
+        // Utilisez un chemin absolu pour être sûr
+        const apiBasePath = '../../../php/api/cart/';
+
+        /**
+         * Affiche une notification à l'utilisateur
+         */
+        function showNotification(message, type = 'success') {
+            // Créer l'élément de notification
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            // Ajouter au DOM
+            document.body.appendChild(notification);
+            
+            // Faire disparaître après 3 secondes
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
+            }, 3000);
+        }
+
+        /**
+         * Récupère et affiche les articles du panier depuis le serveur
+         */
+        function loadCart() {
+            const cartContainer = document.getElementById('cart-container');
             const cartItemsContainer = document.getElementById('cart-items-container');
-            const cartEmptyMessage = document.querySelector('.cart-empty');
-            const cartContainer = document.querySelector('.cart-container');
-            const subtotalElement = document.getElementById('cart-subtotal');
-            const totalElement = document.getElementById('cart-total');
-            const checkoutBtn = document.getElementById('checkout-btn');
-            const continueShoppingBtn = document.getElementById('continue-shopping');
-            const cartBadge = document.querySelector('.cart-badge');
-
-            /**
-             * Fonction pour récupérer le panier depuis localStorage
-             */
-            function getCart() {
-                return JSON.parse(localStorage.getItem('cart')) || [];
+            
+            // Ajouter un indicateur de chargement sans remplacer toute la structure
+            if (cartItemsContainer) {
+                cartItemsContainer.innerHTML = '<tr><td colspan="5" class="loading-cell"><div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement du panier...</div></td></tr>';
             }
-
-            /**
-             * Fonction pour sauvegarder le panier dans localStorage avec rafraîchissement plus rapide
-             */
-            function saveCart(cart, refresh = true) {
-                localStorage.setItem('cart', JSON.stringify(cart));
-                
-                // Uniquement pour les mises à jour de l'UI sans rafraîchissement
-                if (!refresh) {
-                    updateCartUI(cart);
-                }
-
-                // Synchroniser avec le serveur si l'utilisateur est connecté
-                <?php if ($isLoggedIn): ?>
-                syncCartWithServer(cart);
-                <?php endif; ?>
-                
-                // Rafraîchir la page plus rapidement si demandé
-                if (refresh) {
-                    setTimeout(function() {
-                        window.location.reload();
-                    }, 50); // Réduit de 800ms à 300ms pour une expérience plus rapide
-                }
-            }
-
-            /**
-             * Fonction pour synchroniser le panier avec le serveur
-             */
-            function syncCartWithServer(cart) {
-                fetch('panier.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `action=sync&cart=${encodeURIComponent(JSON.stringify(cart))}`
+            
+            fetch(apiBasePath + 'get-cart.php')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Erreur HTTP: ${response.status}`);
+                    }
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json();
+                    } else {
+                        return response.text().then(text => {
+                            console.error('Réponse non-JSON reçue:', text);
+                            throw new Error('Réponse invalide du serveur');
+                        });
+                    }
                 })
-                .then(response => response.json())
                 .then(data => {
-                    if (!data.success) {
-                        console.error('Erreur de synchronisation du panier');
+                    console.log('Données reçues:', data);
+                    
+                    if (data.success) {
+                        if (data.cartContent && data.cartContent.length > 0) {
+                            console.log('Premier article brut:', data.cartContent[0]);
+                            const adaptedItems = adaptCartData(data.cartContent);
+                            console.log('Premier article adapté:', adaptedItems[0]);
+                            displayCartItems(adaptedItems);
+                        } else {
+                            displayCartItems([]);
+                        }
+                        
+                        // Mettre à jour le compteur de panier dans le header
+                        const cartCountBadge = document.querySelector('.cart-badge');
+                        if (cartCountBadge) {
+                            cartCountBadge.textContent = data.cartCount || '0';
+                        }
+                    } else {
+                        showNotification('Erreur: ' + (data.message || 'Erreur inconnue'), 'error');
+                        if (cartItemsContainer) {
+                            cartItemsContainer.innerHTML = '<tr><td colspan="5">Une erreur est survenue lors du chargement du panier.</td></tr>';
+                        }
                     }
                 })
                 .catch(error => {
                     console.error('Erreur:', error);
+                    showNotification('Erreur de connexion', 'error');
+                    if (cartItemsContainer) {
+                        cartItemsContainer.innerHTML = '<tr><td colspan="5">Impossible de charger le panier. Veuillez réessayer.</td></tr>';
+                    }
                 });
-            }
+        }
 
-            /**
-             * Mettre à jour l'interface utilisateur du panier (badge, etc.)
-             */
-            function updateCartUI(cart) {
-                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-                if (cartBadge) {
-                    cartBadge.textContent = totalItems;
-                    cartBadge.style.display = totalItems > 0 ? 'flex' : 'none';
-                }
-            }
-
-            /**
-             * Vérifie le stock disponible d'un produit via l'API
-             */
-            function checkProductStock(productId) {
-                return fetch(`../../php/api/products/check-stock.php?id=${productId}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Erreur réseau lors de la vérification du stock');
-                        }
-                        return response.json();
-                    });
-            }
-
-            /**
-             * Formate un prix
-             */
-            function formatPrice(price) {
-                return Number(price).toFixed(2).replace('.', ',');
-            }
-
-            /**
-             * Affiche une notification à l'utilisateur
-             */
-            function showNotification(message, type = 'success') {
-                let notification = document.getElementById('notification');
-                
-                if (!notification) {
-                    notification = document.createElement('div');
-                    notification.id = 'notification';
-                    document.body.appendChild(notification);
-                }
-                
-                // Définir la classe en fonction du type
-                notification.className = 'notification ' + type;
-                notification.innerHTML = message;
-                notification.style.display = 'block';
-                notification.style.opacity = '1';
-                
-                // Ne pas masquer automatiquement la notification si la page va être rafraîchie
-                // Elle disparaîtra naturellement lors du refresh
-            }
-
-            /**
-             * Supprime un article du panier et rafraîchit la page
-             */
-            function removeFromCart(productId) {
-                let cart = getCart();
-                cart = cart.filter(item => item.id !== productId);
-                
-                // Afficher une notification avant de rafraîchir
-                showNotification('Article supprimé du panier', 'success');
-                
-                // Sauvegarder le panier
-                localStorage.setItem('cart', JSON.stringify(cart));
-                
-                <?php if ($isLoggedIn): ?>
-                // Synchroniser avec le serveur avant le rafraîchissement
-                syncCartWithServer(cart);
-                <?php endif; ?>
-                
-                // Pour les opérations où nous voulons un rafraîchissement:
-                setTimeout(function() {
+        /**
+         * Supprime un article du panier et rafraîchit la page
+         */
+        function removeFromCart(productId) {
+            // Convertir en nombre si c'est une chaîne
+            productId = parseInt(productId);
+            
+            // Afficher une notification avant de supprimer
+            showNotification('Article supprimé du panier', 'success');
+            
+            // Supprimer via l'API
+            fetch(apiBasePath + 'remove-item.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `product_id=${productId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Recharger la page
                     window.location.reload();
-                }, 50); // Réduit à 300ms
-            }
-
-            /**
-             * Diminue la quantité d'un article dans le panier et rafraîchit la page
-             */
-            function decreaseCartQuantity(productId) {
-                const cart = getCart();
-                const productIndex = cart.findIndex(item => item.id === productId);
-                
-                if (productIndex > -1) {
-                    if (cart[productIndex].quantity > 1) {
-                        cart[productIndex].quantity--;
-                        
-                        showNotification('Quantité mise à jour', 'success');
-                        localStorage.setItem('cart', JSON.stringify(cart));
-                        
-                        <?php if ($isLoggedIn): ?>
-                        // Synchroniser avec le serveur avant le rafraîchissement
-                        syncCartWithServer(cart);
-                        <?php endif; ?>
-                        
-                        // Pour les opérations où nous voulons un rafraîchissement:
-                        setTimeout(function() {
-                            window.location.reload();
-                        }, 50); // Réduit à 300ms
-                    } else {
-                        removeFromCart(productId); // Cette fonction rafraîchit déjà la page
-                    }
+                } else {
+                    showNotification('Erreur: ' + data.message, 'error');
                 }
+            })
+            .catch(err => {
+                console.error('Erreur:', err);
+                showNotification('Erreur de connexion', 'error');
+                // Recharger quand même la page
+                window.location.reload();
+            });
+        }
+
+        /**
+         * Affiche les articles du panier dans l'interface
+         * @param {Array} cartItems Les articles du panier
+         */
+        function displayCartItems(cartItems) {
+            console.log("DisplayCartItems appelé avec:", cartItems);
+            
+            const cartItemsContainer = document.getElementById('cart-items-container');
+            const emptyCartMessage = document.querySelector('.cart-empty');
+            const cartContainer = document.getElementById('cart-container');
+            const subtotalElement = document.getElementById('cart-subtotal');
+            const totalElement = document.getElementById('cart-total');
+            
+            // Vérifier les éléments DOM
+            console.log("cartItemsContainer existe:", !!cartItemsContainer);
+            console.log("emptyCartMessage existe:", !!emptyCartMessage);
+            console.log("cartContainer existe:", !!cartContainer);
+            
+            // Si le panier est vide
+            if (!cartItems || cartItems.length === 0) {
+                if (emptyCartMessage) emptyCartMessage.style.display = 'block';
+                if (cartContainer) cartContainer.style.display = 'none';
+                return;
             }
-
-            /**
-             * Augmente la quantité d'un article dans le panier et rafraîchit la page
-             */
-            function increaseCartQuantity(productId) {
-                const cart = getCart();
-                const productIndex = cart.findIndex(item => item.id === productId);
-                
-                if (productIndex > -1) {
-                    // Vérifier le stock avant d'augmenter
-                    checkProductStock(productId)
-                        .then(stockInfo => {
-                            if (stockInfo.visible === false) {
-                                showNotification(`Ce produit n'est plus disponible`, 'error');
-                                removeFromCart(productId); // Cette fonction rafraîchit déjà la page
-                                return;
-                            }
-                            
-                            if (stockInfo.stock > cart[productIndex].quantity) {
-                                cart[productIndex].quantity++;
-                                
-                                // Mettre à jour les informations du produit
-                                cart[productIndex].availableStock = stockInfo.stock;
-                                cart[productIndex].stockAlerte = stockInfo.stock_alerte || 5;
-                                
-                                // Mettre à jour le prix si nécessaire
-                                if (stockInfo.prix_promo && parseFloat(stockInfo.prix_promo) < parseFloat(stockInfo.prix)) {
-                                    cart[productIndex].price = parseFloat(stockInfo.prix_promo);
-                                    cart[productIndex].regularPrice = parseFloat(stockInfo.prix);
-                                    cart[productIndex].hasPromo = true;
-                                } else {
-                                    cart[productIndex].price = parseFloat(stockInfo.prix);
-                                    cart[productIndex].hasPromo = false;
-                                }
-                                
-                                showNotification('Quantité mise à jour', 'success');
-                                localStorage.setItem('cart', JSON.stringify(cart));
-                                
-                                <?php if ($isLoggedIn): ?>
-                                // Synchroniser avec le serveur avant le rafraîchissement
-                                syncCartWithServer(cart);
-                                <?php endif; ?>
-                                
-                                // Pour les opérations où nous voulons un rafraîchissement:
-                                setTimeout(function() {
-                                    window.location.reload();
-                                }, 50); // Réduit à 300ms
-                            } else {
-                                showNotification(`Stock maximum atteint pour ce produit (${stockInfo.stock})`, 'warning');
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Erreur lors de la vérification du stock:", error);
-                            showNotification("Impossible de vérifier le stock disponible", 'error');
-                        });
-                }
-            }
-
-            /**
-             * Vérifie le stock de tous les produits du panier avant le paiement
-             */
-            async function verifyAllStockBeforeCheckout() {
-                const cart = getCart();
-                let allValid = true;
-                let message = "";
-                let updatedCart = [...cart];
-
-                for (let i = 0; i < cart.length; i++) {
-                    try {
-                        const stockInfo = await checkProductStock(cart[i].id);
-                        
-                        // Vérifier si le produit est visible/disponible
-                        if (stockInfo.error || stockInfo.visible === false) {
-                            allValid = false;
-                            message += `"${cart[i].name}" n'est plus disponible et a été retiré de votre panier. `;
-                            updatedCart = updatedCart.filter(item => item.id !== cart[i].id);
-                            continue;
-                        }
-                        
-                        // Si le stock est insuffisant
-                        if (stockInfo.stock < cart[i].quantity) {
-                            allValid = false;
-                            
-                            if (stockInfo.stock <= 0) {
-                                // Produit supprimé du panier (rupture)
-                                message += `"${cart[i].name}" a été supprimé (rupture de stock). `;
-                                updatedCart = updatedCart.filter(item => item.id !== cart[i].id);
-                            } else {
-                                // Quantité ajustée
-                                message += `La quantité de "${cart[i].name}" a été ajustée à ${stockInfo.stock}. `;
-                                const idx = updatedCart.findIndex(item => item.id === cart[i].id);
-                                if (idx !== -1) {
-                                    updatedCart[idx].quantity = stockInfo.stock;
-                                }
-                            }
-                        }
-                        
-                        // Mettre à jour les informations du produit dans le panier
-                        const idx = updatedCart.findIndex(item => item.id === cart[i].id);
-                        if (idx !== -1) {
-                            updatedCart[idx].availableStock = stockInfo.stock;
-                            updatedCart[idx].stockAlerte = stockInfo.stock_alerte || 5;
-                            
-                            // Mettre à jour le prix si un prix promo est disponible
-                            if (stockInfo.prix_promo && parseFloat(stockInfo.prix_promo) < parseFloat(stockInfo.prix)) {
-                                updatedCart[idx].regularPrice = parseFloat(stockInfo.prix);
-                                updatedCart[idx].price = parseFloat(stockInfo.prix_promo);
-                                updatedCart[idx].hasPromo = true;
-                            } else {
-                                updatedCart[idx].price = parseFloat(stockInfo.prix);
-                                updatedCart[idx].hasPromo = false;
-                            }
-                        }
-                    } catch (error) {
-                        console.error(`Erreur pour le produit ${cart[i].id}:`, error);
-                    }
-                }
-
-                // Si des modifications ont été faites, mettre à jour le panier
-                if (!allValid) {
-                    saveCart(updatedCart);
-                }
-
-                return { allValid, message };
-            }
-
-            /**
-             * Ajoute les écouteurs d'événements aux boutons de quantité
-             */
-            function attachQuantityEvents() {
-                // Boutons de diminution
-                document.querySelectorAll('.qty-btn.decrease').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const productId = this.getAttribute('data-id');
-                        decreaseCartQuantity(productId);
-                    });
-                });
-                
-                // Boutons d'augmentation
-                document.querySelectorAll('.qty-btn.increase').forEach(button => {
-                    if (button.classList.contains('disabled')) {
-                        return; // Ne pas attacher d'événement aux boutons désactivés
-                    }
-                    
-                    button.addEventListener('click', function() {
-                        const productId = this.getAttribute('data-id');
-                        const input = document.querySelector(`.qty-input[data-id="${productId}"]`);
-                        const currentStock = parseInt(input.getAttribute('data-stock'), 10);
-                        const currentQuantity = parseInt(input.value, 10);
-                        
-                        if (currentQuantity < currentStock) {
-                            increaseCartQuantity(productId);
-                        } else {
-                            showNotification('Quantité maximum atteinte pour ce produit', 'warning');
-                        }
-                    });
-                });
-                
-                // Boutons de suppression
-                document.querySelectorAll('.cart-remove').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const productId = this.getAttribute('data-id');
-                        removeFromCart(productId);
-                    });
-                });
-            }
-
-            /**
-             * Charge et affiche le contenu du panier
-             */
-            function loadCart() {
-                // Récupérer le panier depuis le localStorage
-                const cart = getCart();
-                
-                if (cart.length === 0) {
-                    // Afficher le message "panier vide"
-                    cartEmptyMessage.style.display = 'block';
-                    cartContainer.style.display = 'none';
-                    return;
-                }
-                
-                // Afficher le contenu du panier
-                cartEmptyMessage.style.display = 'none';
-                cartContainer.style.display = 'flex';
-                
-                // Vider le conteneur existant
+            
+            // Afficher le panier et masquer le message vide
+            if (emptyCartMessage) emptyCartMessage.style.display = 'none';
+            if (cartContainer) cartContainer.style.display = 'flex';
+            
+            // Calculer le total
+            let subtotal = 0;
+            
+            // Générer le HTML pour chaque article
+            if (cartItemsContainer) {
                 cartItemsContainer.innerHTML = '';
                 
-                // Vérifier le stock pour chaque produit
-                Promise.all(cart.map(item => 
-                    checkProductStock(item.id)
-                        .then(stockInfo => {
-                            return {
-                                ...item,
-                                currentStock: stockInfo.stock,
-                                stockAlerte: stockInfo.stock_alerte || 5,
-                                visible: stockInfo.visible !== false,
-                                regularPrice: parseFloat(stockInfo.prix),
-                                promoPrice: stockInfo.prix_promo ? parseFloat(stockInfo.prix_promo) : null
-                            };
-                        })
-                        .catch(error => {
-                            console.error(`Erreur pour le produit ${item.id}:`, error);
-                            return {
-                                ...item,
-                                currentStock: 0,
-                                visible: false
-                            };
-                        })
-                ))
-                .then(productsWithStock => {
-                    // Filtrer les produits qui ne sont plus disponibles
-                    const availableProducts = productsWithStock.filter(item => item.visible);
+                cartItems.forEach(item => {
+                    // Calculer le total pour cet article
+                    const itemTotal = item.price * item.quantity;
+                    subtotal += itemTotal;
                     
-                    if (availableProducts.length === 0) {
-                        cartEmptyMessage.style.display = 'block';
-                        cartContainer.style.display = 'none';
-                        saveCart([]);
-                        return;
-                    }
+                    // Créer la ligne formatée correctement
+                    const row = document.createElement('tr');
+                    row.className = 'cart-item-row';
+                    row.dataset.productId = item.id;
                     
-                    let subtotal = 0;
-                    
-                    availableProducts.forEach(item => {
-                        // Utiliser le prix promotionnel si disponible
-                        const displayPrice = item.promoPrice !== null && item.promoPrice < item.regularPrice ? 
-                            item.promoPrice : item.regularPrice;
-                        
-                        const itemTotal = displayPrice * item.quantity;
-                        subtotal += itemTotal;
-                        
-                        // Déterminer les classes et messages pour l'indicateur de stock
-                        let stockClass = 'in-stock';
-                        let stockMessage = '<i class="fas fa-check-circle"></i> En stock';
-                        let disableIncrease = false;
-                        
-                        if (item.currentStock <= 0) {
-                            stockClass = 'out-of-stock';
-                            stockMessage = '<i class="fas fa-times-circle"></i> Rupture de stock';
-                            disableIncrease = true;
-                        } else if (item.quantity >= item.currentStock) {
-                            stockClass = 'stock-warning';
-                            stockMessage = `<i class="fas fa-exclamation-circle"></i> Maximum disponible`;
-                            disableIncrease = true;
-                        } else if (item.currentStock <= item.stockAlerte) {
-                            stockClass = 'stock-low';
-                            stockMessage = `<i class="fas fa-exclamation-circle"></i> Plus que ${item.currentStock} en stock`;
-                        }
-                        
-                        const tr = document.createElement('tr');
-                        tr.className = 'cart-item-row';
-                        
-                        // Préparer l'affichage du prix (normal ou promotion)
-                        let priceDisplay = `${formatPrice(displayPrice)} €`;
-                        if (item.promoPrice !== null && item.promoPrice < item.regularPrice) {
-                            priceDisplay = `
-                                <span class="price-old">${formatPrice(item.regularPrice)} €</span>
-                                <span class="price-promo">${formatPrice(item.promoPrice)} €</span>
-                            `;
-                        }
-                        
-                        tr.innerHTML = `
-                            <td class="cart-item-cell" data-label="Produit">
-                                <div class="cart-product">
-                                    <div class="cart-product-image">
-                                        <img src="${item.image}" alt="${item.name}">
-                                    </div>
-                                    <div class="cart-product-info">
-                                        <h3 class="cart-product-name">${item.name}</h3>
-                                        <p class="cart-product-ref">Réf: ${item.reference || `ELX-${item.id}`}</p>
-                                        <div class="stock-indicator ${stockClass}">${stockMessage}</div>
-                                    </div>
+                    row.innerHTML = `
+                        <td class="cart-item-cell cart-product-cell">
+                            <div class="cart-product">
+                                <div class="cart-product-image">
+                                    ${item.image 
+                                        ? `<img src="/Site-Vitrine/uploads/products/${item.image}" alt="${item.name}" loading="lazy">`
+                                        : `<div class="no-image"><i class="fas fa-image"></i></div>`
+                                    }
                                 </div>
-                            </td>
-                            <td class="cart-item-cell" data-label="Prix">${priceDisplay}</td>
-                            <td class="cart-item-cell" data-label="Quantité">
-                                <div class="cart-quantity">
-                                    <button type="button" class="qty-btn decrease" data-id="${item.id}">-</button>
-                                    <input type="text" value="${item.quantity}" class="qty-input" readonly 
-                                           data-stock="${item.currentStock}" data-id="${item.id}">
-                                    <button type="button" class="qty-btn increase ${disableIncrease ? 'disabled' : ''}" 
-                                            data-id="${item.id}" ${disableIncrease ? 'disabled' : ''}>+</button>
+                                <div class="cart-product-info">
+                                    <h3 class="cart-product-name">${item.name}</h3>
+                                    <p class="cart-product-ref">${item.reference}</p>
                                 </div>
-                            </td>
-                            <td class="cart-item-cell" data-label="Total">${formatPrice(itemTotal)} €</td>
-                            <td class="cart-item-cell">
-                                <button type="button" class="cart-remove" data-id="${item.id}">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                    </svg>
-                                </button>
-                            </td>
-                        `;
-                        
-                        cartItemsContainer.appendChild(tr);
-                    });
+                            </div>
+                        </td>
+                        <td class="cart-item-cell" data-label="Prix">
+                            ${formatPrice(item.price)} €
+                        </td>
+                        <td class="cart-item-cell" data-label="Quantité">
+                            <div class="cart-quantity">
+                                <button class="qty-btn decrease" onclick="updateQuantity(${item.id}, -1)" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
+                                <span class="qty-input">${item.quantity}</span>
+                                <button class="qty-btn increase" onclick="updateQuantity(${item.id}, 1)">+</button>
+                            </div>
+                        </td>
+                        <td class="cart-item-cell" data-label="Total">
+                            ${formatPrice(itemTotal)} €
+                        </td>
+                        <td class="cart-item-cell">
+                            <button class="cart-remove" onclick="removeFromCart(${item.id})">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    `;
                     
-                    // Mettre à jour les totaux
-                    subtotalElement.textContent = `${formatPrice(subtotal)} €`;
-                    totalElement.textContent = `${formatPrice(subtotal)} €`; // Pas de frais de livraison
-                    
-                    // Ajouter les écouteurs d'événements aux boutons
-                    attachQuantityEvents();
-                    
-                    // Si le panier a été modifié (produits non visibles supprimés)
-                    if (availableProducts.length < cart.length) {
-                        saveCart(availableProducts);
-                        showNotification("Certains produits ne sont plus disponibles et ont été retirés du panier.", 'warning');
-                    }
+                    cartItemsContainer.appendChild(row);
+                });
+                
+                // Mettre à jour les totaux
+                if (subtotalElement) subtotalElement.textContent = formatPrice(subtotal) + ' €';
+                if (totalElement) totalElement.textContent = formatPrice(subtotal) + ' €';
+            }
+            
+            // Activer les boutons
+            addCartItemEventListeners();
+        }
+
+        /**
+         * Formater un prix avec 2 décimales et séparateur virgule
+         */
+        function formatPrice(price) {
+            // Convertir en nombre si c'est une chaîne
+            const numberPrice = typeof price === 'string' ? parseFloat(price.replace(/[^\d.,]/g, '').replace(',', '.')) : price;
+            
+            // Vérifier si c'est un nombre valide
+            if (isNaN(numberPrice)) return '0,00';
+            
+            // Formater avec 2 décimales et virgule
+            return numberPrice.toFixed(2).replace('.', ',');
+        }
+
+        /**
+         * Ajouter les événements aux boutons d'actions du panier
+         */
+        function addCartItemEventListeners() {
+            // Vérifier que les éléments existent avant d'ajouter des écouteurs d'événements
+            const checkoutBtn = document.querySelector('.checkout-btn');
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', function() {
+                    window.location.href = 'checkout.php';
                 });
             }
+            
+            const continueShoppingBtn = document.querySelector('.continue-shopping');
+            if (continueShoppingBtn) {
+                continueShoppingBtn.addEventListener('click', function() {
+                    window.location.href = 'Montres.html';
+                });
+            }
+        }
 
-            // Charger le panier au chargement de la page
-            loadCart();
-
-            // Ajouter les écouteurs d'événements aux boutons
-            continueShoppingBtn.addEventListener('click', function() {
-                window.location.href = 'Montres.html';
+        /**
+         * Mettre à jour la quantité d'un article
+         */
+        function updateQuantity(productId, change) {
+            fetch(apiBasePath + 'update-quantity.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `product_id=${productId}&change=${change}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Quantité mise à jour', 'success');
+                    setTimeout(() => window.location.reload(), 500);
+                } else {
+                    showNotification('Erreur: ' + (data.message || 'Erreur inconnue'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showNotification('Erreur de connexion', 'error');
             });
+        }
 
-            checkoutBtn.addEventListener('click', function() {
-                <?php if ($isLoggedIn): ?>
-                // Si l'utilisateur est connecté, vérifier les stocks avant de procéder au paiement
-                verifyAllStockBeforeCheckout()
-                    .then(result => {
-                        if (result.allValid) {
-                            // Rediriger vers la page de paiement
-                            window.location.href = 'checkout.php';
-                        } else {
-                            showNotification(`Attention: ${result.message}`, 'warning');
-                            loadCart(); // Recharger pour refléter les ajustements
-                        }
-                    })
-                    .catch(error => {
-                        showNotification("Erreur lors de la vérification du stock. Veuillez réessayer.", 'error');
-                        console.error("Erreur:", error);
-                    });
-                <?php else: ?>
-                // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
-                window.location.href = '../auth/login.php?redirect=products/panier.php';
-                <?php endif; ?>
+        /**
+         * Adapte les données de l'API au format attendu par l'affichage
+         */
+        function adaptCartData(cartItems) {
+            return cartItems.map(item => {
+                // Assurez-vous que toutes les propriétés nécessaires sont présentes
+                return {
+                    id: item.id,
+                    name: item.name || 'Produit sans nom',
+                    price: parseFloat(item.price) || 0,
+                    quantity: parseInt(item.quantity) || 1,
+                    image: item.image || '',
+                    reference: item.reference || `Réf: ${item.id}`,
+                    hasPromo: !!item.hasPromo,
+                    regularPrice: parseFloat(item.regularPrice) || parseFloat(item.price) || 0,
+                    availableStock: parseInt(item.availableStock) || 99
+                };
             });
+        }
+
+        // Synchronisation du panier
+        document.getElementById('sync-cart-button').addEventListener('click', function() {
+            fetch('/Site-Vitrine/php/api/cart/sync_cart.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Panier synchronisé', 'success');
+                        setTimeout(() => window.location.reload(), 500);
+                    } else {
+                        showNotification(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    showNotification('Erreur de synchronisation', 'error');
+                });
         });
+
+        // Charger le panier au chargement de la page
+        loadCart();
 
         // Gestion du préchargeur pour éviter le flash blanc
         window.addEventListener('load', function() {

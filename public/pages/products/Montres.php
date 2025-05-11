@@ -108,7 +108,6 @@ include($relativePath . '/includes/header.php');
         <source src="../../assets/video/background.mp4" type="video/mp4">
         <!-- Fallback image si la vidéo ne se charge pas -->
     </video>
-    <img src="../../assets/img/collections/montres-hero.jpg" alt="Nos Montres" class="fallback-img">
     <div class="video-overlay"></div>
     
     <!-- Hero content sur la vidéo -->
@@ -450,5 +449,33 @@ include($relativePath . '/includes/footer.php');
         fadeElements.forEach(element => {
             observer.observe(element);
         });
+
+        // Ajouter cette partie pour gérer l'ajout au panier depuis le modal
+        const modalAddToCartBtn = document.getElementById('modal-add-to-cart');
+        if (modalAddToCartBtn) {
+            // Supprimer les gestionnaires existants (au cas où)
+            modalAddToCartBtn.replaceWith(modalAddToCartBtn.cloneNode(true));
+            
+            // Récupérer la référence au nouvel élément
+            const newModalBtn = document.getElementById('modal-add-to-cart');
+            
+            newModalBtn.addEventListener('click', function(e) {
+                e.preventDefault(); // Important
+                e.stopPropagation(); // Empêche la propagation
+                
+                const productId = this.getAttribute('data-product-id');
+                if (productId && window.CartManager) {
+                    console.log('Ajout depuis le modal, ID:', productId);
+                    window.CartManager.addToCart(productId);
+                }
+                
+                // Fermer le modal après l'ajout
+                const modal = document.getElementById('quick-view-modal');
+                if (modal) modal.style.display = 'none';
+            });
+        }
+
+        // Dans Montres.php
+        const modalCartBtn = document.getElementById('modal-cart-action');
     });
 </script>

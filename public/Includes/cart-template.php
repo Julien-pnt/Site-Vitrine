@@ -58,7 +58,7 @@ $cartCount = array_sum(array_column($cartItems, 'quantite'));
                 <div class="cart-item" data-product-id="<?php echo $item['id']; ?>">
                     <div class="cart-item-image">
                         <?php if (!empty($item['image'])): ?>
-                            <img src="<?php echo $relativePath; ?>/uploads/product/<?php echo htmlspecialchars(basename($item['image'])); ?>" 
+                            <img src="<?php echo $relativePath; ?>/uploads/products/<?php echo htmlspecialchars(basename($item['image'])); ?>" 
                                  alt="<?php echo htmlspecialchars($item['nom']); ?>">
                         <?php else: ?>
                             <div class="no-image">

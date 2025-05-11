@@ -111,8 +111,6 @@ if (!isset($relativePath)) {
 </footer>
 
 <!-- Scripts communs à toutes les pages -->
-<script src="<?php echo $relativePath; ?>/assets/js/header-functions.js"></script>
-<script src="<?php echo $relativePath; ?>/assets/js/gestion-cart.js"></script>
 <script src="<?php echo $relativePath; ?>/assets/js/main.js"></script>
 
 <!-- Script pour assurer le fonctionnement du menu utilisateur -->

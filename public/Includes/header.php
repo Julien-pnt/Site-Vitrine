@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 // Définir le chemin relatif si non défini
 if (!isset($relativePath)) {
     $relativePath = ".."; // Par défaut, remontez d'un niveau
@@ -11,6 +12,79 @@ if (!isset($pageTitle)) {
 
 // Déterminer la page active pour le menu
 $currentPage = basename($_SERVER['PHP_SELF']);
+
+// Fonction améliorée pour obtenir les éléments du panier depuis la table panier
+function getSimpleCartItems() {
+   
+    
+    // Connexion à la base de données pour obtenir les données à jour
+    global $pdo;
+    if (!isset($pdo)) {
+        try {
+            require_once __DIR__ . '/../../php/config/database.php';
+        } catch (Exception $e) {
+            error_log("Erreur lors de la connexion à la base de données: " . $e->getMessage());
+            return []; // Retourner un panier vide en cas d'erreur
+        }
+    }
+    
+    try {
+        // Récupérer l'ID utilisateur ou session ID
+        $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+        $sessionId = session_id();
+        
+        // Pour débogage
+        error_log("Session ID: $sessionId, User ID: " . ($userId ?: 'non connecté'));
+        
+        // Construire la clause WHERE
+        $whereClause = $userId ? 'p.utilisateur_id = ?' : 'p.session_id = ?';
+        $whereValue = $userId ?: $sessionId;
+        
+        // Requête pour récupérer le panier avec les informations produit
+        $query = "SELECT p.id as panier_id, p.produit_id as id, p.quantite, 
+                         pr.nom, pr.reference, pr.prix, pr.prix_promo, pr.image, 
+                         pr.stock, pr.stock_alerte, pr.visible
+                  FROM panier p
+                  JOIN produits pr ON p.produit_id = pr.id
+                  WHERE $whereClause AND pr.visible = 1";
+        
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([$whereValue]);
+        
+        $cartItems = [];
+        
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            // Ignorer les produits sans stock
+            if ($row['stock'] <= 0) continue;
+            
+            // Ajuster la quantité au stock disponible
+            $quantity = min($row['quantite'], $row['stock']);
+            
+            // Stocker l'article avec toutes les informations nécessaires
+            $cartItems[$row['id']] = [
+                'id' => $row['id'],
+                'panier_id' => $row['panier_id'],
+                'nom' => $row['nom'],
+                'reference' => $row['reference'] ?: "ELX-{$row['id']}",
+                'prix' => $row['prix'],
+                'prix_promo' => $row['prix_promo'],
+                'quantite' => $quantity,
+                'image' => $row['image'],
+                'stock' => $row['stock'],
+                'stock_alerte' => $row['stock_alerte']
+            ];
+        }
+        
+        return $cartItems;
+        
+    } catch (PDOException $e) {
+        // En cas d'erreur, logger et retourner un panier vide
+        error_log("Erreur lors de la récupération du panier: " . $e->getMessage());
+        return [];
+    }
+}
+
+$cartItems = getSimpleCartItems();
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -18,30 +92,14 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="<?php echo isset($pageDescription) ? $pageDescription : 'Elixir du Temps - Découvrez notre collection de montres de luxe, alliant tradition et innovation.'; ?>">
+    <meta name="base-url" content="<?php echo $relativePath; ?>">
     
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="<?php echo $pageTitle; ?>">
-    <meta property="og:description" content="<?php echo isset($pageDescription) ? $pageDescription : 'Elixir du Temps - Découvrez notre collection de montres de luxe, alliant tradition et innovation.'; ?>">
-    <meta property="og:image" content="<?php echo $relativePath; ?>/assets/img/layout/social-preview.jpg">
-    
-    <!-- Script pour corriger le fondu blanc -->
-    <script>
-        // Force l'affichage immédiat du contenu
-        document.documentElement.style.opacity = "1";
-        function ensureVisibility() {
-            document.body.classList.add('video-loaded');
-        }
-        // S'exécute dès que possible
-        document.addEventListener('DOMContentLoaded', ensureVisibility);
-        // Backup au cas où DOMContentLoaded ne se déclencherait pas
-        setTimeout(ensureVisibility, 100);
-    </script>
-    
-    <!-- Ressources CSS communes -->
+    <!-- Ressources CSS -->
     <link rel="stylesheet" href="<?php echo $relativePath; ?>/assets/css/main.css">
     <link rel="stylesheet" href="<?php echo $relativePath; ?>/assets/css/header.css">
     <link rel="stylesheet" href="<?php echo $relativePath; ?>/assets/css/footer.css">
+    <link rel="stylesheet" href="<?php echo $relativePath; ?>/assets/css/cart.css">
+    <link rel="stylesheet" href="<?php echo $relativePath; ?>/assets/css/notifications.css">
     <?php if (isset($additionalCss)) echo $additionalCss; ?>
     
     <link rel="shortcut icon" href="<?php echo $relativePath; ?>/assets/img/layout/icon2.png" type="image/x-icon">
@@ -54,111 +112,20 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     
     <?php if (isset($additionalHead)) echo $additionalHead; ?>
     
-    <style>
-        /* RESET COMPLET du panier */
-        .cart-icon {
-            position: relative !important;
-            cursor: pointer;
-        }
-        
-        .cart-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            min-width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background-color: #d4af37;
-            color: white;
-            font-size: 10px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Supprimez toutes les anciennes règles */
-        .cart-dropdown {
-            /* Le style sera appliqué par JS */
-        }
-
-        /* Alignement correct des icônes */
-        .user-cart-container {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-left: auto;
-        }
-
-        .user-menu-container, .cart-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-        }
-
-        .user-icon-wrapper {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .user-dropdown {
-            position: absolute;
-            top: calc(100% + 5px);
-            right: -5px;
-            width: 220px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-            z-index: 9998;
-            display: none;
-            padding: 10px 0;
-        }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            color: #333;
-            text-decoration: none;
-            transition: background-color 0.2s;
-        }
-
-        .dropdown-item:hover {
-            background-color: rgba(212, 175, 55, 0.1);
-        }
-
-        .dropdown-item i {
-            margin-right: 10px;
-            color: #d4af37;
-            width: 16px;
-            text-align: center;
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background-color: #eee;
-            margin: 8px 0;
-        }
-    </style>
+    <script src="<?php echo $relativePath; ?>/assets/js/cart-functions.js"></script>
+    <script src="<?php echo $relativePath; ?>/assets/js/header-functions.js"></script>
+    <script src="<?php echo $relativePath; ?>/assets/js/cart-common.js"></script>
+    <script src="<?php echo $relativePath; ?>/assets/js/add-to-cart.js"></script>
 </head>
-<body class="video-loaded">
-    <!-- Loader -->
-    <div class="loader-container">
-        <div class="loader">
-            <span class="visually-hidden">Chargement en cours...</span>
-        </div>
-    </div>
-    
-    <!-- Header section with logo and navigation menu -->
+<body>
+    <!-- Header section -->
     <header class="header">
         <div class="logo-container">
             <a href="<?php echo $relativePath; ?>/pages/Accueil.php" aria-label="Accueil Elixir du Temps">
-                <img src="<?php echo $relativePath; ?>/assets/img/layout/logo.png" alt="Logo Elixir du Temps" class="logo" width="180" height="60" fetchpriority="high">
+                <img src="<?php echo $relativePath; ?>/assets/img/layout/logo.png" alt="Logo Elixir du Temps" class="logo" width="180" height="60">
             </a>
         </div>
+        
         <nav aria-label="Navigation principale">
             <ul class="menu-bar">
                 <li><a href="<?php echo $relativePath; ?>/pages/Accueil.php" <?php if($currentPage == 'Accueil.php') echo 'class="active"'; ?>>Accueil</a></li>
@@ -174,10 +141,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <!-- User dropdown menu -->
             <div class="user-menu-container">
                 <div class="user-icon-wrapper">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-user">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
+                    <i class="fas fa-user"></i>
                     <span class="user-menu-arrow">▼</span>
                 </div>
                 
@@ -211,82 +175,137 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                 </div>
             </div>
             
-            <!-- Structure correcte pour l'icône du panier -->
-            <div class="cart-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="9" cy="21" r="1"></circle>
-                    <circle cx="20" cy="21" r="1"></circle>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                </svg>
-                <span class="cart-badge"><?php echo isset($cartCount) ? $cartCount : 0; ?></span>
+            <!-- Cart Icon avec compteur -->
+            <div class="cart-wrapper">
+                <div class="cart-icon" id="cart-icon">
+                    <button class="nav-icon toggle-cart" aria-label="Panier">
+                        <i class="fas fa-shopping-cart"></i>
+                        <?php
+                        $cartItemCount = 0;
+                        foreach ($cartItems as $item) {
+                            $cartItemCount += $item['quantite'];
+                        }
+                        ?>
+                        <span class="cart-badge" id="cart-count"><?php echo $cartItemCount; ?></span>
+                    </button>
+                </div>
                 
-                <?php include_once(__DIR__ . '/cart-template.php'); ?>
+                <!-- Contenu du panier dropdown -->
+                <div class="cart-dropdown">
+                    <div class="cart-dropdown-header">
+                        <span class="cart-dropdown-title">Mon panier</span>
+                        <button class="close-cart-dropdown" aria-label="Fermer le panier">&times;</button>
+                    </div>
+                    
+                    <!-- Message panier vide - toujours présent, affiché/masqué via JS -->
+                    <div class="cart-dropdown-empty" <?php if (!empty($cartItems)): ?>style="display: none;"<?php endif; ?>>
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>Votre panier est vide</p>
+                    </div>
+                    
+                    <!-- Conteneur pour les articles - sera rempli dynamiquement par JS -->
+                    <div class="cart-dropdown-items" <?php if (empty($cartItems)): ?>style="display: none;"<?php endif; ?>>
+                        <?php if (!empty($cartItems)): ?>
+                            <?php foreach ($cartItems as $item): ?>
+                                <div class="cart-item" data-product-id="<?php echo $item['id']; ?>">
+                                    <div class="cart-item-image">
+                                        <?php if (!empty($item['image'])): ?>
+                                            <img src="<?php echo $relativePath; ?>/uploads/products/<?php echo htmlspecialchars(basename($item['image'])); ?>" 
+                                                 alt="<?php echo htmlspecialchars($item['nom']); ?>">
+                                        <?php else: ?>
+                                            <div class="no-image"><i class="fas fa-image"></i></div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="cart-item-details">
+                                        <h4 class="cart-item-title"><?php echo htmlspecialchars($item['nom']); ?></h4>
+                                        <div class="cart-item-price">
+                                            <?php if (!empty($item['prix_promo'])): ?>
+                                                <span class="price-current"><?php echo number_format($item['prix_promo'], 0, ',', ' '); ?> €</span>
+                                                <span class="price-old"><?php echo number_format($item['prix'], 0, ',', ' '); ?> €</span>
+                                            <?php else: ?>
+                                                <span class="price-current"><?php echo number_format($item['prix'], 0, ',', ' '); ?> €</span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="cart-item-quantity">
+                                            <button class="quantity-btn decrease" data-product-id="<?php echo $item['id']; ?>">-</button>
+                                            <span class="quantity-value"><?php echo $item['quantite']; ?></span>
+                                            <button class="quantity-btn increase" data-product-id="<?php echo $item['id']; ?>">+</button>
+                                            <button class="remove-cart-item" data-product-id="<?php echo $item['id']; ?>">×</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <!-- Pied du panier toujours présent -->
+                    <div class="cart-dropdown-footer" <?php if (empty($cartItems)): ?>style="display: none;"<?php endif; ?>>
+                        <div class="cart-total">
+                            <span>Total:</span>
+                            <span id="cart-dropdown-total">
+                                <?php
+                                $total = 0;
+                                if (!empty($cartItems)) {
+                                    foreach ($cartItems as $item) {
+                                        $price = !empty($item['prix_promo']) ? $item['prix_promo'] : $item['prix'];
+                                        $total += $price * $item['quantite'];
+                                    }
+                                }
+                                echo number_format($total, 0, ',', ' ') . ' €';
+                                ?>
+                            </span>
+                        </div>
+                        
+                        <div class="cart-buttons">
+                            <a href="<?php echo $relativePath; ?>/pages/products/panier.php" class="cart-button secondary">Voir le panier</a>
+                            <a href="<?php echo $relativePath; ?>/pages/products/checkout.php" class="cart-button primary">Commander</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Solution extrême pour le panier -->
+    <!-- Chargement des scripts dans le bon ordre -->
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Récupérer les éléments
-        const cartIcon = document.querySelector('.cart-icon');
-        const cartDropdown = document.querySelector('.cart-dropdown');
-        
-        if (cartIcon && cartDropdown) {
-            console.log("Script d'urgence activé pour le panier");
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser les gestionnaires d'événements pour les boutons du panier
+            if (window.cartFunctions) {
+                window.cartFunctions.initCartButtonHandlers();
+            }
             
-            // IMPORTANT: Ne PAS remplacer l'élément cartIcon car cela supprime le dropdown à l'intérieur
-            // const newCartIcon = cartIcon.cloneNode(true);
-            // cartIcon.parentNode.replaceChild(newCartIcon, cartIcon);
+            // Ouvrir/fermer le dropdown du panier
+            const cartIcon = document.querySelector('.toggle-cart');
+            const cartDropdown = document.querySelector('.cart-dropdown');
+            const closeCartButton = document.querySelector('.close-cart-dropdown');
             
-            // Au lieu de cela, supprimez simplement tous les écouteurs d'événements existants
-            const oldIcon = cartIcon.querySelector('svg');
-            const newIcon = oldIcon.cloneNode(true);
-            oldIcon.parentNode.replaceChild(newIcon, oldIcon);
-            
-            // RÉINITIALISER COMPLÈTEMENT LE DROPDOWN
-            Object.assign(cartDropdown.style, {
-                display: 'none',
-                position: 'absolute',
-                top: 'calc(100% + 5px)',
-                right: '-5px',
-                width: '320px',
-                backgroundColor: 'white', 
-                boxShadow: '0 5px 20px rgba(0,0,0,0.15)',
-                borderRadius: '8px',
-                zIndex: '9999',
-                // Force une couleur de texte visible
-                color: '#333'
-            });
-            
-            // Ajouter l'écouteur au SVG de l'icône
-            cartIcon.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
+            if (cartIcon && cartDropdown) {
+                cartIcon.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    cartDropdown.classList.toggle('active');
+                    
+                    // Fermer le menu utilisateur s'il est ouvert
+                    const userDropdown = document.querySelector('.user-dropdown');
+                    if (userDropdown && userDropdown.classList.contains('active')) {
+                        userDropdown.classList.remove('active');
+                    }
+                });
                 
-                console.log("Clic sur panier détecté (script d'urgence)");
-                
-                // Basculer l'affichage directement
-                cartDropdown.style.display = 
-                    cartDropdown.style.display === 'block' ? 'none' : 'block';
-                
-                console.log("État du panier:", cartDropdown.style.display);
-            });
-            
-
-            
-            // Fermeture au clic extérieur
-            document.addEventListener('click', function(e) {
-                if (cartDropdown.style.display === 'block' && 
-                    !cartIcon.contains(e.target) && 
-                    !cartDropdown.contains(e.target)) {
-                    cartDropdown.style.display = 'none';
+                if (closeCartButton) {
+                    closeCartButton.addEventListener('click', function() {
+                        cartDropdown.classList.remove('active');
+                    });
                 }
-            });
-        } else {
-            console.error("Éléments du panier introuvables");
-        }
-    });
+                
+                // Fermer le dropdown en cliquant à l'extérieur
+                document.addEventListener('click', function(e) {
+                    if (!cartDropdown.contains(e.target) && !cartIcon.contains(e.target)) {
+                        cartDropdown.classList.remove('active');
+                    }
+                });
+            }
+        });
     </script>
-
-    <!-- Le contenu spécifique de la page sera inséré ici -->
+</body>
+</html>

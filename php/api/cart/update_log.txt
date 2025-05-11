@@ -1,0 +1,120 @@
+2025-05-11 16:23:42 - POST: Array
+(
+    [product_id] => 603
+    [change] => 1
+)
+ - SESSION: Array
+(
+    [user_id] => 1
+    [user_email] => admin@elixirdutemps.com
+    [user_role] => admin
+    [user_prenom] => Admin
+    [user_nom] => Administrateur
+    [cart] => Array
+        (
+            [603] => Array
+                (
+                    [id] => 603
+                    [name] => Élégance Souveraine
+                    [reference] => ELX-PR-F03
+                    [price] => 31500
+                    [quantity] => 1
+                    [image] => elegance-souveraine.jpg
+                )
+
+        )
+
+    [cart_count] => 1
+    [cart_total] => 34000
+)
+
+2025-05-11 16:23:45 - POST: Array
+(
+    [product_id] => 603
+    [change] => -1
+)
+ - SESSION: Array
+(
+    [user_id] => 1
+    [user_email] => admin@elixirdutemps.com
+    [user_role] => admin
+    [user_prenom] => Admin
+    [user_nom] => Administrateur
+    [cart] => Array
+        (
+            [603] => Array
+                (
+                    [id] => 603
+                    [name] => Élégance Souveraine
+                    [reference] => ELX-PR-F03
+                    [price] => 31500
+                    [quantity] => 1
+                    [image] => elegance-souveraine.jpg
+                )
+
+        )
+
+    [cart_count] => 1
+    [cart_total] => 34000
+)
+
+2025-05-11 16:31:30 - POST: Array
+(
+    [product_id] => 603
+    [change] => 1
+)
+ - SESSION: Array
+(
+    [user_id] => 1
+    [user_email] => admin@elixirdutemps.com
+    [user_role] => admin
+    [user_prenom] => Admin
+    [user_nom] => Administrateur
+    [cart] => Array
+        (
+            [603] => Array
+                (
+                    [id] => 603
+                    [name] => Élégance Souveraine
+                    [reference] => ELX-PR-F03
+                    [price] => 31500
+                    [quantity] => 1
+                    [image] => elegance-souveraine.jpg
+                )
+
+        )
+
+    [cart_count] => 1
+    [cart_total] => 34000
+)
+
+2025-05-11 16:31:33 - POST: Array
+(
+    [product_id] => 603
+    [change] => -1
+)
+ - SESSION: Array
+(
+    [user_id] => 1
+    [user_email] => admin@elixirdutemps.com
+    [user_role] => admin
+    [user_prenom] => Admin
+    [user_nom] => Administrateur
+    [cart] => Array
+        (
+            [603] => Array
+                (
+                    [id] => 603
+                    [name] => Élégance Souveraine
+                    [reference] => ELX-PR-F03
+                    [price] => 31500
+                    [quantity] => 1
+                    [image] => elegance-souveraine.jpg
+                )
+
+        )
+
+    [cart_count] => 1
+    [cart_total] => 34000
+)
+

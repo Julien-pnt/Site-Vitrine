@@ -1,7 +1,7 @@
 <?php
 // Démarrer la session
 session_start();
-require_once '../../../../php/config/database.php';
+require_once '../../config/database.php';  // Chemin corrigé
 
 // Supprimer le jeton d'authentification si "Se souvenir de moi" était activé
 if (isset($_COOKIE['remember_token'])) {
@@ -35,7 +35,7 @@ session_destroy();
 
 // Redirection vers la page d'accueil
 $relativePath = "../../";
-$returnUrl = isset($_GET['redirect']) ? $_GET['redirect'] : 'pages/Accueil.php';
+$returnUrl = isset($_GET['redirect']) ? $_GET['redirect'] : 'public/pages/Accueil.php';
 
 // Vérifier et nettoyer l'URL de redirection pour éviter les redirections malveillantes
 if (!filter_var($returnUrl, FILTER_VALIDATE_URL) && strpos($returnUrl, '../') === false) {
@@ -43,7 +43,7 @@ if (!filter_var($returnUrl, FILTER_VALIDATE_URL) && strpos($returnUrl, '../') ==
     header('Location: ' . $relativePath . $returnUrl);
 } else {
     // URL potentiellement dangereuse, rediriger vers l'accueil par défaut
-    header('Location: ' . $relativePath . 'pages/Accueil.php');
+    header('Location: ' . $relativePath . 'public/pages/Accueil.php');
 }
 
 // Arrêter l'exécution du script

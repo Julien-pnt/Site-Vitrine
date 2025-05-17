@@ -52,19 +52,23 @@
 /* Badge du panier */
 .cart-badge {
     position: absolute;
-    top: -5px;
-    right: -5px;
-    width: 18px;
+    top: -8px;
+    right: -8px;
+    min-width: 18px;
     height: 18px;
     border-radius: 50%;
-    background-color: #d4af37; /* Remplacé rouge #e74c3c par doré #d4af37 */
-    color: white;
-    font-size: 11px;
+    background-color: #8B5C2E; /* Couleur bronze */
+    color: white !important; /* Forcer la couleur blanche */
+    font-size: 12px;
     font-weight: bold;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    padding: 0 4px;
+    border: 1px solid white; /* Bordure blanche pour contraste */
+    z-index: 10;
+    transition: transform 0.3s ease;
 }
 
 .cart-badge:empty {
@@ -80,6 +84,17 @@
 
 .cart-badge.pulse {
     animation: pulse 0.3s ease-in-out;
+}
+
+/* Animation pour les changements de quantité */
+@keyframes badge-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+.cart-badge.updated {
+    animation: badge-pulse 0.3s ease-in-out;
 }
 
 /* Dropdown du panier */
@@ -241,37 +256,34 @@
 }
 
 /* Amélioration des boutons dans le dropdown du panier */
+/* Styles pour les boutons de quantité */
 .cart-item-quantity {
     display: flex;
     align-items: center;
-    margin-top: 6px;
-    gap: 8px;
+    margin-top: 5px;
+    gap: 5px;
 }
 
 .quantity-btn {
     width: 22px;
     height: 22px;
-    border-radius: 4px;
-    background-color: #f0f0f0;
+    background-color: #f5f5f5;
     border: 1px solid #ddd;
-    color: #333;
-    font-size: 14px;
-    font-weight: bold;
+    border-radius: 3px;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
     cursor: pointer;
-    transition: all 0.2s;
-    user-select: none;
+    transition: all 0.2s ease;
+    color: #333;
+    padding: 0;
+    line-height: 1;
 }
 
 .quantity-btn:hover:not(:disabled) {
-    background-color: #e3e3e3;
-    border-color: #ccc;
-}
-
-.quantity-btn:active:not(:disabled) {
-    transform: scale(0.95);
+    background-color: #e0e0e0;
 }
 
 .quantity-btn:disabled {
@@ -280,37 +292,26 @@
 }
 
 .quantity-value {
-    width: 20px;
+    display: inline-block;
+    min-width: 20px;
     text-align: center;
     font-size: 14px;
     font-weight: 500;
+    color: #333;
 }
 
 .remove-cart-item {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 22px;
-    height: 22px;
+    margin-left: 5px;
     background: none;
     border: none;
-    font-size: 14px;
-    color: #999;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 16px;
     cursor: pointer;
-    transition: all 0.2s;
+    color: #999;
+    transition: color 0.2s;
 }
 
 .remove-cart-item:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    color: #f44336;
-}
-
-.remove-cart-item:active {
-    transform: scale(0.95);
+    color: #d32f2f;
 }
 
 /* Message panier vide */

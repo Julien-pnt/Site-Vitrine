@@ -93,7 +93,7 @@
     </nav>
 
     <div class="sidebar-footer">
-        <a href="/Site-Vitrine/public/pages/Accueil.php" target="_blank" title="Voir le site">
+        <a href="/public/pages/Accueil.php" target="_blank" title="Voir le site">
             <i class="fas fa-external-link-alt"></i>
         </a>
         <a href="/Site-Vitrine/public/pages/auth/logout.php" class="logout-btn" title="Déconnexion">

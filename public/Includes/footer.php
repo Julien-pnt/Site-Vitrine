@@ -51,7 +51,7 @@ if (!isset($relativePath)) {
                     <li><a href="<?php echo $relativePath; ?>/pages/APropos.php">À propos</a></li>
                     <li><a href="<?php echo $relativePath; ?>/pages/Contact.php">Contact</a></li>
                     <li><a href="<?php echo $relativePath; ?>/pages/products/DescriptionProduits.php">Fabrication</a></li>
-                    <li><a href="<?php echo $relativePath; ?>/pages/legal/MentionsLegales.php">Mentions légales</a></li>
+                    <li><a href="<?php echo $relativePath; ?>/pages/legal/PrivacyPolicy.php">Mentions légales</a></li>
                     <li><a href="<?php echo $relativePath; ?>/pages/Organigramme.php">Organigramme</a></li>
                 </ul>
             </div>

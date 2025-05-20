@@ -821,7 +821,7 @@ $productsStock = loadProductsStockBatch($productIds);
         <div class="collection-info">
           <h3>Classique</h3>
           <p>L'élégance intemporelle qui traverse les époques</p>
-          <span class="price-range">À partir de 1 200 €</span>
+          <span class="price-range">À partir de 8 500 €</span>
           <a href="<?= $relativePath ?>/pages/collections/Collection-Classic.php" class="explore-button">Découvrir</a>
         </div>
       </div>
@@ -833,7 +833,7 @@ $productsStock = loadProductsStockBatch($productIds);
         <div class="collection-info">
           <h3>Prestige</h3>
           <p>Le summum du luxe et de la haute horlogerie</p>
-          <span class="price-range">À partir de 5 000 €</span>
+          <span class="price-range">À partir de 25 000 €</span>
           <a href="<?= $relativePath ?>/pages/collections/Collection-Prestige.php" class="explore-button">Découvrir</a>
         </div>
       </div>
@@ -845,7 +845,7 @@ $productsStock = loadProductsStockBatch($productIds);
         <div class="collection-info">
           <h3>Sport</h3>
           <p>Robustes et performantes pour tous vos défis</p>
-          <span class="price-range">À partir de 2 500 €</span>
+          <span class="price-range">À partir de 12 000 €</span>
           <a href="<?= $relativePath ?>/pages/collections/Collection-Sport.php" class="explore-button">Découvrir</a>
         </div>
       </div>
@@ -863,11 +863,23 @@ $productsStock = loadProductsStockBatch($productIds);
       <?php 
       // Limiter à seulement 3 produits
       $limitedProducts = array_slice($featuredProducts, 0, 3);
-      foreach($limitedProducts as $product): 
+      
+      // Vérifier si nous avons des produits
+      if(empty($limitedProducts)): 
       ?>
-      <div class="product-card animated-element" data-product-id="<?php echo $product['id']; ?>">
+        <div class="alert-message" style="text-align: center; width: 100%; padding: 30px;">
+          <p>Nos montres populaires sont temporairement indisponibles. Veuillez consulter notre catalogue complet.</p>
+        </div>
+      <?php else: ?>
+      
+      <?php foreach($limitedProducts as $product): 
+        // Vérifier si le produit existe réellement et a toutes les propriétés nécessaires
+        $productExists = isset($product['id']) && isset($product['nom']) && isset($product['prix']);
+        $isAvailable = $productExists && isProductAvailable($product['id']);
+      ?>
+      <div class="product-card animated-element" data-product-id="<?php echo $productExists ? $product['id'] : 0; ?>">
         <div class="product-image-container">
-          <?php if (!empty($product['image'])): ?>
+          <?php if ($productExists && !empty($product['image'])): ?>
             <img src="<?php echo $relativePath; ?>/uploads/products/<?php echo htmlspecialchars(basename($product['image'])); ?>" 
                  alt="<?php echo htmlspecialchars($product['nom']); ?>" 
                  class="product-image" 
@@ -876,37 +888,39 @@ $productsStock = loadProductsStockBatch($productIds);
             <div class="no-image"><i class="fas fa-image"></i></div>
           <?php endif; ?>
           <div class="product-overlay">
-            <button class="quick-view-btn" data-product-id="<?php echo $product['id']; ?>">Aperçu rapide</button>
+            <button class="quick-view-btn" data-product-id="<?php echo $productExists ? $product['id'] : 0; ?>">
+              <?php echo $productExists ? 'Aperçu rapide' : 'Indisponible'; ?>
+            </button>
           </div>
-          <?php if ($product['nouveaute']): ?>
+          <?php if ($productExists && isset($product['nouveaute']) && $product['nouveaute']): ?>
             <div class="product-badge new">Nouveau</div>
           <?php endif; ?>
-          <?php if (!empty($product['prix_promo'])): ?>
+          <?php if ($productExists && !empty($product['prix_promo'])): ?>
             <div class="product-badge sale">-<?php echo round((1 - $product['prix_promo'] / $product['prix']) * 100); ?>%</div>
           <?php endif; ?>
         </div>
         <div class="product-info">
-          <h3 class="product-title"><?php echo htmlspecialchars($product['nom']); ?></h3>
+          <h3 class="product-title"><?php echo $productExists ? htmlspecialchars($product['nom']) : 'Produit indisponible'; ?></h3>
           
-          <?php if (!empty($product['prix_promo'])): ?>
+          <?php if ($productExists && !empty($product['prix_promo'])): ?>
             <p class="product-price">
               <span class="price-old"><?php echo number_format($product['prix'], 0, ',', ' '); ?> €</span> 
               <?php echo number_format($product['prix_promo'], 0, ',', ' '); ?> €
             </p>
-          <?php else: ?>
+          <?php elseif ($productExists): ?>
             <p class="product-price"><?php echo number_format($product['prix'], 0, ',', ' '); ?> €</p>
+          <?php else: ?>
+            <p class="product-price">Prix indisponible</p>
           <?php endif; ?>
           
-          <?php echo generateStockIndicator($product['id']); ?>
+          <?php echo $productExists ? generateStockIndicator($product['id']) : '<div class="stock-indicator out-of-stock"><i class="fas fa-times-circle"></i> Indisponible</div>'; ?>
           
           <div class="product-actions">
-            <?php if (isProductAvailable($product['id'])): ?>
-              <button class="add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">Ajouter au panier</button>
-            <?php else: ?>
-              <button class="add-to-cart-btn disabled" data-product-id="<?php echo $product['id']; ?>" disabled>Indisponible</button>
-            <?php endif; ?>
+            <button class="add-to-cart-btn disabled" data-product-id="<?php echo $productExists ? $product['id'] : 0; ?>" disabled>
+              Indisponible
+            </button>
             
-            <button class="add-to-wishlist-btn" data-product-id="<?php echo $product['id']; ?>" aria-label="Ajouter aux favoris">
+            <button class="add-to-wishlist-btn" data-product-id="<?php echo $productExists ? $product['id'] : 0; ?>" aria-label="Ajouter aux favoris">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
               </svg>
@@ -915,6 +929,7 @@ $productsStock = loadProductsStockBatch($productIds);
         </div>
       </div>
       <?php endforeach; ?>
+      <?php endif; ?>
     </div>
     
     <div class="text-center" style="margin-top: 50px;">

@@ -652,6 +652,7 @@ $productsStock = loadProductsStockBatch($productIds);
       align-items: center;
       justify-content: center;
       background-color: #f8f9fa;
+      position: relative;
     }
     
     .no-image i {
@@ -757,6 +758,30 @@ $productsStock = loadProductsStockBatch($productIds);
         text-align: center;
         border-radius: 0;
       }
+    }
+
+    /* Style pour l'étiquette "Rupture de stock" */
+    .product-badge.out-of-stock {
+      background-color: #dc3545;
+      color: white;
+      font-weight: bold;
+    }
+
+    .out-of-stock-overlay {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      background-color: rgba(220, 53, 69, 0.8);
+      color: white;
+      padding: 8px 0;
+      font-weight: bold;
+      transform: translateY(-50%);
+    }
+
+    .no-image {
+      position: relative;
     }
   </style>
 </head>
@@ -868,7 +893,7 @@ $productsStock = loadProductsStockBatch($productIds);
       if(empty($limitedProducts)): 
       ?>
         <div class="alert-message" style="text-align: center; width: 100%; padding: 30px;">
-          <p>Nos montres populaires sont temporairement indisponibles. Veuillez consulter notre catalogue complet.</p>
+          <p>Nos montres populaires sont temporairement en rupture de stock. Veuillez consulter notre catalogue complet.</p>
         </div>
       <?php else: ?>
       
@@ -885,11 +910,14 @@ $productsStock = loadProductsStockBatch($productIds);
                  class="product-image" 
                  loading="lazy">
           <?php else: ?>
-            <div class="no-image"><i class="fas fa-image"></i></div>
+            <div class="no-image">
+              <i class="fas fa-image"></i>
+              <div class="out-of-stock-overlay">Rupture de stock</div>
+            </div>
           <?php endif; ?>
           <div class="product-overlay">
             <button class="quick-view-btn" data-product-id="<?php echo $productExists ? $product['id'] : 0; ?>">
-              <?php echo $productExists ? 'Aperçu rapide' : 'Indisponible'; ?>
+              Aperçu rapide
             </button>
           </div>
           <?php if ($productExists && isset($product['nouveaute']) && $product['nouveaute']): ?>
@@ -898,9 +926,15 @@ $productsStock = loadProductsStockBatch($productIds);
           <?php if ($productExists && !empty($product['prix_promo'])): ?>
             <div class="product-badge sale">-<?php echo round((1 - $product['prix_promo'] / $product['prix']) * 100); ?>%</div>
           <?php endif; ?>
+          <!-- Modification du badge pour les produits non trouvés -->
+          <?php if (!$productExists): ?>
+            <div class="product-badge out-of-stock">Indisponible</div>
+          <?php elseif (!$isAvailable): ?>
+            <div class="product-badge out-of-stock">Rupture de stock</div>
+          <?php endif; ?>
         </div>
         <div class="product-info">
-          <h3 class="product-title"><?php echo $productExists ? htmlspecialchars($product['nom']) : 'Produit indisponible'; ?></h3>
+          <h3 class="product-title"><?php echo $productExists ? htmlspecialchars($product['nom']) : 'Produit en rupture de stock'; ?></h3>
           
           <?php if ($productExists && !empty($product['prix_promo'])): ?>
             <p class="product-price">
@@ -910,15 +944,25 @@ $productsStock = loadProductsStockBatch($productIds);
           <?php elseif ($productExists): ?>
             <p class="product-price"><?php echo number_format($product['prix'], 0, ',', ' '); ?> €</p>
           <?php else: ?>
-            <p class="product-price">Prix indisponible</p>
+            <p class="product-price">Prix non disponible</p>
           <?php endif; ?>
           
-          <?php echo $productExists ? generateStockIndicator($product['id']) : '<div class="stock-indicator out-of-stock"><i class="fas fa-times-circle"></i> Indisponible</div>'; ?>
+          <?php echo $productExists ? generateStockIndicator($product['id']) : '<div class="stock-indicator out-of-stock"><i class="fas fa-times-circle"></i> Rupture de stock</div>'; ?>
           
           <div class="product-actions">
-            <button class="add-to-cart-btn disabled" data-product-id="<?php echo $productExists ? $product['id'] : 0; ?>" disabled>
-              Indisponible
-            </button>
+            <?php if ($productExists && $isAvailable): ?>
+              <button class="add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
+                Ajouter au panier
+              </button>
+            <?php elseif (!$productExists): ?>
+              <button class="add-to-cart-btn disabled" data-product-id="0" disabled>
+                Indisponible
+              </button>
+            <?php else: ?>
+              <button class="add-to-cart-btn disabled" data-product-id="<?php echo $product['id']; ?>" disabled>
+                Rupture de stock
+              </button>
+            <?php endif; ?>
             
             <button class="add-to-wishlist-btn" data-product-id="<?php echo $productExists ? $product['id'] : 0; ?>" aria-label="Ajouter aux favoris">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

@@ -1,4 +1,10 @@
 <?php
+// Protection CSRF ajoutée automatiquement
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 session_start();
 require_once '../../php/config/database.php';
 require_once '../../php/utils/auth.php';
@@ -232,6 +238,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 <div class="widget-settings">
                     <h2>Widgets disponibles</h2>
                     <form method="POST" action="">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                         <input type="hidden" name="action" value="save_widgets">
                         
                         <div class="widget-list">

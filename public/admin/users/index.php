@@ -820,6 +820,7 @@ if (!isset($_SESSION['csrf_token'])) {
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary close-modal">Annuler</button>
                 <form action="delete.php" method="POST" id="deleteForm">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                     <input type="hidden" name="user_id" id="deleteUserId">
                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                     <button type="submit" class="btn btn-danger">Supprimer</button>

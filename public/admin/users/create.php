@@ -392,6 +392,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="card-body">
                         <form method="POST" action="" id="userForm">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                             <!-- Token CSRF -->
                             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                             

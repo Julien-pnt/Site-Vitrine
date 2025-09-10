@@ -1,4 +1,10 @@
 <?php
+// Protection CSRF ajoutée automatiquement
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Connexion à la base de données
 require_once '../../../php/config/database.php';
 
@@ -1322,6 +1328,7 @@ try {
             <div class="review-form-container">
                 <h3>Donnez votre avis</h3>
                 <form id="review-form" action="../../../php/api/reviews/add-review.php" method="post">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                     <input type="hidden" name="produit_id" value="<?php echo $productId; ?>">
                     
                     <div class="form-group">

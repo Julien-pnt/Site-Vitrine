@@ -1,0 +1,17 @@
+# LISTE BLANCHE D'ADRESSES IP
+# IPs autorisées à bypasser certaines vérifications de sécurité
+# Format: une IP par ligne, commentaires avec #
+
+# IPs locales
+127.0.0.1
+::1
+localhost
+
+# IPs de confiance (exemples - à adapter selon vos besoins)
+# 192.168.1.100    # IP admin principal
+# 10.0.0.50        # Serveur de monitoring
+# 203.0.113.10     # IP bureau principal
+
+# IPs de services externes de confiance
+# 173.252.66.0/24  # Facebook crawlers (exemple)
+# 66.249.64.0/19   # Google crawlers (exemple)

@@ -1,0 +1,14 @@
+# LISTE NOIRE D'ADRESSES IP
+# IPs bloquées pour des raisons de sécurité
+# Format: une IP par ligne, commentaires avec #
+
+# IPs malveillantes connues (exemples)
+# 192.0.2.1        # Attaque par force brute détectée
+# 203.0.113.100    # Tentatives d'injection SQL
+# 198.51.100.50    # Scanning automatisé
+
+# Plages d'IP suspectes
+# Ajoutez ici les IPs à bloquer définitivement
+
+# Note: Cette liste est mise à jour automatiquement par le système de monitoring
+# Les IPs avec un score de réputation trop bas sont ajoutées automatiquement

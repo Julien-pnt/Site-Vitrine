@@ -1,4 +1,10 @@
 <?php
+// Protection CSRF ajoutée automatiquement
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 session_start();
 
 // Vérifier si l'utilisateur est connecté
@@ -450,6 +456,7 @@ $relativePath = "..";
             
             <div class="section-content">
                 <form action="profile.php" method="POST" class="profile-form">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                     <div class="form-row">
                         <div class="form-column">
                             <div class="form-group">
@@ -504,6 +511,7 @@ $relativePath = "..";
             
             <div class="section-content">
                 <form action="change-password.php" method="POST" class="password-form">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                     <div class="form-row">
                         <div class="form-column">
                             <div class="form-group">
@@ -549,6 +557,7 @@ $relativePath = "..";
             
             <div class="section-content">
                 <form action="update-photo.php" method="POST" enctype="multipart/form-data" class="photo-form">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                     <div class="form-group">
                         <label for="profile_photo">Choisir une nouvelle photo</label>
                         <input type="file" id="profile_photo" name="profile_photo" accept="image/*">

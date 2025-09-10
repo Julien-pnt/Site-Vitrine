@@ -1,4 +1,10 @@
 <?php
+// Protection CSRF ajoutée automatiquement
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 session_start();
 require_once '../../php/config/database.php';
 require_once '../../php/utils/auth.php';
@@ -865,6 +871,7 @@ try {
                     <h2 id="formTitle">Ajouter une promotion</h2>
                     
                     <form method="POST" id="promoForm">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                         <input type="hidden" id="promotionId" name="id">
                         <input type="hidden" id="formAction" name="action" value="add_promotion">
                         
@@ -1059,6 +1066,7 @@ try {
                 
                 <!-- Formulaire de suppression caché -->
                 <form id="deleteForm" method="POST" style="display: none;">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                     <input type="hidden" name="action" value="delete_promotion">
                     <input type="hidden" id="deleteId" name="id">
                 </form>

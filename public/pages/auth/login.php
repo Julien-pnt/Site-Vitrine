@@ -1,4 +1,10 @@
 <?php
+// Protection CSRF ajoutée automatiquement
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Démarrer la session
 session_start();
 require_once '../../../php/config/database.php';
@@ -477,7 +483,8 @@ require_once "../../Includes/header.php";
         <div id="alert" class="alert alert-danger"><?php echo $error_message; ?></div>
         <?php endif; ?>
         
-        <form id="loginForm" class="auth-form" method="post" action="login.php<?php echo !empty($redirect) ? '?redirect='.urlencode($redirect) : ''; ?>" novalidate>
+        <form id="loginForm" class="auth-form" method="post" action="login.php<?php echo !empty($redirect) ? '?redirect='.urlencode($redirect) : ''; ?>
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">" novalidate>
             <div class="form-group">
                 <!-- Icône email -->
                 <svg class="form-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

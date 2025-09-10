@@ -1,4 +1,10 @@
 <?php
+// Protection CSRF ajoutée automatiquement
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Initialisation de la session et vérification d'authentification admin
 session_start();
 
@@ -904,6 +910,7 @@ if (isset($_SESSION['message'])) {
                         </div>
                         <div class="card-body">
                             <form action="categories.php" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                 <?php if ($editCategory): ?>
                                     <input type="hidden" name="id" value="<?= $editCategory['id'] ?>">
                                 <?php endif; ?>

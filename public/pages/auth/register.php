@@ -1,4 +1,10 @@
 <?php
+// Protection CSRF ajoutée automatiquement
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Démarrer la session
 session_start();
 
@@ -462,6 +468,7 @@ require_once "../../Includes/header.php";
         <?php endif; ?>
         
         <form id="registerForm" class="auth-form" method="post" action="register.php" novalidate>
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
             <div class="form-section-title">Informations personnelles</div>
             
             <div class="form-row">

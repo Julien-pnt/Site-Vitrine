@@ -94,7 +94,28 @@ $cartItems = getSimpleCartItems();
     <meta name="description" content="<?php echo isset($pageDescription) ? $pageDescription : 'Elixir du Temps - Découvrez notre collection de montres de luxe, alliant tradition et innovation.'; ?>">
     <meta name="base-url" content="<?php echo $relativePath; ?>">
     
-    <!-- Ressources CSS -->
+    <!-- Security & Performance Meta Tags -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="<?php echo $relativePath; ?>/assets/css/design-system.css" as="style">
+    <link rel="preload" href="<?php echo $relativePath; ?>/assets/css/navigation.css" as="style">
+    <link rel="preload" href="<?php echo $relativePath; ?>/assets/js/navigation.js" as="script">
+    
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    
+    <!-- Critical CSS -->
+    <link rel="stylesheet" href="<?php echo $relativePath; ?>/assets/css/design-system.css">
+    <link rel="stylesheet" href="<?php echo $relativePath; ?>/assets/css/navigation.css">
+    <link rel="stylesheet" href="<?php echo $relativePath; ?>/assets/css/products.css">
+    
+    <!-- Legacy CSS for backward compatibility -->
     <link rel="stylesheet" href="<?php echo $relativePath; ?>/assets/css/main.css">
     <link rel="stylesheet" href="<?php echo $relativePath; ?>/assets/css/header.css">
     <link rel="stylesheet" href="<?php echo $relativePath; ?>/assets/css/footer.css">
@@ -102,168 +123,413 @@ $cartItems = getSimpleCartItems();
     <link rel="stylesheet" href="<?php echo $relativePath; ?>/assets/css/notifications.css">
     <?php if (isset($additionalCss)) echo $additionalCss; ?>
     
+    <!-- Favicon -->
     <link rel="shortcut icon" href="<?php echo $relativePath; ?>/assets/img/layout/icon2.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="<?php echo $relativePath; ?>/assets/img/layout/icon2.png">
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <title><?php echo $pageTitle; ?></title>
     
     <?php if (isset($additionalHead)) echo $additionalHead; ?>
-    
-    <script src="<?php echo $relativePath; ?>/assets/js/cart-functions.js"></script>
-    <script src="<?php echo $relativePath; ?>/assets/js/header-functions.js"></script>
-    <script src="<?php echo $relativePath; ?>/assets/js/cart-common.js"></script>
-    <script src="<?php echo $relativePath; ?>/assets/js/add-to-cart.js"></script>
 </head>
 <body>
-    <!-- Header section -->
-    <header class="header">
-        <div class="logo-container">
-            <a href="<?php echo $relativePath; ?>/pages/Accueil.php" aria-label="Accueil Elixir du Temps">
-                <img src="<?php echo $relativePath; ?>/assets/img/layout/logo.png" alt="Logo Elixir du Temps" class="logo" width="180" height="60">
-            </a>
-        </div>
-        
-        <nav aria-label="Navigation principale">
-            <ul class="menu-bar">
-                <li><a href="<?php echo $relativePath; ?>/pages/Accueil.php" <?php if($currentPage == 'Accueil.php') echo 'class="active"'; ?>>Accueil</a></li>
-                <li><a href="<?php echo $relativePath; ?>/pages/collections/Collections.php" <?php if($currentPage == 'Collections.php') echo 'class="active"'; ?>>Collections</a></li>
-                <li><a href="<?php echo $relativePath; ?>/pages/products/Montres.php" <?php if($currentPage == 'Montres.php') echo 'class="active"'; ?>>Montres</a></li>
-                <li><a href="<?php echo $relativePath; ?>/pages/APropos.php" <?php if($currentPage == 'APropos.php') echo 'class="active"'; ?>>À propos</a></li>
-                <li><a href="<?php echo $relativePath; ?>/pages/Contact.php" <?php if($currentPage == 'Contact.php') echo 'class="active"'; ?>>Contact</a></li>
-            </ul>
-        </nav>
-        
-        <!-- User and Cart Icons -->
-        <div class="user-cart-container">
-            <!-- User dropdown menu -->
-            <div class="user-menu-container">
-                <div class="user-icon-wrapper">
-                    <i class="fas fa-user"></i>
-                    <span class="user-menu-arrow">▼</span>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+    
+    <!-- Modern Header -->
+    <header class="main-header">
+        <div class="container">
+            <nav class="navbar" role="navigation" aria-label="Navigation principale">
+                <!-- Brand Logo -->
+                <a href="<?php echo $relativePath; ?>/pages/Accueil.php" class="navbar-brand" aria-label="Accueil Elixir du Temps">
+                    <img src="<?php echo $relativePath; ?>/assets/img/layout/logo.png" alt="Elixir du Temps" class="brand-logo" width="180" height="45">
+                    <span class="brand-text">Elixir du Temps</span>
+                </a>
+                
+                <!-- Main Navigation -->
+                <ul class="navbar-nav" role="menubar">
+                    <li class="nav-item" role="none">
+                        <a href="<?php echo $relativePath; ?>/pages/Accueil.php" 
+                           class="nav-link <?php if($currentPage == 'Accueil.php') echo 'active'; ?>" 
+                           role="menuitem">
+                            <i class="fas fa-home" aria-hidden="true"></i>
+                            Accueil
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item dropdown" role="none">
+                        <a href="<?php echo $relativePath; ?>/pages/collections/Collections.php" 
+                           class="nav-link dropdown-toggle <?php if($currentPage == 'Collections.php') echo 'active'; ?>" 
+                           role="menuitem" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-gem" aria-hidden="true"></i>
+                            Collections
+                        </a>
+                        <div class="dropdown-menu" role="menu">
+                            <a href="<?php echo $relativePath; ?>/pages/collections/luxury.php" class="dropdown-item" role="menuitem">
+                                <i class="fas fa-crown" aria-hidden="true"></i>
+                                Collection Luxury
+                            </a>
+                            <a href="<?php echo $relativePath; ?>/pages/collections/sport.php" class="dropdown-item" role="menuitem">
+                                <i class="fas fa-running" aria-hidden="true"></i>
+                                Collection Sport
+                            </a>
+                            <a href="<?php echo $relativePath; ?>/pages/collections/classic.php" class="dropdown-item" role="menuitem">
+                                <i class="fas fa-clock" aria-hidden="true"></i>
+                                Collection Classic
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="<?php echo $relativePath; ?>/pages/collections/nouveautes.php" class="dropdown-item" role="menuitem">
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                                Nouveautés
+                            </a>
+                        </div>
+                    </li>
+                    
+                    <li class="nav-item" role="none">
+                        <a href="<?php echo $relativePath; ?>/pages/products/Montres.php" 
+                           class="nav-link <?php if($currentPage == 'Montres.php') echo 'active'; ?>" 
+                           role="menuitem">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                            Montres
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item" role="none">
+                        <a href="<?php echo $relativePath; ?>/pages/APropos.php" 
+                           class="nav-link <?php if($currentPage == 'APropos.php') echo 'active'; ?>" 
+                           role="menuitem">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i>
+                            À propos
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item" role="none">
+                        <a href="<?php echo $relativePath; ?>/pages/Contact.php" 
+                           class="nav-link <?php if($currentPage == 'Contact.php') echo 'active'; ?>" 
+                           role="menuitem">
+                            <i class="fas fa-envelope" aria-hidden="true"></i>
+                            Contact
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Search Bar -->
+                <div class="search-bar">
+                    <form action="<?php echo $relativePath; ?>/pages/products/search.php" method="GET" role="search">
+                        <input type="search" 
+                               class="search-input" 
+                               placeholder="Rechercher une montre..." 
+                               name="q" 
+                               autocomplete="off"
+                               aria-label="Rechercher des produits">
+                        <i class="fas fa-search search-icon" aria-hidden="true"></i>
+                    </form>
+                    <div class="search-results" aria-live="polite"></div>
                 </div>
                 
-                <div class="user-dropdown">
-                    <!-- Options pour utilisateurs non connectés -->
-                    <div class="guest-options">
-                        <a href="<?php echo $relativePath; ?>/pages/auth/login.php" class="dropdown-item">
-                            <i class="fas fa-sign-in-alt"></i> Se connecter
-                        </a>
-                        <a href="<?php echo $relativePath; ?>/pages/auth/register.php" class="dropdown-item">
-                            <i class="fas fa-user-plus"></i> S'inscrire
-                        </a>
+                <!-- User Actions -->
+                <div class="navbar-actions">
+                    <!-- User Menu -->
+                    <div class="dropdown">
+                        <button class="action-btn dropdown-toggle" 
+                                aria-label="Menu utilisateur" 
+                                aria-haspopup="true" 
+                                aria-expanded="false">
+                            <i class="fas fa-user" aria-hidden="true"></i>
+                        </button>
+                        <div class="dropdown-menu" role="menu">
+                            <?php if (isset($_SESSION['user_id'])): ?>
+                                <!-- User logged in -->
+                                <a href="<?php echo $relativePath; ?>/user/index.php" class="dropdown-item" role="menuitem">
+                                    <i class="fas fa-user-circle" aria-hidden="true"></i>
+                                    Mon compte
+                                </a>
+                                <a href="<?php echo $relativePath; ?>/user/orders.php" class="dropdown-item" role="menuitem">
+                                    <i class="fas fa-box" aria-hidden="true"></i>
+                                    Mes commandes
+                                </a>
+                                <a href="<?php echo $relativePath; ?>/user/wishlist.php" class="dropdown-item" role="menuitem">
+                                    <i class="fas fa-heart" aria-hidden="true"></i>
+                                    Mes favoris
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="<?php echo $relativePath; ?>/php/api/auth/logout.php" class="dropdown-item" role="menuitem">
+                                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                                    Déconnexion
+                                </a>
+                            <?php else: ?>
+                                <!-- User not logged in -->
+                                <a href="<?php echo $relativePath; ?>/pages/auth/login.php" class="dropdown-item" role="menuitem">
+                                    <i class="fas fa-sign-in-alt" aria-hidden="true"></i>
+                                    Se connecter
+                                </a>
+                                <a href="<?php echo $relativePath; ?>/pages/auth/register.php" class="dropdown-item" role="menuitem">
+                                    <i class="fas fa-user-plus" aria-hidden="true"></i>
+                                    S'inscrire
+                                </a>
+                            <?php endif; ?>
+                        </div>
                     </div>
                     
-                    <!-- Options pour utilisateurs connectés -->
-                    <div class="user-options" style="display: none;">
-                        <a href="<?php echo $relativePath; ?>/user/index.php" class="dropdown-item">
-                            <i class="fas fa-user-circle"></i> Mon compte
-                        </a>
-                        <a href="<?php echo $relativePath; ?>/user/orders.php" class="dropdown-item">
-                            <i class="fas fa-box"></i> Mes commandes
-                        </a>
-                        <a href="<?php echo $relativePath; ?>/user/wishlist.php" class="dropdown-item">
-                            <i class="fas fa-heart"></i> Mes favoris
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="<?php echo $relativePath; ?>/php/api/auth/logout.php" class="dropdown-item logout">
-                            <i class="fas fa-sign-out-alt"></i> Déconnexion
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Cart Icon avec compteur -->
-            <div class="cart-wrapper">
-                <div class="cart-icon" id="cart-icon">
-                    <button class="nav-icon toggle-cart" aria-label="Panier">
-                        <i class="fas fa-shopping-cart"></i>
-                        <?php
-                        $cartItemCount = 0;
-                        foreach ($cartItems as $item) {
-                            $cartItemCount += $item['quantite'];
-                        }
-                        ?>
-                        <span class="cart-badge" id="cart-count"><?php echo $cartItemCount; ?></span>
+                    <!-- Wishlist -->
+                    <button class="action-btn" aria-label="Liste de souhaits" title="Mes favoris">
+                        <i class="fas fa-heart" aria-hidden="true"></i>
+                        <span class="badge" id="wishlist-count">0</span>
                     </button>
-                </div>
-                
-                <!-- Contenu du panier dropdown -->
-                <div class="cart-dropdown">
-                    <div class="cart-dropdown-header">
-                        <span class="cart-dropdown-title">Mon panier</span>
-                        <button class="close-cart-dropdown" aria-label="Fermer le panier">&times;</button>
-                    </div>
                     
-                    <!-- Message panier vide - toujours présent, affiché/masqué via JS -->
-                    <div class="cart-dropdown-empty" <?php if (!empty($cartItems)): ?>style="display: none;"<?php endif; ?>>
-                        <i class="fas fa-shopping-cart"></i>
-                        <p>Votre panier est vide</p>
-                    </div>
-                    
-                    <!-- Conteneur pour les articles - sera rempli dynamiquement par JS -->
-                    <div class="cart-dropdown-items" <?php if (empty($cartItems)): ?>style="display: none;"<?php endif; ?>>
-                        <?php if (!empty($cartItems)): ?>
-                            <?php foreach ($cartItems as $item): ?>
-                                <div class="cart-item" data-product-id="<?php echo $item['id']; ?>">
-                                    <div class="cart-item-image">
-                                        <?php if (!empty($item['image'])): ?>
-                                            <img src="<?php echo $relativePath; ?>/uploads/products/<?php echo htmlspecialchars(basename($item['image'])); ?>" 
-                                                 alt="<?php echo htmlspecialchars($item['nom']); ?>">
-                                        <?php else: ?>
-                                            <div class="no-image"><i class="fas fa-image"></i></div>
-                                        <?php endif; ?>
+                    <!-- Cart -->
+                    <div class="dropdown">
+                        <button class="action-btn dropdown-toggle" 
+                                aria-label="Panier d'achat" 
+                                aria-haspopup="true" 
+                                aria-expanded="false">
+                            <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                            <?php
+                            $cartItemCount = 0;
+                            foreach ($cartItems as $item) {
+                                $cartItemCount += $item['quantite'];
+                            }
+                            ?>
+                            <span class="badge" id="cart-count"><?php echo $cartItemCount; ?></span>
+                        </button>
+                        
+                        <!-- Cart Dropdown -->
+                        <div class="dropdown-menu cart-dropdown" role="menu">
+                            <div class="cart-dropdown-header">
+                                <h6>Mon panier (<?php echo count($cartItems); ?> articles)</h6>
+                            </div>
+                            
+                            <?php if (empty($cartItems)): ?>
+                                <div class="cart-dropdown-empty">
+                                    <i class="fas fa-shopping-cart fa-2x" aria-hidden="true"></i>
+                                    <p>Votre panier est vide</p>
+                                    <a href="<?php echo $relativePath; ?>/pages/products/Montres.php" class="btn btn-primary btn-sm">
+                                        Découvrir nos montres
+                                    </a>
+                                </div>
+                            <?php else: ?>
+                                <div class="cart-dropdown-items">
+                                    <?php foreach (array_slice($cartItems, 0, 3) as $item): ?>
+                                        <div class="cart-item" data-product-id="<?php echo $item['id']; ?>">
+                                            <div class="cart-item-image">
+                                                <?php if (!empty($item['image'])): ?>
+                                                    <img src="<?php echo $relativePath; ?>/uploads/products/<?php echo htmlspecialchars(basename($item['image'])); ?>" 
+                                                         alt="<?php echo htmlspecialchars($item['nom']); ?>"
+                                                         loading="lazy">
+                                                <?php else: ?>
+                                                    <div class="no-image">
+                                                        <i class="fas fa-clock" aria-hidden="true"></i>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                            <div class="cart-item-info">
+                                                <h6><?php echo htmlspecialchars($item['nom']); ?></h6>
+                                                <div class="cart-item-price">
+                                                    <?php if (!empty($item['prix_promo'])): ?>
+                                                        <span class="price-current"><?php echo number_format($item['prix_promo'], 0, ',', ' '); ?> €</span>
+                                                        <span class="price-old"><?php echo number_format($item['prix'], 0, ',', ' '); ?> €</span>
+                                                    <?php else: ?>
+                                                        <span class="price-current"><?php echo number_format($item['prix'], 0, ',', ' '); ?> €</span>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div class="cart-item-quantity">
+                                                    Quantité: <?php echo $item['quantite']; ?>
+                                                </div>
+                                            </div>
+                                            <button class="cart-item-remove" data-product-id="<?php echo $item['id']; ?>" aria-label="Supprimer cet article">
+                                                <i class="fas fa-times" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    <?php endforeach; ?>
+                                    
+                                    <?php if (count($cartItems) > 3): ?>
+                                        <div class="cart-more-items">
+                                            <p>et <?php echo count($cartItems) - 3; ?> autres articles...</p>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <div class="cart-dropdown-footer">
+                                    <div class="cart-total">
+                                        <strong>
+                                            Total: 
+                                            <span id="cart-total">
+                                                <?php
+                                                $total = 0;
+                                                foreach ($cartItems as $item) {
+                                                    $price = !empty($item['prix_promo']) ? $item['prix_promo'] : $item['prix'];
+                                                    $total += $price * $item['quantite'];
+                                                }
+                                                echo number_format($total, 0, ',', ' ') . ' €';
+                                                ?>
+                                            </span>
+                                        </strong>
                                     </div>
-                                    <div class="cart-item-details">
-                                        <h4 class="cart-item-title"><?php echo htmlspecialchars($item['nom']); ?></h4>
-                                        <div class="cart-item-price">
-                                            <?php if (!empty($item['prix_promo'])): ?>
-                                                <span class="price-current"><?php echo number_format($item['prix_promo'], 0, ',', ' '); ?> €</span>
-                                                <span class="price-old"><?php echo number_format($item['prix'], 0, ',', ' '); ?> €</span>
-                                            <?php else: ?>
-                                                <span class="price-current"><?php echo number_format($item['prix'], 0, ',', ' '); ?> €</span>
-                                            <?php endif; ?>
-                                        </div>
-                                        <div class="cart-item-quantity">
-                                            <button class="quantity-btn decrease" data-product-id="<?php echo $item['id']; ?>">-</button>
-                                            <span class="quantity-value"><?php echo $item['quantite']; ?></span>
-                                            <button class="quantity-btn increase" data-product-id="<?php echo $item['id']; ?>">+</button>
-                                            <button class="remove-cart-item" data-product-id="<?php echo $item['id']; ?>">×</button>
-                                        </div>
+                                    <div class="cart-actions">
+                                        <a href="<?php echo $relativePath; ?>/pages/products/panier.php" class="btn btn-outline-dark btn-sm">
+                                            Voir le panier
+                                        </a>
+                                        <a href="<?php echo $relativePath; ?>/pages/products/checkout.php" class="btn btn-primary btn-sm">
+                                            Commander
+                                        </a>
                                     </div>
                                 </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </div>
-                    
-                    <!-- Pied du panier toujours présent -->
-                    <div class="cart-dropdown-footer" <?php if (empty($cartItems)): ?>style="display: none;"<?php endif; ?>>
-                        <div class="cart-total">
-                            <span>Total:</span>
-                            <span id="cart-dropdown-total">
-                                <?php
-                                $total = 0;
-                                if (!empty($cartItems)) {
-                                    foreach ($cartItems as $item) {
-                                        $price = !empty($item['prix_promo']) ? $item['prix_promo'] : $item['prix'];
-                                        $total += $price * $item['quantite'];
-                                    }
-                                }
-                                echo number_format($total, 0, ',', ' ') . ' €';
-                                ?>
-                            </span>
-                        </div>
-                        
-                        <div class="cart-buttons">
-                            <a href="<?php echo $relativePath; ?>/pages/products/panier.php" class="cart-button secondary">Voir le panier</a>
-                            <a href="<?php echo $relativePath; ?>/pages/products/checkout.php" class="cart-button primary">Commander</a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
-            </div>
+                
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" 
+                        aria-label="Menu de navigation mobile" 
+                        aria-expanded="false" 
+                        aria-controls="mobile-menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </nav>
         </div>
     </header>
+    
+    <!-- Mobile Menu -->
+    <div class="mobile-overlay"></div>
+    <nav class="mobile-menu" id="mobile-menu" aria-label="Navigation mobile">
+        <ul class="mobile-nav" role="menubar">
+            <li class="nav-item" role="none">
+                <a href="<?php echo $relativePath; ?>/pages/Accueil.php" 
+                   class="nav-link <?php if($currentPage == 'Accueil.php') echo 'active'; ?>" 
+                   role="menuitem">
+                    <i class="fas fa-home" aria-hidden="true"></i>
+                    Accueil
+                </a>
+            </li>
+            <li class="nav-item" role="none">
+                <a href="<?php echo $relativePath; ?>/pages/collections/Collections.php" 
+                   class="nav-link <?php if($currentPage == 'Collections.php') echo 'active'; ?>" 
+                   role="menuitem">
+                    <i class="fas fa-gem" aria-hidden="true"></i>
+                    Collections
+                </a>
+            </li>
+            <li class="nav-item" role="none">
+                <a href="<?php echo $relativePath; ?>/pages/products/Montres.php" 
+                   class="nav-link <?php if($currentPage == 'Montres.php') echo 'active'; ?>" 
+                   role="menuitem">
+                    <i class="fas fa-clock" aria-hidden="true"></i>
+                    Montres
+                </a>
+            </li>
+            <li class="nav-item" role="none">
+                <a href="<?php echo $relativePath; ?>/pages/APropos.php" 
+                   class="nav-link <?php if($currentPage == 'APropos.php') echo 'active'; ?>" 
+                   role="menuitem">
+                    <i class="fas fa-info-circle" aria-hidden="true"></i>
+                    À propos
+                </a>
+            </li>
+            <li class="nav-item" role="none">
+                <a href="<?php echo $relativePath; ?>/pages/Contact.php" 
+                   class="nav-link <?php if($currentPage == 'Contact.php') echo 'active'; ?>" 
+                   role="menuitem">
+                    <i class="fas fa-envelope" aria-hidden="true"></i>
+                    Contact
+                </a>
+            </li>
+        </ul>
+        
+        <div class="mobile-actions">
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <a href="<?php echo $relativePath; ?>/user/index.php" class="btn btn-outline-dark btn-full">
+                    <i class="fas fa-user" aria-hidden="true"></i>
+                    Mon compte
+                </a>
+                <a href="<?php echo $relativePath; ?>/php/api/auth/logout.php" class="btn btn-ghost btn-full">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                    Déconnexion
+                </a>
+            <?php else: ?>
+                <a href="<?php echo $relativePath; ?>/pages/auth/login.php" class="btn btn-primary btn-full">
+                    <i class="fas fa-sign-in-alt" aria-hidden="true"></i>
+                    Se connecter
+                </a>
+                <a href="<?php echo $relativePath; ?>/pages/auth/register.php" class="btn btn-outline-dark btn-full">
+                    <i class="fas fa-user-plus" aria-hidden="true"></i>
+                    S'inscrire
+                </a>
+            <?php endif; ?>
+        </div>
+    </nav>
+    
+    <!-- Breadcrumb (if applicable) -->
+    <?php if (isset($breadcrumb) && !empty($breadcrumb)): ?>
+        <nav aria-label="Fil d'Ariane" class="breadcrumb-nav">
+            <div class="container">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="<?php echo $relativePath; ?>/pages/Accueil.php">Accueil</a>
+                    </li>
+                    <?php foreach ($breadcrumb as $item): ?>
+                        <?php if (isset($item['url'])): ?>
+                            <li class="breadcrumb-item">
+                                <a href="<?php echo $item['url']; ?>"><?php echo $item['title']; ?></a>
+                            </li>
+                        <?php else: ?>
+                            <li class="breadcrumb-item active" aria-current="page">
+                                <?php echo $item['title']; ?>
+                            </li>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </ol>
+            </div>
+        </nav>
+    <?php endif; ?>
+    
+    <!-- Main Content -->
+    <main id="main-content" tabindex="-1">
+    
+    <!-- JavaScript -->
+    <script src="<?php echo $relativePath; ?>/assets/js/navigation.js" defer></script>
+    <script src="<?php echo $relativePath; ?>/assets/js/performance.js" defer></script>
+    
+    <!-- Legacy scripts for backward compatibility -->
+    <script src="<?php echo $relativePath; ?>/assets/js/cart-functions.js" defer></script>
+    <script src="<?php echo $relativePath; ?>/assets/js/header-functions.js" defer></script>
+    <script src="<?php echo $relativePath; ?>/assets/js/cart-common.js" defer></script>
+    <script src="<?php echo $relativePath; ?>/assets/js/add-to-cart.js" defer></script>
+    
+    <script>
+        // Configuration globale
+        window.SITE_CONFIG = {
+            basePath: '<?php echo $relativePath; ?>',
+            isLoggedIn: <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>,
+            cartCount: <?php echo $cartItemCount; ?>,
+            apiEndpoints: {
+                search: '<?php echo $relativePath; ?>/php/api/search.php',
+                cart: '<?php echo $relativePath; ?>/php/api/cart/',
+                auth: '<?php echo $relativePath; ?>/php/api/auth/'
+            }
+        };
+        
+        // Compatibility shim pour l'ancien code
+        document.addEventListener('DOMContentLoaded', function() {
+            // Synchroniser l'ancien système avec le nouveau
+            if (window.elixirNav && typeof updateHeaderUserMenu === 'function') {
+                updateHeaderUserMenu();
+            }
+            
+            // Gérer les anciens événements de panier
+            document.addEventListener('cartUpdated', function(e) {
+                if (window.elixirNav) {
+                    document.getElementById('cart-count').textContent = e.detail.count || 0;
+                }
+            });
+        });
+    </script>
 </body>
 </html>

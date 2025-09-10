@@ -1,4 +1,10 @@
 <?php
+// Protection CSRF ajoutée automatiquement
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 session_start();
 
 // Vérifier si l'utilisateur est connecté
@@ -430,6 +436,7 @@ $relativePath = "..";
                 <?php endif; ?>
                 
                 <form action="addresses.php" method="POST" class="address-form">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                     <div class="form-group full-width">
                         <label for="adresse">Adresse <span class="required">*</span></label>
                         <input type="text" id="adresse" name="adresse" value="<?php echo htmlspecialchars($user['adresse']); ?>" required placeholder="Numéro et nom de rue">

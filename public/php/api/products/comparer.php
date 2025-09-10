@@ -217,6 +217,7 @@ $caracteristiques = [
                             <div class="product-name"><?php echo htmlspecialchars($montre['nom']); ?></div>
                             <div class="product-price"><?php echo number_format($montre['prix'], 2, ',', ' '); ?> €</div>
                             <form action="panier.php" method="post" class="add-to-cart-form">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                 <input type="hidden" name="produit_id" value="<?php echo $montre['id']; ?>">
                                 <input type="hidden" name="quantite" value="1">
                                 <input type="hidden" name="ajouter_panier" value="1">

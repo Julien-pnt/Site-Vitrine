@@ -1,0 +1,27 @@
+# Protection du répertoire uploads
+# Empêcher l'exécution de scripts malveillants
+
+# Désactiver l'exécution PHP
+php_flag engine off
+
+# Empêcher l'affichage du contenu des répertoires
+Options -Indexes
+
+# Types de fichiers autorisés seulement
+<FilesMatch "\.(php|php3|php4|php5|phtml|pl|py|jsp|asp|sh|cgi)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Autoriser seulement les fichiers image et documents
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|pdf|doc|docx|txt)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# En-têtes de sécurité pour les fichiers uploadés
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options nosniff
+    Header set Content-Disposition attachment
+    Header set X-Download-Options noopen
+</IfModule>

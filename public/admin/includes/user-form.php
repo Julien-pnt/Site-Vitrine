@@ -10,6 +10,7 @@ $statut = isset($user['statut']) ? $user['statut'] : 1;
 
 <form method="post" action="" class="user-form" enctype="multipart/form-data">
     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
     
     <div class="form-row">
         <div class="form-group">

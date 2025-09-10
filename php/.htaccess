@@ -1,0 +1,18 @@
+# Protection des scripts PHP métier
+# Interdire l'accès direct aux fichiers PHP de ce répertoire
+
+<Files "*.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+# Empêcher l'affichage du contenu des répertoires
+Options -Indexes
+
+# Permettre l'inclusion interne des fichiers PHP
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Rediriger toute tentative d'accès direct vers la page d'accueil
+    RewriteCond %{REQUEST_METHOD} ^(GET|POST)$
+    RewriteRule ^.*$ /Site-Vitrine/public/pages/Accueil.php [R=301,L]
+</IfModule>

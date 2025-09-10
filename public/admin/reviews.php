@@ -986,6 +986,7 @@ function getPaginationUrl($newPage) {
                                                 
                                                 <?php if ($review['statut'] === 'en_attente'): ?>
                                                 <form method="POST" class="d-inline">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                                     <input type="hidden" name="action" value="approve">
                                                     <input type="hidden" name="review_id" value="<?= $review['id'] ?>">
                                                     <button type="submit" class="icon-button success">
@@ -994,6 +995,7 @@ function getPaginationUrl($newPage) {
                                                 </form>
                                                 
                                                 <form method="POST" class="d-inline">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                                     <input type="hidden" name="action" value="reject">
                                                     <input type="hidden" name="review_id" value="<?= $review['id'] ?>">
                                                     <button type="submit" class="icon-button danger">
@@ -1003,6 +1005,7 @@ function getPaginationUrl($newPage) {
                                                 <?php endif; ?>
                                                 
                                                 <form method="POST" class="d-inline delete-form">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                                     <input type="hidden" name="action" value="delete">
                                                     <input type="hidden" name="review_id" value="<?= $review['id'] ?>">
                                                     <button type="button" class="icon-button danger delete-review">
@@ -1125,11 +1128,13 @@ function getPaginationUrl($newPage) {
     
     <!-- Formulaires pour actions groupées -->
     <form id="bulkApproveForm" method="POST" style="display:none;">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
         <input type="hidden" name="action" value="bulk_approve">
         <input type="hidden" name="review_ids" id="bulkApproveIds">
     </form>
     
     <form id="bulkRejectForm" method="POST" style="display:none;">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
         <input type="hidden" name="action" value="bulk_reject">
         <input type="hidden" name="review_ids" id="bulkRejectIds">
     </form>
@@ -1206,6 +1211,7 @@ function getPaginationUrl($newPage) {
                 if (status === 'en_attente') {
                     modalActions.innerHTML = `
                         <form method="POST" class="d-inline">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                             <input type="hidden" name="action" value="approve">
                             <input type="hidden" name="review_id" value="${id}">
                             <button type="submit" class="primary-button">
@@ -1214,6 +1220,7 @@ function getPaginationUrl($newPage) {
                         </form>
                         
                         <form method="POST" class="d-inline">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                             <input type="hidden" name="action" value="reject">
                             <input type="hidden" name="review_id" value="${id}">
                             <button type="submit" class="secondary-button">
@@ -1226,6 +1233,7 @@ function getPaginationUrl($newPage) {
                 // Ajouter l'action de suppression
                 modalActions.innerHTML += `
                     <form method="POST" class="d-inline delete-form">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="review_id" value="${id}">
                         <button type="button" class="danger-button delete-modal-review">
